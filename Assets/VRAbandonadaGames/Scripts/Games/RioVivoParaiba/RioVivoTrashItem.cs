@@ -6,6 +6,7 @@ namespace VRAbandonadaGames.Games.RioVivoParaiba
     {
         [SerializeField] private int riverHealthGain = 5;
         [SerializeField] private GameObject collectedVisual;
+        [SerializeField] private RioVivoFeedbackFX feedbackFx;
 
         private bool collected;
 
@@ -31,6 +32,11 @@ namespace VRAbandonadaGames.Games.RioVivoParaiba
             else
             {
                 gameObject.SetActive(false);
+            }
+
+            if (feedbackFx != null)
+            {
+                feedbackFx.PlayPulse(transform);
             }
 
             gameManager.RegisterTrashCollected(riverHealthGain, gameObject.name);

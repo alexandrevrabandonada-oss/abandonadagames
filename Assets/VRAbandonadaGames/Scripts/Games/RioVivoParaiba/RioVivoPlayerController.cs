@@ -11,13 +11,23 @@ namespace VRAbandonadaGames.Games.RioVivoParaiba
         [SerializeField] private LayerMask interactionLayerMask = ~0;
         [SerializeField] private RioVivoGameManager gameManager;
         [SerializeField] private RioVivoHUD hud;
+        [SerializeField] private RioVivoTouchHUD touchHud;
 
         private CharacterController characterController;
         private Vector3 velocity;
+        private RioVivoInteractable currentInteractable;
 
         private void Awake()
         {
             characterController = GetComponent<CharacterController>();
+        }
+
+        private void Start()
+        {
+            if (touchHud != null)
+            {
+                touchHud.BindInteract(TryInteract);
+            }
         }
 
         private void Update()
@@ -50,6 +60,20 @@ namespace VRAbandonadaGames.Games.RioVivoParaiba
         private void HandleInteraction()
         {
             var interactable = FindNearestInteractable();
+            if (currentInteractable != interactable)
+            {
+                if (currentInteractable != null)
+                {
+                    currentInteractable.SetHighlighted(false);
+                }
+
+                currentInteractable = interactable;
+                if (currentInteractable != null)
+                {
+                    currentInteractable.SetHighlighted(true);
+                }
+            }
+
             if (hud != null)
             {
                 hud.SetPrompt(interactable == null
@@ -59,7 +83,15 @@ namespace VRAbandonadaGames.Games.RioVivoParaiba
 
             if (interactable != null && Input.GetKeyDown(KeyCode.E))
             {
-                interactable.Interact(gameManager);
+                TryInteract();
+            }
+        }
+
+        private void TryInteract()
+        {
+            if (currentInteractable != null)
+            {
+                currentInteractable.Interact(gameManager);
             }
         }
 

@@ -15,6 +15,7 @@ namespace VRAbandonadaGames.Games.RioVivoParaiba
     {
         [SerializeField] private RioVivoHUD hud;
         [SerializeField] private RioVivoResultPanel resultPanel;
+        [SerializeField] private RioVivoAudioManager audioManager;
         [SerializeField] private int initialRiverHealth = 30;
         [SerializeField] private int requiredTrashCount = 8;
         [SerializeField] private int requiredRecoveryPoints = 3;
@@ -79,6 +80,11 @@ namespace VRAbandonadaGames.Games.RioVivoParaiba
                 hud.ShowMessage("Residuo recolhido. Cada cuidado fortalece o rio.");
             }
 
+            if (audioManager != null)
+            {
+                audioManager.PlayCollect();
+            }
+
             if (TrashCollected >= requiredTrashCount && CurrentStage == RioVivoGameStage.Care)
             {
                 CurrentStage = RioVivoGameStage.Organize;
@@ -105,6 +111,11 @@ namespace VRAbandonadaGames.Games.RioVivoParaiba
             if (hud != null)
             {
                 hud.ShowMessage("Ponto de recuperacao ativado.");
+            }
+
+            if (audioManager != null)
+            {
+                audioManager.PlayRecovery();
             }
 
             RefreshHud();
@@ -138,6 +149,11 @@ namespace VRAbandonadaGames.Games.RioVivoParaiba
             if (resultPanel != null)
             {
                 resultPanel.Show(this);
+            }
+
+            if (audioManager != null)
+            {
+                audioManager.PlayVictory();
             }
         }
 

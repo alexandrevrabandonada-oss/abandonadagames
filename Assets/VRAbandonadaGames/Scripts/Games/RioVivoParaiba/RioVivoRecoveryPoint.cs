@@ -15,6 +15,7 @@ namespace VRAbandonadaGames.Games.RioVivoParaiba
         [SerializeField] private int riverHealthGain = 15;
         [SerializeField] private GameObject inactiveVisual;
         [SerializeField] private GameObject activeVisual;
+        [SerializeField] private RioVivoFeedbackFX feedbackFx;
 
         private bool recovered;
 
@@ -45,6 +46,11 @@ namespace VRAbandonadaGames.Games.RioVivoParaiba
             if (activeVisual != null)
             {
                 activeVisual.SetActive(true);
+            }
+
+            if (feedbackFx != null)
+            {
+                feedbackFx.PlayPulse(transform);
             }
 
             gameManager.RegisterRecoveryPoint(recoveryType, riverHealthGain);

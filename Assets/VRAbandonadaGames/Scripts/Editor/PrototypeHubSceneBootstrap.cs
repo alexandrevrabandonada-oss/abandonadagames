@@ -39,6 +39,7 @@ namespace VRAbandonadaGames.EditorTools
             var hub = new GameObject("GameHubCore");
             var hubCore = hub.AddComponent<GameHubCore>();
             var shareSystem = hub.AddComponent<SocialShareResultSystem>();
+            var sceneLoader = hub.AddComponent<VRAHubSceneLoader>();
 
             var canvasObject = new GameObject("Canvas");
             var canvas = canvasObject.AddComponent<Canvas>();
@@ -69,7 +70,8 @@ namespace VRAbandonadaGames.EditorTools
 
             for (var index = 0; index < buttonNames.Length; index++)
             {
-                CreateButton(canvasObject.transform, buttonNames[index], new Vector2(0f, 170f - (index * 52f)), null);
+                var onClick = index == 0 ? new UnityAction(sceneLoader.LoadRioVivoParaiba) : null;
+                CreateButton(canvasObject.transform, buttonNames[index], new Vector2(0f, 170f - (index * 52f)), onClick);
             }
 
             CreateButton(canvasObject.transform, "Testar Resultado Compartilhavel", new Vector2(0f, -205f), shareSystem.CopyShareText);
