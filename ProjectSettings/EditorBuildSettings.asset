@@ -4,6 +4,12 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/VRAbandonadaGames/Scenes/VRA_Games_PrototypeHub.unity
+    guid: 74bc47a7d4c67e045830aa005a7e012a
+  - enabled: 1
+    path: Assets/VRAbandonadaGames/Scenes/Games/RioVivoParaiba/RioVivoParaiba_Main.unity
+    guid: 00000000000000000000000000000000
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
