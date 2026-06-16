@@ -1,6 +1,6 @@
 # TIJOLO 08 WebGL Finalizer Report
 
-Generated: 2026-06-16 19:46:56Z
+Generated: 2026-06-16 20:04:38Z
 
 ## Diagnostico inicial
 - O TouchHUD aparecia como pendencia no relatorio anterior, mas a causa raiz era o validador nao considerar objetos inativos.
@@ -35,12 +35,12 @@ Generated: 2026-06-16 19:46:56Z
 ## Resultado do build WebGL
 - Resultado: Succeeded
 - Arquivos gerados: 17
-- Tamanho total: 62692810 bytes
+- Tamanho total: 62692840 bytes
 - Warnings: 2
 - Errors: 0
 
 ## Tamanho do build
-- 62692810 bytes em Builds/WebGL/RioVivoParaiba_Test
+- 62692840 bytes em Builds/WebGL/RioVivoParaiba_Test
 
 ## Erros encontrados
 - Nenhum erro bloqueante detectado pela automacao T08.

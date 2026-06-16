@@ -81,6 +81,11 @@ namespace VRAbandonadaGames.Games.RioVivoParaiba
                     : "Pressione E para " + interactable.InteractionLabel.ToLowerInvariant() + ".");
             }
 
+            if (touchHud != null)
+            {
+                touchHud.SetInteractAvailable(interactable != null);
+            }
+
             if (interactable != null && Input.GetKeyDown(KeyCode.E))
             {
                 TryInteract();
