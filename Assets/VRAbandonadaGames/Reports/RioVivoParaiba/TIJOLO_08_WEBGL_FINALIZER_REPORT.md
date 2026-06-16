@@ -1,6 +1,6 @@
 # TIJOLO 08 WebGL Finalizer Report
 
-Generated: 2026-06-16 18:41:43Z
+Generated: 2026-06-16 19:46:56Z
 
 ## Diagnostico inicial
 - O TouchHUD aparecia como pendencia no relatorio anterior, mas a causa raiz era o validador nao considerar objetos inativos.
@@ -33,19 +33,17 @@ Generated: 2026-06-16 18:41:43Z
 - Nao foram detectados missing scripts, error shaders ou material magenta pela validacao T08.
 
 ## Resultado do build WebGL
-- Resultado: Failed
-- Arquivos gerados: 1
-- Tamanho total: 56248224 bytes
+- Resultado: Succeeded
+- Arquivos gerados: 17
+- Tamanho total: 62692810 bytes
 - Warnings: 2
-- Errors: 1
-- Falha tecnica do ambiente WebGL do Unity: `FROZEN_CACHE is set, but cache file is missing: "sysroot\\lib\\wasm32-emscripten\\libGL-webgl2-full_es3.a"`.
+- Errors: 0
 
 ## Tamanho do build
-- 56248224 bytes em Builds/WebGL/RioVivoParaiba_Test
+- 62692810 bytes em Builds/WebGL/RioVivoParaiba_Test
 
 ## Erros encontrados
-- Build WebGL retornou erros: 1
-- O pipeline Bee/WebGL falhou na etapa `build.js` por ausencia de artefato no cache congelado do Emscripten do proprio editor Unity.
+- Nenhum erro bloqueante detectado pela automacao T08.
 
 ## Erros corrigidos
 - Falso positivo de Missing TouchHUD no validador anterior.
@@ -53,8 +51,8 @@ Generated: 2026-06-16 18:41:43Z
 - Enquadramento de camera e legibilidade de HUD refinados para fechamento WebGL.
 
 ## Pendencias
+- Se a Unity estiver aberta em outra instancia, o build por linha de comando continua bloqueado.
 - Recomenda-se ultimo conferimento visual em Play Mode para desktop e mobile horizontal.
-- Para concluir o build WebGL, e necessario reparar/reinstalar o modulo WebGL Support ou regenerar o cache Emscripten do Unity 6000.2.6f1.
 
 ## Proximos passos
 - Rodar o menu Apply T08, depois Validate T08 e por fim Build T08 WebGL Test no Editor principal.
