@@ -1,0 +1,591 @@
+# TIJOLO 03 AssetOps Report
+
+Generated: 2026-06-16 16:23:54Z
+
+## Diagnostico inicial
+- Projeto Unity ativado e compilando desde o Tijolo 02.
+- Internet disponivel: sim.
+- Ferramentas de download disponiveis: curl, tar, Expand-Archive, Invoke-WebRequest.
+- Pipeline grafico atual: Built-in Render Pipeline (`m_CustomRenderPipeline: 0`).
+- Formatos suportados no conjunto escolhido: FBX, OBJ, PNG, JPG, zip.
+
+## Fontes pesquisadas
+- Kenney
+- ambientCG
+- Quaternius
+- OpenGameArt
+
+## Palavras-chave usadas
+- river low poly
+- river environment
+- bridge low poly
+- urban bridge
+- nature pack
+- city props low poly
+- trash props
+- low poly NPC
+- concrete material CC0
+- asphalt material CC0
+- grass material CC0
+- rust material CC0
+
+## Assets aprovados
+- Kenney Nature Kit | CC0 | https://kenney.nl/assets/nature-kit
+- Kenney City Kit (Roads) | CC0 | https://kenney.nl/assets/city-kit-roads
+- Kenney City Kit (Commercial) | CC0 | https://kenney.nl/assets/city-kit-commercial
+- Kenney Animated Characters Retro | CC0 | https://kenney.nl/assets/animated-characters-retro
+- ambientCG Asphalt002 2K JPG | CC0 | https://ambientcg.com/view?id=Asphalt002
+- ambientCG Concrete010 2K JPG | CC0 | https://ambientcg.com/view?id=Concrete010
+- ambientCG Grass004 2K JPG | CC0 | https://ambientcg.com/view?id=Grass004
+- ambientCG Rust004 2K JPG | CC0 | https://ambientcg.com/view?id=Rust004
+- ambientCG Ground037 2K JPG | CC0 | https://ambientcg.com/view?id=Ground037
+
+## Assets recusados ou adiados
+- OpenGameArt Park Props Lowpoly | CC-BY 3.0 | Rejected for Tijolo 03 because the pipeline prioritizes CC0/permissive sources first and this stage already has enough approved CC0 assets.
+- OpenGameArt Free Trashes | Collection / mixed clarity | Rejected because the page is a collection surface, not a single asset with a directly auditable pack-level license and provenance.
+- Quaternius Animated Men Pack | CC0 | Deferred for now because the exposed download path is a Google Drive folder, which is less reliable for unattended scripted retrieval in this workspace.
+
+## Assets baixados
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/kenney_city-kit-roads.zip
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Characters/kenney_animated-characters-retro.zip
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Materials/Asphalt002_2K-JPG.zip
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Materials/Concrete010_2K-JPG.zip
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Materials/Grass004_2K-JPG.zip
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Materials/Rust004_2K-JPG.zip
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/kenney_nature-kit.zip
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/River/Ground037_2K-JPG.zip
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/kenney_city-kit-commercial_2.1.zip
+
+## Assets importados
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/bridge-pillar-wide.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/bridge-pillar.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/construction-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/construction-cone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/construction-light.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/light-curved-cross.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/light-curved-double.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/light-curved.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/light-square-cross.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/light-square-double.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/light-square.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-bend-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-bend-sidewalk.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-bend-square-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-bend-square.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-bend.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-bridge.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-crossing.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-crossroad-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-crossroad-line.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-crossroad-path.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-crossroad.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-curve-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-curve-intersection-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-curve-intersection.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-curve-pavement.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-curve.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-driveway-double-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-driveway-double.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-driveway-single-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-driveway-single.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-end-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-end-round-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-end-round.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-end.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-intersection-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-intersection-line.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-intersection-path.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-intersection.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-roundabout-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-roundabout.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-side-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-side-entry-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-side-entry.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-side-exit-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-side-exit.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-side.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-slant-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-slant-curve-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-slant-curve.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-slant-flat-curve.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-slant-flat-high.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-slant-flat.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-slant-high-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-slant-high.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-slant.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-split-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-split.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-square-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-square.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-straight-barrier-end.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-straight-barrier-half.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-straight-barrier.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-straight-half.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-straight.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/sign-highway-detailed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/sign-highway-wide.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/sign-highway.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/tile-high.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/tile-low.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/tile-slant.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/tile-slantHigh.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Characters/KenneyAnimatedCharactersRetro/Animations/idle.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Characters/KenneyAnimatedCharactersRetro/Animations/jump.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Characters/KenneyAnimatedCharactersRetro/Animations/run.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Characters/KenneyAnimatedCharactersRetro/Model/characterMedium.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bed_floor.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_center_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_center_stoneRound.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_center_wood.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_center_woodRound.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_side_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_side_stoneRound.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_side_wood.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_side_woodRound.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_stoneNarrow.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_stoneRound.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_stoneRoundNarrow.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_wood.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_woodNarrow.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_woodRound.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_woodRoundNarrow.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cactus_short.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cactus_tall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/campfire_bricks.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/campfire_logs.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/campfire_planks.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/campfire_stones.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/canoe.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/canoe_paddle.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_block_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_block_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockCave_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockCave_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockDiagonal_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockDiagonal_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockHalf_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockHalf_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockQuarter_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockQuarter_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockSlope_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockSlope_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockSlopeHalfWalls_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockSlopeHalfWalls_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockSlopeWalls_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_blockSlopeWalls_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_cave_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_cave_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_corner_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_corner_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_cornerInner_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_cornerInner_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_cornerInnerLarge_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_cornerInnerLarge_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_cornerInnerTop_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_cornerInnerTop_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_cornerLarge_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_cornerLarge_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_cornerTop_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_cornerTop_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_diagonal_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_diagonal_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_half_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_half_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_halfCorner_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_halfCorner_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_halfCornerInner_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_halfCornerInner_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_large_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_large_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_steps_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_steps_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_stepsCorner_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_stepsCorner_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_stepsCornerInner_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_stepsCornerInner_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_top_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_top_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_topDiagonal_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_topDiagonal_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_waterfall_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_waterfall_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_waterfallTop_rock.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/cliff_waterfallTop_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crop_carrot.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crop_melon.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crop_pumpkin.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crop_turnip.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_bambooStageA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_bambooStageB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_cornStageA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_cornStageB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_cornStageC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_cornStageD.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_dirtDoubleRow.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_dirtDoubleRowCorner.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_dirtDoubleRowEnd.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_dirtRow.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_dirtRowCorner.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_dirtRowEnd.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_dirtSingle.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_leafsStageA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_leafsStageB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_wheatStageA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/crops_wheatStageB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/fence_bend.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/fence_bendCenter.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/fence_corner.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/fence_gate.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/fence_planks.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/fence_planksDouble.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/fence_simple.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/fence_simpleCenter.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/fence_simpleDiagonal.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/fence_simpleDiagonalCenter.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/fence_simpleHigh.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/fence_simpleLow.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/flower_purpleA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/flower_purpleB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/flower_purpleC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/flower_redA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/flower_redB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/flower_redC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/flower_yellowA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/flower_yellowB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/flower_yellowC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/grass.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/grass_large.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/grass_leafs.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/grass_leafsLarge.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_grass.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathBend.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathBendBank.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathCorner.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathCornerSmall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathCross.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathEnd.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathEndClosed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathOpen.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathRocks.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathSide.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathSideOpen.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathSplit.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathStraight.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_pathTile.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverBend.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverBendBank.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverCorner.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverCornerSmall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverCross.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverEnd.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverEndClosed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverOpen.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverRocks.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverSide.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverSideOpen.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverSplit.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverStraight.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/ground_riverTile.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/hanging_moss.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/lily_large.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/lily_small.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/log.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/log_large.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/log_stack.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/log_stackLarge.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/mushroom_red.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/mushroom_redGroup.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/mushroom_redTall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/mushroom_tan.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/mushroom_tanGroup.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/mushroom_tanTall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/path_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/path_stoneCircle.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/path_stoneCorner.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/path_stoneEnd.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/path_wood.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/path_woodCorner.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/path_woodEnd.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/plant_bush.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/plant_bushDetailed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/plant_bushLarge.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/plant_bushLargeTriangle.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/plant_bushSmall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/plant_bushTriangle.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/plant_flatShort.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/plant_flatTall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/platform_beach.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/platform_grass.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/platform_stone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/pot_large.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/pot_small.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_largeA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_largeB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_largeC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_largeD.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_largeE.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_largeF.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallD.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallE.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallF.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallFlatA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallFlatB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallFlatC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallG.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallH.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallI.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallTopA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_smallTopB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_tallA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_tallB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_tallC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_tallD.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_tallE.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_tallF.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_tallG.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_tallH.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_tallI.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/rock_tallJ.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/sign.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/statue_block.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/statue_column.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/statue_columnDamaged.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/statue_head.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/statue_obelisk.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/statue_ring.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_largeA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_largeB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_largeC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_largeD.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_largeE.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_largeF.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallD.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallE.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallF.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallFlatA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallFlatB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallFlatC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallG.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallH.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallI.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallTopA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_smallTopB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_tallA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_tallB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_tallC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_tallD.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_tallE.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_tallF.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_tallG.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_tallH.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_tallI.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stone_tallJ.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stump_old.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stump_oldTall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stump_round.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stump_roundDetailed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stump_square.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stump_squareDetailed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/stump_squareDetailedWide.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tent_detailedClosed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tent_detailedOpen.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tent_smallClosed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tent_smallOpen.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_blocks.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_blocks_dark.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_blocks_fall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_cone.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_cone_dark.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_cone_fall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_default.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_default_dark.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_default_fall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_detailed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_detailed_dark.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_detailed_fall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_fat.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_fat_darkh.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_fat_fall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_oak.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_oak_dark.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_oak_fall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_palm.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_palmBend.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_palmDetailedShort.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_palmDetailedTall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_palmShort.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_palmTall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineDefaultA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineDefaultB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineGroundA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineGroundB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineRoundA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineRoundB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineRoundC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineRoundD.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineRoundE.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineRoundF.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineSmallA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineSmallB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineSmallC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineSmallD.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineTallA.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineTallA_detailed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineTallB.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineTallB_detailed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineTallC.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineTallC_detailed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineTallD.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_pineTallD_detailed.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_plateau.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_plateau_dark.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_plateau_fall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_simple.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_simple_dark.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_simple_fall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_small.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_small_dark.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_small_fall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_tall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_tall_dark.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_tall_fall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_thin.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_thin_dark.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/tree_thin_fall.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-a.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-b.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-c.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-d.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-e.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-f.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-g.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-h.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-i.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-j.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-k.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-l.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-m.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-n.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-skyscraper-a.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-skyscraper-b.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-skyscraper-c.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-skyscraper-d.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-skyscraper-e.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/detail-awning-wide.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/detail-awning.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/detail-overhang-wide.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/detail-overhang.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/detail-parasol-a.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/detail-parasol-b.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-a.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-b.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-c.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-d.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-e.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-f.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-g.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-h.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-i.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-j.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-k.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-l.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-m.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-n.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-wide-a.fbx
+- Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/low-detail-building-wide-b.fbx
+
+## Prefabs criados
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/bridge-pillar-wide.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/bridge-pillar.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/construction-barrier.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/construction-cone.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/construction-light.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/light-curved-cross.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/light-curved-double.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/light-curved.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/light-square-cross.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/light-square-double.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/light-square.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-bend-barrier.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-bend-sidewalk.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-bend-square-barrier.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-bend-square.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-bend.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-bridge.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-crossing.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Characters/characterMedium.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bed.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bed_floor.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_center_stone.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_center_stoneRound.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_center_wood.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_center_woodRound.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_side_stone.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_side_stoneRound.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_side_wood.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_side_woodRound.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_stone.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_stoneNarrow.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_stoneRound.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_stoneRoundNarrow.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_wood.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_woodNarrow.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_woodRound.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_woodRoundNarrow.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-a.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-b.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-c.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-d.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-e.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-f.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-g.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-h.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-i.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-j.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-k.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-l.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-m.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-n.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-skyscraper-a.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-skyscraper-b.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-skyscraper-c.prefab
+- Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-skyscraper-d.prefab
+
+## Materiais criados
+- Assets/VRAbandonadaGames/Prefabs/Imported/Materials/VRA_Mat_Asphalt002_2K-JPG.mat
+- Assets/VRAbandonadaGames/Prefabs/Imported/Materials/VRA_Mat_Concrete010_2K-JPG.mat
+- Assets/VRAbandonadaGames/Prefabs/Imported/Materials/VRA_Mat_Grass004_2K-JPG.mat
+- Assets/VRAbandonadaGames/Prefabs/Imported/Materials/VRA_Mat_Ground037_2K-JPG.mat
+- Assets/VRAbandonadaGames/Prefabs/Imported/Materials/VRA_Mat_Rust004_2K-JPG.mat
+
+## Cena de teste
+- Assets/VRAbandonadaGames/Scenes/AssetTests/T03_RiverAssetIntegration_Test.unity
+
+## Manifesto atualizado
+- Assets/VRAbandonadaGames/ThirdParty/_Licenses/ASSET_MANIFEST.md
+
+## Validacao executada
+- AssetOps validation passed.
+
+## Pendencias
+- Audio livre ainda nao foi baixado nesta etapa.
+- Pode ser necessario ajustar visualmente materiais e escalas no editor para o mini-jogo final.
+- NPC importado ainda esta em modo placeholder e sem blend tree configurada.
+
+## Proximos assets recomendados
+- Um water shader livre e leve compativel com Built-in RP.
+- Audio ambiente de agua/cidade com licenca CC0 ou permissiva clara.
+- Props especificos de residuos urbanos auditados com mesma politica de licenca.
+
+## Proximo prompt recomendado
+`Tijolo 04 — Rio Vivo Paraiba: criar o primeiro mini-jogo jogavel usando os assets importados.`

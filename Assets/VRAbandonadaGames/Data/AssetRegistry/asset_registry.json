@@ -1,0 +1,844 @@
+{
+    "entries": [
+        {
+            "name": "bed",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bed.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bed.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bed_floor",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bed_floor.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bed_floor.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_center_stone",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_center_stone.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_center_stone.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_center_stoneRound",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_center_stoneRound.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_center_stoneRound.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_center_wood",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_center_wood.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_center_wood.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_center_woodRound",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_center_woodRound.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_center_woodRound.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_side_stone",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_side_stone.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_side_stone.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_side_stoneRound",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_side_stoneRound.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_side_stoneRound.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_side_wood",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_side_wood.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_side_wood.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_side_woodRound",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_side_woodRound.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_side_woodRound.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_stone",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_stone.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_stone.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_stoneNarrow",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_stoneNarrow.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_stoneNarrow.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_stoneRound",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_stoneRound.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_stoneRound.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_stoneRoundNarrow",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_stoneRoundNarrow.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_stoneRoundNarrow.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_wood",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_wood.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_wood.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_woodNarrow",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_woodNarrow.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_woodNarrow.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_woodRound",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_woodRound.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_woodRound.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge_woodRoundNarrow",
+            "category": "Nature",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Nature/KenneyNatureKit/Models/FBX format/bridge_woodRoundNarrow.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Nature/bridge_woodRoundNarrow.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Nature foundation for riverbanks, rocks, trees and generic signs.",
+            "tags": [
+                "Nature",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge-pillar-wide",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/bridge-pillar-wide.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/bridge-pillar-wide.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "bridge-pillar",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/bridge-pillar.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/bridge-pillar.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "construction-barrier",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/construction-barrier.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/construction-barrier.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "construction-cone",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/construction-cone.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/construction-cone.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "construction-light",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/construction-light.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/construction-light.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "light-curved-cross",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/light-curved-cross.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/light-curved-cross.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "light-curved-double",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/light-curved-double.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/light-curved-double.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "light-curved",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/light-curved.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/light-curved.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "light-square-cross",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/light-square-cross.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/light-square-cross.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "light-square-double",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/light-square-double.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/light-square-double.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "light-square",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/light-square.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/light-square.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "road-bend-barrier",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-bend-barrier.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-bend-barrier.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "road-bend-sidewalk",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-bend-sidewalk.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-bend-sidewalk.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "road-bend-square-barrier",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-bend-square-barrier.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-bend-square-barrier.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "road-bend-square",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-bend-square.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-bend-square.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "road-bend",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-bend.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-bend.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "road-bridge",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-bridge.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-bridge.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "road-crossing",
+            "category": "Bridges",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Bridges/KenneyCityKitRoads/Models/FBX format/road-crossing.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Bridges/road-crossing.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Bridge and road pieces for generic urban river crossings.",
+            "tags": [
+                "Bridges",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-a",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-a.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-a.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-b",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-b.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-b.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-c",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-c.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-c.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-d",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-d.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-d.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-e",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-e.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-e.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-f",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-f.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-f.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-g",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-g.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-g.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-h",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-h.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-h.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-i",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-i.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-i.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-j",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-j.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-j.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-k",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-k.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-k.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-l",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-l.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-l.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-m",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-m.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-m.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-n",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-n.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-n.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-skyscraper-a",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-skyscraper-a.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-skyscraper-a.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-skyscraper-b",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-skyscraper-b.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-skyscraper-b.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-skyscraper-c",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-skyscraper-c.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-skyscraper-c.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "building-skyscraper-d",
+            "category": "Urban",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Urban/KenneyCityKitCommercial/Models/FBX format/building-skyscraper-d.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Urban/building-skyscraper-d.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Urban props and buildings for a generic city edge around the river.",
+            "tags": [
+                "Urban",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "characterMedium",
+            "category": "Characters",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Characters/KenneyAnimatedCharactersRetro/Model/characterMedium.fbx",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Characters/characterMedium.prefab",
+            "license": "CC0",
+            "author": "Kenney",
+            "recommendedUse": "Placeholder NPCs for the first asset integration scene.",
+            "tags": [
+                "Characters",
+                "prefab",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "ambientCG Asphalt002 2K JPG",
+            "category": "Materials",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Materials/Asphalt002",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Materials/VRA_Mat_Asphalt002_2K-JPG.mat",
+            "license": "CC0",
+            "author": "ambientCG",
+            "recommendedUse": "Asphalt material for streets and paved edges.",
+            "tags": [
+                "Materials",
+                "material",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "ambientCG Concrete010 2K JPG",
+            "category": "Materials",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Materials/Concrete010",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Materials/VRA_Mat_Concrete010_2K-JPG.mat",
+            "license": "CC0",
+            "author": "ambientCG",
+            "recommendedUse": "Concrete material for bridge and urban structures.",
+            "tags": [
+                "Materials",
+                "material",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "ambientCG Grass004 2K JPG",
+            "category": "Materials",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Materials/Grass004",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Materials/VRA_Mat_Grass004_2K-JPG.mat",
+            "license": "CC0",
+            "author": "ambientCG",
+            "recommendedUse": "Grass material for riverbanks and vegetation patches.",
+            "tags": [
+                "Materials",
+                "material",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "ambientCG Rust004 2K JPG",
+            "category": "Materials",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/Materials/Rust004",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Materials/VRA_Mat_Rust004_2K-JPG.mat",
+            "license": "CC0",
+            "author": "ambientCG",
+            "recommendedUse": "Rust material for metal props and pollution storytelling.",
+            "tags": [
+                "Materials",
+                "material",
+                "rio-vivo-paraiba"
+            ]
+        },
+        {
+            "name": "ambientCG Ground037 2K JPG",
+            "category": "River",
+            "projectPath": "Assets/VRAbandonadaGames/ThirdParty/Downloaded/River/Ground037",
+            "prefabOrMaterialPath": "Assets/VRAbandonadaGames/Prefabs/Imported/Materials/VRA_Mat_Ground037_2K-JPG.mat",
+            "license": "CC0",
+            "author": "ambientCG",
+            "recommendedUse": "Ground texture for mud and rough riverbank transitions.",
+            "tags": [
+                "River",
+                "material",
+                "rio-vivo-paraiba"
+            ]
+        }
+    ]
+}

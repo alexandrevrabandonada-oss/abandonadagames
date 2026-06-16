@@ -117,6 +117,8 @@ namespace VRAbandonadaGames.EditorTools
                 }
             }
 
+            issues.AddRange(AssetOpsAutomation.CollectValidationIssues());
+
             WriteReport("Assets/VRAbandonadaGames/Reports/FULL_VALIDATION_REPORT.md", issues);
         }
 
