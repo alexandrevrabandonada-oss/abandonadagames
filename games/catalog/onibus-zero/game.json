@@ -1,0 +1,21 @@
+{
+  "slug": "onibus-zero",
+  "title": "Corrida do Onibus Zero",
+  "template": "bus-runner",
+  "tagline": "Leve a linha adiante, conecte bairros e derrube a tarifa.",
+  "summary": "Um arcade de pista com onibus, passageiros, obstaculos e bairros conectados em partidas curtas.",
+  "obstacles": [
+    "buraco",
+    "cone",
+    "carro parado",
+    "bloqueio",
+    "obra sem fim"
+  ],
+  "powerUps": [
+    "ponto cheio",
+    "faixa livre",
+    "apoio popular",
+    "linha expressa",
+    "bairro conectado"
+  ]
+}
