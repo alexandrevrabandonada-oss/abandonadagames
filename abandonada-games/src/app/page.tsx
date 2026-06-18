@@ -4,6 +4,10 @@ import { getAllGames } from "@/lib/gameRegistry";
 export default function Home() {
   const games = getAllGames();
   const featuredGame = games[0];
+  const featuredMeta =
+    featuredGame.slug === "onibus-zero"
+      ? { theme: "Transporte", action: "3 faixas" }
+      : { theme: "Saude publica", action: "Toque rapido" };
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]">
@@ -48,7 +52,7 @@ export default function Home() {
                 Tema
               </div>
               <div className="mt-2 font-semibold text-[var(--sand)]">
-                Saude publica
+                {featuredMeta.theme}
               </div>
             </div>
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-3">
@@ -56,7 +60,7 @@ export default function Home() {
                 Acao
               </div>
               <div className="mt-2 font-semibold text-[var(--sand)]">
-                Arraste a fila
+                {featuredMeta.action}
               </div>
             </div>
           </div>
@@ -91,7 +95,7 @@ export default function Home() {
               <Link
                 key={game.slug}
                 href={`/jogar/${game.slug}`}
-                className="block rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface)] p-4 transition-transform hover:-translate-y-0.5"
+                className="block rounded-[1.25rem] border border-[var(--border)] bg-[var(--surface)] p-4 transition-transform hover:-translate-y-0.5"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -101,8 +105,16 @@ export default function Home() {
                     <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
                       {game.summary}
                     </p>
+                    <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-[0.14em]">
+                      <span className="rounded-lg bg-[var(--surface-soft)] px-3 py-2 text-[var(--sand)]">
+                        45-60s
+                      </span>
+                      <span className="rounded-lg bg-[var(--surface-soft)] px-3 py-2 text-[var(--text-soft)]">
+                        {game.slug === "onibus-zero" ? "3 faixas" : "toque rapido"}
+                      </span>
+                    </div>
                   </div>
-                  <div className="shrink-0 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
+                  <div className="shrink-0 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
                     {game.template}
                   </div>
                 </div>

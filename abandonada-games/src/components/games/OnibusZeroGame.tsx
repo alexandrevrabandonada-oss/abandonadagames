@@ -53,10 +53,10 @@ const START_FARE = 5;
 
 const rankTable = [
   { min: 0, label: "D", message: "Linha travada." },
-  { min: 1400, label: "C", message: "Rota funcionando." },
-  { min: 3200, label: "B", message: "Cidade conectada." },
-  { min: 5400, label: "A", message: "Tarifa popular." },
-  { min: 7800, label: "S", message: "Onibus Zero em movimento." },
+  { min: 1200, label: "C", message: "Rota funcionando." },
+  { min: 2900, label: "B", message: "Cidade conectada." },
+  { min: 5000, label: "A", message: "Tarifa popular." },
+  { min: 7400, label: "S", message: "Onibus Zero em movimento." },
 ];
 
 function clamp(value: number, min: number, max: number) {
@@ -75,7 +75,7 @@ function createInitialSnapshot(bestScore = 0): GameSnapshot {
     maxCombo: 0,
     fare: START_FARE,
     districts: 0,
-    delay: 8,
+    delay: 6,
     timeLeft: ROUND_DURATION_MS / 1000,
     bestScore,
     rank: "D",
@@ -171,7 +171,7 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
   const itemSeqRef = useRef(0);
   const roadOffsetRef = useRef(0);
   const nextPassengerAtRef = useRef(0);
-  const nextObstacleAtRef = useRef(1100);
+  const nextObstacleAtRef = useRef(1800);
   const nextCheckpointAtRef = useRef(7200);
   const hornCooldownRef = useRef(0);
   const hornPulseRef = useRef(0);
@@ -269,8 +269,8 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
     itemSeqRef.current = 0;
     roadOffsetRef.current = 0;
     nextPassengerAtRef.current = 400;
-    nextObstacleAtRef.current = 1600;
-    nextCheckpointAtRef.current = 7600;
+    nextObstacleAtRef.current = 2600;
+    nextCheckpointAtRef.current = 6200;
     hornCooldownRef.current = 0;
     hornPulseRef.current = 0;
     shakeRef.current = 0;
@@ -329,7 +329,7 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
       if (item.hit || item.kind !== "passenger") continue;
       const dx = Math.abs(LANES[item.lane] - busX);
       const dy = Math.abs(item.y - 890);
-      if (dx < 190 && dy < 210) {
+      if (dx < 220 && dy < 230) {
         hitIds.add(item.id);
         mutateState((current) => {
           const combo = current.combo + 1;
@@ -397,21 +397,21 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
       lastTickRef.current = now;
       const elapsed = now - startAtRef.current;
       const phase = elapsed / ROUND_DURATION_MS;
-      const speed = 430 + phase * 260 + stateRef.current.combo * 3;
+      const speed = 390 + phase * 230 + stateRef.current.combo * 2.4;
       const timeLeft = clamp((ROUND_DURATION_MS - elapsed) / 1000, 0, ROUND_DURATION_MS / 1000);
 
       if (stateRef.current.running) {
         if (elapsed >= nextPassengerAtRef.current) {
           spawnItem("passenger", elapsed);
-          nextPassengerAtRef.current = elapsed + clamp(1250 - phase * 420, 680, 1250);
+          nextPassengerAtRef.current = elapsed + clamp(1180 - phase * 360, 660, 1180);
         }
         if (elapsed >= nextObstacleAtRef.current) {
           spawnItem("obstacle", elapsed);
-          nextObstacleAtRef.current = elapsed + clamp(1750 - phase * 520, 820, 1750);
+          nextObstacleAtRef.current = elapsed + clamp(2150 - phase * 520, 980, 2150);
         }
         if (elapsed >= nextCheckpointAtRef.current) {
           spawnItem("checkpoint", elapsed);
-          nextCheckpointAtRef.current = elapsed + 8200;
+          nextCheckpointAtRef.current = elapsed + 7200;
         }
       }
 
@@ -430,7 +430,7 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
       const busLane = targetLaneRef.current;
       const hitIds = new Set<number>();
       for (const item of roadItemsRef.current) {
-        if (item.hit || item.y < 795 || item.y > 980) continue;
+        if (item.hit || item.y < 810 || item.y > 970) continue;
         const sameLane = item.lane === busLane;
         if (!sameLane) continue;
         hitIds.add(item.id);
@@ -454,8 +454,8 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
           playTone("pickup");
         } else if (item.kind === "checkpoint") {
           mutateState((current) => {
-            const nextFare = clamp(current.fare - 0.35 - Math.min(0.4, current.combo * 0.015), 0, START_FARE);
-            const scoreGain = 380 + current.combo * 18;
+            const nextFare = clamp(current.fare - 0.45 - Math.min(0.45, current.combo * 0.018), 0, START_FARE);
+            const scoreGain = 430 + current.combo * 20;
             return {
               ...current,
               districts: current.districts + 1,
@@ -472,10 +472,10 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
           mutateState((current) => ({
             ...current,
             combo: 0,
-            delay: clamp(current.delay + 13, 0, 100),
-            fare: clamp(current.fare + 0.12, 0, START_FARE),
+            delay: clamp(current.delay + 10, 0, 100),
+            fare: clamp(current.fare + 0.08, 0, START_FARE),
           }));
-          shakeRef.current = 0.45;
+          shakeRef.current = 0.34;
           addParticle("Cuidado com o buraco!", LANES[item.lane] - 130, item.y, "bad");
           setQuickToast("Cuidado com o buraco!");
           playTone("hit");
@@ -627,7 +627,7 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
           />
           {!snapshot.finished ? (
             <div className="pointer-events-none absolute inset-x-5 bottom-5 flex items-center justify-between rounded-lg bg-[rgba(16,20,19,0.76)] px-4 py-3 text-xs font-black uppercase text-[#d4e8d8] backdrop-blur-sm">
-              <span>toque lados para virar</span>
+              <span>toque lados</span>
               <span>{toast}</span>
             </div>
           ) : null}
