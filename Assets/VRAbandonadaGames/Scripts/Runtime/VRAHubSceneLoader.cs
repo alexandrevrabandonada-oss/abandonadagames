@@ -5,6 +5,9 @@ namespace VRAbandonadaGames.Runtime
 {
     public sealed class VRAHubSceneLoader : MonoBehaviour
     {
+        private const string RioVivoSceneName = "RioVivoParaiba_Main";
+        private const string OnibusZeroSceneName = "OnibusZero_Main";
+
         public void LoadSceneByPath(string scenePath)
         {
             if (string.IsNullOrEmpty(scenePath))
@@ -17,7 +20,12 @@ namespace VRAbandonadaGames.Runtime
 
         public void LoadRioVivoParaiba()
         {
-            LoadSceneByPath("Assets/VRAbandonadaGames/Scenes/Games/RioVivoParaiba/RioVivoParaiba_Main.unity");
+            SceneManager.LoadScene(RioVivoSceneName);
+        }
+
+        public void LoadOnibusZero()
+        {
+            SceneManager.LoadScene(OnibusZeroSceneName);
         }
     }
 }
