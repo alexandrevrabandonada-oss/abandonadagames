@@ -75,6 +75,75 @@ const events = [
   "Organizacao ajuda!",
 ];
 
+const survivalActions = [
+  {
+    id: "trabalhar",
+    title: "Trabalhar",
+    subtitle: "+ dinheiro",
+    icon: "✚",
+    tone: "bg-[#c96f08]",
+    score: 220,
+    breath: -10,
+    bills: -8,
+    chaos: 4,
+    toast: "Plantao pago em migalha.",
+  },
+  {
+    id: "bico",
+    title: "Fazer bico",
+    subtitle: "+ renda extra",
+    icon: "$",
+    tone: "bg-[#086aa0]",
+    score: 170,
+    breath: -13,
+    bills: -12,
+    chaos: 7,
+    toast: "Virou noite no bico.",
+  },
+  {
+    id: "economizar",
+    title: "Economizar",
+    subtitle: "- gastos",
+    icon: "¢",
+    tone: "bg-[#6f2aa8]",
+    score: 120,
+    breath: -4,
+    bills: -10,
+    chaos: 2,
+    toast: "Cortou o minimo do minimo.",
+  },
+  {
+    id: "saude",
+    title: "Cuidar da saude",
+    subtitle: "+ energia",
+    icon: "♥",
+    tone: "bg-[#247a26]",
+    score: 90,
+    breath: 16,
+    bills: 2,
+    chaos: -8,
+    toast: "Respirou antes do colapso.",
+  },
+];
+
+const needBars = [
+  { label: "alimentacao", icon: "AL", color: "#ffd554", getValue: (snapshot: GameSnapshot) => clamp(100 - snapshot.bills * 0.65, 8, 100) },
+  { label: "transporte", icon: "▣", color: "#62d6ff", getValue: (snapshot: GameSnapshot) => clamp(92 - snapshot.bills * 0.45, 10, 100) },
+  { label: "saude", icon: "+", color: "#9ee8c1", getValue: (snapshot: GameSnapshot) => clamp(snapshot.breath, 0, 100) },
+  { label: "lazer", icon: "◇", color: "#ff9a62", getValue: (snapshot: GameSnapshot) => clamp(70 - snapshot.chaos * 0.7, 5, 100) },
+  { label: "sono", icon: "▰", color: "#62d6ff", getValue: (snapshot: GameSnapshot) => clamp(snapshot.breath - snapshot.chaos * 0.22, 5, 100) },
+  { label: "saude mental", icon: "●", color: "#d778ff", getValue: (snapshot: GameSnapshot) => clamp(105 - snapshot.chaos, 4, 100) },
+];
+
+const dueBills = [
+  ["aluguel", 400],
+  ["agua", 45],
+  ["luz", 120],
+  ["internet", 89.9],
+  ["mercado", 300],
+  ["transporte", 120],
+] as const;
+
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
@@ -596,6 +665,29 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
     window.setTimeout(() => setCopyLabel("Compartilhar"), 1200);
   }, [game.title, snapshot]);
 
+  const applySurvivalAction = useCallback(
+    (action: (typeof survivalActions)[number]) => {
+      if (!stateRef.current.running || stateRef.current.finished) return;
+      mutateState((current) => {
+        const nextScore = current.score + action.score;
+        return {
+          ...current,
+          score: nextScore,
+          breath: clamp(current.breath + action.breath, 0, 100),
+          bills: clamp(current.bills + action.bills, 0, 100),
+          chaos: clamp(current.chaos + action.chaos, 0, 100),
+          rank: getRank(nextScore).label,
+        };
+      });
+      reliefRef.current = action.id === "saude" ? 0.75 : reliefRef.current;
+      shakeRef.current = action.breath < -8 ? 0.18 : shakeRef.current;
+      addParticle(action.title, playerXRef.current - 56, PLAYER_Y - 112, action.id === "saude" ? "good" : "power");
+      setToast(action.toast);
+      playTone(action.id === "saude" ? "good" : "power");
+    },
+    [addParticle, mutateState, playTone],
+  );
+
   function handlePointerDown(event: React.PointerEvent<HTMLCanvasElement>) {
     if (!canvasRef.current) return;
     const rect = canvasRef.current.getBoundingClientRect();
@@ -608,40 +700,44 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
     targetXRef.current = clamp(((event.clientX - rect.left) / rect.width) * CANVAS_WIDTH, 68, CANVAS_WIDTH - 68);
   }
 
+  const salaryLeft = clamp(950 - snapshot.bills * 8.6 + snapshot.supports * 24 + snapshot.score * 0.025, -1400, 950);
+  const debtTotal = dueBills.reduce((total, [, value]) => total + value, 0);
+  const paidRatio = clamp((100 - snapshot.bills) / 100, 0, 1);
+
   return (
-    <main className="min-h-screen bg-[#130d10] px-3 py-3 text-[#f7f1df] sm:px-5 sm:py-5">
-      <div className="mx-auto max-w-md">
-        <section className="rounded-[1.25rem] border border-[rgba(255,213,84,0.22)] bg-[#241015] p-4 shadow-[0_18px_60px_rgba(0,0,0,0.38)]">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,#124c73_0%,#130d10_42%,#07090a_100%)] px-3 py-3 text-[#f7f1df] sm:px-5 sm:py-5">
+      <div className="mx-auto grid max-w-6xl gap-3 lg:grid-cols-[280px_minmax(360px,560px)_280px] lg:items-start">
+        <section className="rounded-[1.25rem] border border-[rgba(98,214,255,0.3)] bg-[rgba(6,26,39,0.9)] p-4 shadow-[0_18px_60px_rgba(0,0,0,0.38)]">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#9ee8c1]">
-                salario atrasado survival
+                enfermeiro nivel {Math.max(1, Math.floor(snapshot.score / 1600) + 1)}
               </p>
-              <h1 className="mt-2 text-3xl font-black uppercase leading-none">{game.title}</h1>
+              <h1 className="mt-2 text-2xl font-black uppercase leading-none">Como sobreviver com salario atrasado</h1>
             </div>
             <Link href="/" className="rounded-lg border border-[rgba(255,255,255,0.14)] px-3 py-2 text-[11px] font-bold uppercase">
               Inicio
             </Link>
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-2">
+          <div className="mt-4 grid grid-cols-2 gap-2">
             <HudBox label="dia" value={`${snapshot.day}/30`} />
-            <HudBox label="folego" value={`${Math.round(snapshot.breath)}%`} />
-            <HudBox label="caos" value={`${Math.round(snapshot.chaos)}%`} />
-            <HudBox label="contas" value={`${Math.round(snapshot.bills)}%`} />
-            <HudBox label="combo" value={`${snapshot.combo}x`} />
+            <HudBox label="saldo" value={`R$ ${salaryLeft.toFixed(2).replace(".", ",")}`} />
+            <HudBox label="energia" value={`${Math.round(snapshot.breath)}/100`} />
             <HudBox label="score" value={`${snapshot.score}`} />
           </div>
-          <div className="mt-3 rounded-lg bg-[#130d10] px-4 py-3 text-xs font-black uppercase text-[#ffd554]">
-            Salario: atrasado
+          <div className="mt-3 rounded-lg bg-[#061a27] px-4 py-3 text-xs font-black uppercase text-[#ffd554]">
+            Missao: chegar ao fim do mes
           </div>
           <div className="mt-3 grid gap-2">
-            <MeterBar label="folego" value={snapshot.breath} color="#9ee8c1" />
+            <MeterBar label="energia" value={snapshot.breath} color="#29d443" />
             <MeterBar label="contas" value={snapshot.bills} color="#ffd554" danger />
             <MeterBar label="caos" value={snapshot.chaos} color="#ff3b30" danger />
           </div>
+          <SurvivalChecklist snapshot={snapshot} />
+          <BillPanel paidRatio={paidRatio} total={debtTotal} />
         </section>
 
-        <section className="relative mt-4 rounded-[1.25rem] border border-[rgba(255,255,255,0.1)] bg-[#111] p-2">
+        <section className="relative rounded-[1.25rem] border border-[rgba(255,255,255,0.1)] bg-[#111] p-2">
           <canvas
             ref={canvasRef}
             className="block w-full touch-none rounded-lg"
@@ -656,7 +752,35 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           ) : null}
         </section>
 
-        <div className="mt-3 grid grid-cols-2 gap-3">
+        <section className="grid gap-3 rounded-[1.25rem] border border-[rgba(98,214,255,0.22)] bg-[rgba(6,26,39,0.86)] p-4">
+          <div className="rounded-xl border border-[rgba(255,255,255,0.12)] bg-[#f7f1df] px-4 py-3 text-center text-[#130d10]">
+            <div className="text-xs font-black uppercase">Dia</div>
+            <div className="text-4xl font-black">{snapshot.day} / 30</div>
+            <div className="text-[10px] font-black uppercase">sobreviver ate o dia 30</div>
+          </div>
+          {survivalActions.map((action) => (
+            <button
+              key={action.id}
+              type="button"
+              onClick={() => applySurvivalAction(action)}
+              className={`${action.tone} flex items-center gap-3 rounded-xl border border-[rgba(255,255,255,0.22)] px-4 py-4 text-left shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition active:scale-[0.98]`}
+            >
+              <span className="flex size-11 items-center justify-center rounded-lg bg-[rgba(255,255,255,0.18)] text-2xl font-black">
+                {action.icon}
+              </span>
+              <span>
+                <span className="block text-lg font-black uppercase leading-none">{action.title}</span>
+                <span className="mt-1 block text-xs font-black uppercase text-white/80">{action.subtitle}</span>
+              </span>
+            </button>
+          ))}
+        </section>
+
+        <section className="lg:col-start-2">
+          <NeedsPanel snapshot={snapshot} />
+        </section>
+
+        <div className="grid grid-cols-2 gap-3 lg:col-start-2">
           <button
             type="button"
             onClick={() => movePlayer(-1)}
@@ -674,7 +798,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
         </div>
 
         {snapshot.finished ? (
-          <section className="mt-4 rounded-[1.25rem] border border-[rgba(255,213,84,0.24)] bg-[#241015] p-5">
+          <section className="rounded-[1.25rem] border border-[rgba(255,213,84,0.24)] bg-[#241015] p-5 lg:col-start-2">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9ee8c1]">resultado</p>
@@ -776,6 +900,84 @@ function MeterBar({ label, value, color, danger = false }: { label: string; valu
         <div className="h-full rounded-full" style={{ width: `${width}%`, backgroundColor: color }} />
       </div>
     </div>
+  );
+}
+
+function SurvivalChecklist({ snapshot }: { snapshot: GameSnapshot }) {
+  const goals = [
+    { label: "trabalhar 1 plantao", done: snapshot.score >= 220 },
+    { label: "comprar o essencial", done: snapshot.bills < 45 },
+    { label: "evitar gastos extras", done: snapshot.billsDodged >= 4 },
+    { label: "manter a saude mental", done: snapshot.chaos < 62 },
+  ];
+
+  return (
+    <div className="mt-4 rounded-xl border border-[rgba(255,255,255,0.16)] bg-[rgba(3,14,22,0.72)] p-3">
+      <div className="text-xs font-black uppercase text-[#f7f1df]">Objetivos do dia</div>
+      <div className="mt-3 grid gap-2">
+        {goals.map((goal) => (
+          <div key={goal.label} className="flex items-center gap-2 text-sm font-bold uppercase">
+            <span className={`flex size-5 items-center justify-center rounded border ${goal.done ? "border-[#29d443] bg-[#29d443] text-[#061a27]" : "border-white/50"}`}>
+              {goal.done ? "✓" : ""}
+            </span>
+            <span className={goal.done ? "text-[#9ee8c1]" : "text-[#f7f1df]"}>{goal.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BillPanel({ paidRatio, total }: { paidRatio: number; total: number }) {
+  return (
+    <div className="mt-3 rounded-xl border border-[rgba(255,255,255,0.16)] bg-[rgba(3,14,22,0.72)] p-3">
+      <div className="text-xs font-black uppercase text-[#f7f1df]">Contas a pagar</div>
+      <div className="mt-2 grid gap-1">
+        {dueBills.map(([label, value]) => {
+          const openValue = value * (1 - paidRatio);
+          return (
+            <div key={label} className="flex justify-between text-xs font-black uppercase">
+              <span>{label}</span>
+              <span className={openValue > value * 0.55 ? "text-[#ff3b30]" : "text-[#ffd554]"}>
+                - R$ {openValue.toFixed(2).replace(".", ",")}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-3 rounded-lg bg-[#b9231d] px-3 py-2 text-center text-sm font-black uppercase">
+        Total: -R$ {(total * (1 - paidRatio)).toFixed(2).replace(".", ",")}
+      </div>
+    </div>
+  );
+}
+
+function NeedsPanel({ snapshot }: { snapshot: GameSnapshot }) {
+  return (
+    <section className="rounded-[1.25rem] border border-[rgba(98,214,255,0.26)] bg-[rgba(6,26,39,0.9)] p-3 shadow-[0_14px_50px_rgba(0,0,0,0.35)]">
+      <div className="text-center text-xs font-black uppercase tracking-[0.18em] text-[#f7f1df]">Suas necessidades</div>
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {needBars.map((need) => {
+          const value = need.getValue(snapshot);
+          return (
+            <div key={need.label} className="rounded-lg bg-[rgba(19,13,16,0.62)] px-3 py-2">
+              <div className="mb-2 flex items-center justify-between text-[10px] font-black uppercase">
+                <span>{need.label}</span>
+                <span className="text-[#ffd554]">{Math.round(value)}%</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="flex size-7 items-center justify-center rounded bg-[rgba(255,255,255,0.12)] text-[10px] font-black">
+                  {need.icon}
+                </span>
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/40">
+                  <div className="h-full rounded-full" style={{ width: `${value}%`, backgroundColor: need.color }} />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
