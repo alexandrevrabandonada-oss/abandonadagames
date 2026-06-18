@@ -78,7 +78,7 @@ const CANVAS_WIDTH = 720;
 const CANVAS_HEIGHT = 1180;
 const ROUND_DURATION_MS = 50000;
 const MAX_CITIZENS = 9;
-const INITIAL_CHAOS = 12;
+const INITIAL_CHAOS = 10;
 const BEST_SCORE_KEY = "abandonada:fila-invisivel:best-score";
 const PLAYER_NAME_KEY = "abandonada:fila-invisivel:player-name";
 
@@ -104,8 +104,8 @@ function createCitizen(id: number, count: number): Citizen {
     id,
     x: -40 - Math.random() * 120,
     y: 250 + count * 96 + row * 8,
-    radius: 34 + Math.random() * 5,
-    patience: 0.78 + Math.random() * 0.22,
+    radius: 38 + Math.random() * 5,
+    patience: 0.84 + Math.random() * 0.16,
     hue: ["#ffca74", "#f7f1df", "#ff8f58", "#ffd86a"][id % 4],
     mood: "waiting",
   };
@@ -391,12 +391,12 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
     } else {
       mutateState((current) => ({
         ...current,
-        chaos: clamp(current.chaos + 7, 0, 100),
+        chaos: clamp(current.chaos + 6, 0, 100),
         combo: 0,
         multiplier: 1,
       }));
       flashRef.current = { life: 0.9, tone: "bad" };
-      shakeRef.current = 0.45;
+      shakeRef.current = 0.34;
       addParticle("Caos subiu!", CANVAS_WIDTH / 2, 190, "bad");
       pushToast(label, "bad");
       playTone("miss");
@@ -416,7 +416,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
       mutateState((current) => {
         const nextCombo = quickWindow ? current.combo + 1 : 1;
         const multiplier = clamp(1 + Math.floor(nextCombo / 4), 1, 5);
-        const points = Math.round(125 * multiplier + citizen.patience * 110 + nextCombo * 8);
+        const points = Math.round(140 * multiplier + citizen.patience * 115 + nextCombo * 9);
         if (multiplier > lastMultiplierRef.current) {
           multiplierFlashRef.current = 0.8;
           lastMultiplierRef.current = multiplier;
@@ -428,7 +428,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
           maxCombo: Math.max(current.maxCombo, nextCombo),
           multiplier,
           served: current.served + 1,
-          chaos: clamp(current.chaos - 3.4, 0, 100),
+          chaos: clamp(current.chaos - 3.8, 0, 100),
           rank: getRank(current.score + points).label,
           bestScore: bestScoreRef.current,
         };
@@ -461,7 +461,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
         const dx = citizen.x - x;
         const dy = citizen.y - y;
         const distance = Math.hypot(dx, dy);
-        if (distance <= citizen.radius * 1.35 && distance < bestDistance) {
+        if (distance <= citizen.radius * 1.6 && distance < bestDistance) {
           bestDistance = distance;
           chosen = citizen;
         }
@@ -474,12 +474,12 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
           ...current,
           combo: 0,
           multiplier: 1,
-          chaos: clamp(current.chaos + 3, 0, 100),
+          chaos: clamp(current.chaos + 2.5, 0, 100),
         }));
         addParticle("Perdeu atendimento!", x, y, "bad");
         pushToast("Caos subiu!", "bad");
         flashRef.current = { life: 0.45, tone: "bad" };
-        shakeRef.current = 0.25;
+        shakeRef.current = 0.18;
         playTone("miss");
       }
     },
@@ -556,7 +556,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
       if (stateRef.current.running) {
         if (elapsed >= directorRef.current.nextSpawnAt) {
           spawnCitizen();
-          directorRef.current.nextSpawnAt = elapsed + clamp(2200 - elapsed / 34, 760, 2200);
+          directorRef.current.nextSpawnAt = elapsed + clamp(2350 - elapsed / 36, 780, 2350);
         }
 
         if (elapsed >= directorRef.current.nextEventAt) {
@@ -572,7 +572,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
           const phase = elapsed / ROUND_DURATION_MS;
           const grace = elapsed < 15000 ? 0.7 : 1;
           const patienceLoss =
-            dt * grace * (0.033 + phase * 0.04 + tension + stateRef.current.chaos / 3200);
+            dt * grace * (0.029 + phase * 0.038 + tension + stateRef.current.chaos / 3600);
           const patience = citizen.patience - patienceLoss;
           const mood: Citizen["mood"] = patience < 0.28 ? "panic" : "waiting";
 
@@ -592,12 +592,12 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
             combo: 0,
             multiplier: 1,
             lost: current.lost + 1,
-            chaos: clamp(current.chaos + 10, 0, 100),
+            chaos: clamp(current.chaos + 8.5, 0, 100),
           }));
           addParticle("Desistiu!", citizen.x, citizen.y - 24, "bad");
           pushToast("Perdeu atendimento!", "bad");
           flashRef.current = { life: 0.7, tone: "bad" };
-          shakeRef.current = 0.55;
+          shakeRef.current = 0.42;
           playTone("miss");
           return false;
         });
@@ -791,7 +791,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
             />
             {!snapshot.finished ? (
               <div className="pointer-events-none absolute inset-x-6 bottom-6 flex items-center justify-between rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(17,19,17,0.75)] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--text-soft)] backdrop-blur-sm">
-                <span>toque para atender</span>
+                <span>toque nas pessoas</span>
                 <span>{snapshot.served} atendidos</span>
               </div>
             ) : null}
