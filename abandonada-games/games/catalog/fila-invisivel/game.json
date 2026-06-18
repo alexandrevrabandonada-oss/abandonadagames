@@ -1,0 +1,21 @@
+{
+  "slug": "fila-invisivel",
+  "title": "Fila Invisivel",
+  "template": "queue-chaos",
+  "tagline": "Organize a fila antes que o abandono colapse o posto.",
+  "summary": "Uma fila de atendimento publico em crise. Reordene prioridades, segure o caos e marque pontos em menos de um minuto.",
+  "obstacles": [
+    "sistema fora do ar",
+    "senha so no monitor",
+    "gestao ausente",
+    "falta de equipe",
+    "terceirizacao"
+  ],
+  "powerUps": [
+    "mutirao",
+    "denuncia coletiva",
+    "chamada por voz",
+    "solidariedade",
+    "organizacao popular"
+  ]
+}
