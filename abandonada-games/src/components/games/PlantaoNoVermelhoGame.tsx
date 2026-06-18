@@ -44,6 +44,11 @@ type GameSnapshot = {
 
 type AudioTone = "good" | "bad" | "power";
 
+type GameSprites = {
+  hospital: HTMLImageElement | null;
+  nurse: HTMLImageElement | null;
+};
+
 const CANVAS_WIDTH = 720;
 const CANVAS_HEIGHT = 1080;
 const ROUND_DURATION_MS = 60000;
@@ -185,6 +190,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   const interestFrozenRef = useRef(0);
   const itemsRef = useRef<FallingItem[]>([]);
   const particlesRef = useRef<Particle[]>([]);
+  const spritesRef = useRef<GameSprites>({ hospital: null, nurse: null });
   const initialBestScore =
     typeof window !== "undefined"
       ? Number.parseInt(window.localStorage.getItem(BEST_SCORE_KEY) ?? "0", 10) || 0
@@ -203,6 +209,19 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
 
   const rankMeta = useMemo(() => getRank(snapshot.score), [snapshot.score]);
+
+  useEffect(() => {
+    const hospital = new Image();
+    const nurse = new Image();
+    hospital.src = "/games/plantaono-vermelho/hospital-bg.png";
+    nurse.src = "/games/plantaono-vermelho/nurse-player.png";
+    hospital.onload = () => {
+      spritesRef.current = { ...spritesRef.current, hospital };
+    };
+    nurse.onload = () => {
+      spritesRef.current = { ...spritesRef.current, nurse };
+    };
+  }, []);
 
   const playTone = useCallback((tone: AudioTone) => {
     try {
@@ -487,7 +506,18 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
         finishRound();
       }
 
-      drawGame(ctx, stateRef.current, itemsRef.current, particlesRef.current, playerXRef.current, shakeRef.current, reliefRef.current, interestFrozenRef.current, mutiraoPulseRef.current);
+      drawGame(
+        ctx,
+        stateRef.current,
+        itemsRef.current,
+        particlesRef.current,
+        playerXRef.current,
+        shakeRef.current,
+        reliefRef.current,
+        interestFrozenRef.current,
+        mutiraoPulseRef.current,
+        spritesRef.current,
+      );
       frameRef.current = window.requestAnimationFrame(render);
     };
 
@@ -759,6 +789,7 @@ function drawGame(
   relief: number,
   frozen: number,
   mutiraoPulse: number,
+  sprites: GameSprites,
 ) {
   ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   ctx.save();
@@ -770,13 +801,23 @@ function drawGame(
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-  ctx.fillStyle = "rgba(255,255,255,0.035)";
-  for (let y = 90; y < CANVAS_HEIGHT; y += 90) ctx.fillRect(0, y, CANVAS_WIDTH, 1);
-  ctx.fillStyle = "rgba(255,213,84,0.08)";
-  ctx.fillRect(46, 150, CANVAS_WIDTH - 92, 760);
-  ctx.strokeStyle = "rgba(255,213,84,0.22)";
-  ctx.lineWidth = 5;
-  ctx.strokeRect(46, 150, CANVAS_WIDTH - 92, 760);
+  if (sprites.hospital?.complete) {
+    ctx.drawImage(sprites.hospital, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  } else {
+    ctx.fillStyle = "rgba(255,255,255,0.035)";
+    for (let y = 90; y < CANVAS_HEIGHT; y += 90) ctx.fillRect(0, y, CANVAS_WIDTH, 1);
+    ctx.fillStyle = "rgba(255,213,84,0.08)";
+    ctx.fillRect(46, 150, CANVAS_WIDTH - 92, 760);
+    ctx.strokeStyle = "rgba(255,213,84,0.22)";
+    ctx.lineWidth = 5;
+    ctx.strokeRect(46, 150, CANVAS_WIDTH - 92, 760);
+  }
+
+  ctx.fillStyle = "rgba(19,13,16,0.18)";
+  ctx.fillRect(46, 130, CANVAS_WIDTH - 92, 780);
+  ctx.strokeStyle = "rgba(255,213,84,0.3)";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(46, 130, CANVAS_WIDTH - 92, 780);
   if (mutiraoPulse > 0) {
     ctx.save();
     ctx.globalAlpha = mutiraoPulse;
@@ -792,7 +833,7 @@ function drawGame(
     drawItem(ctx, item);
   }
 
-  drawPlayer(ctx, playerX, PLAYER_Y, relief, frozen, snapshot);
+  drawPlayer(ctx, playerX, PLAYER_Y, relief, frozen, snapshot, sprites.nurse);
 
   for (const particle of particles) {
     ctx.save();
@@ -861,7 +902,15 @@ function drawItem(ctx: CanvasRenderingContext2D, item: FallingItem) {
   ctx.restore();
 }
 
-function drawPlayer(ctx: CanvasRenderingContext2D, x: number, y: number, relief: number, frozen: number, snapshot: GameSnapshot) {
+function drawPlayer(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  relief: number,
+  frozen: number,
+  snapshot: GameSnapshot,
+  nurse: HTMLImageElement | null,
+) {
   ctx.save();
   ctx.translate(x, y);
   if (relief > 0 || frozen > 0) {
@@ -870,6 +919,17 @@ function drawPlayer(ctx: CanvasRenderingContext2D, x: number, y: number, relief:
     ctx.beginPath();
     ctx.arc(0, 0, 68 + relief * 26, 0, Math.PI * 2);
     ctx.stroke();
+  }
+  if (nurse?.complete) {
+    ctx.drawImage(nurse, -72, -118, 144, 144);
+    if (snapshot.breath < 25 || snapshot.chaos > 75) {
+      ctx.fillStyle = "rgba(255,59,48,0.22)";
+      ctx.beginPath();
+      ctx.arc(0, -48, 76, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    return;
   }
   ctx.fillStyle = "rgba(0,0,0,0.32)";
   ctx.beginPath();
