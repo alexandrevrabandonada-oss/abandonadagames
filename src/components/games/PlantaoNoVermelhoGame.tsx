@@ -14,6 +14,7 @@ type FallingItem = {
   y: number;
   size: number;
   label: string;
+  nearMissed?: boolean;
 };
 
 type Particle = {
@@ -81,9 +82,9 @@ function createInitialSnapshot(bestScore = 0): GameSnapshot {
   return {
     score: 0,
     day: 1,
-    breath: 82,
-    bills: 18,
-    chaos: 14,
+    breath: 88,
+    bills: 12,
+    chaos: 10,
     combo: 0,
     maxCombo: 0,
     supports: 0,
@@ -180,6 +181,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   const targetXRef = useRef(CANVAS_WIDTH / 2);
   const shakeRef = useRef(0);
   const reliefRef = useRef(0);
+  const mutiraoPulseRef = useRef(0);
   const interestFrozenRef = useRef(0);
   const itemsRef = useRef<FallingItem[]>([]);
   const particlesRef = useRef<Particle[]>([]);
@@ -283,6 +285,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
     nextDayAtRef.current = 2000;
     shakeRef.current = 0;
     reliefRef.current = 0;
+    mutiraoPulseRef.current = 0;
     interestFrozenRef.current = 0;
     itemsRef.current = [];
     particlesRef.current = [];
@@ -311,18 +314,20 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
     (item: FallingItem) => {
       if (item.kind === "bad") {
         const isPlantao = item.label.includes("plantao");
+        const isJuros = item.label.includes("juros") || item.label.includes("cobranca") || item.label.includes("cartao");
+        const currentDay = stateRef.current.day;
         mutateState((current) => ({
           ...current,
           combo: 0,
-          breath: clamp(current.breath - (isPlantao ? 12 : 7), 0, 100),
-          bills: clamp(current.bills + (isPlantao ? 3 : 8), 0, 100),
-          chaos: clamp(current.chaos + (interestFrozenRef.current > 0 ? 4 : 8), 0, 100),
+          breath: clamp(current.breath - (isPlantao ? 9 : currentDay < 7 ? 4 : 6), 0, 100),
+          bills: clamp(current.bills + (isPlantao ? 2 : currentDay < 7 ? 5 : isJuros ? 9 : 7), 0, 100),
+          chaos: clamp(current.chaos + (interestFrozenRef.current > 0 ? 3 : currentDay < 7 ? 5 : isJuros ? 9 : 7), 0, 100),
           score: current.score + (isPlantao ? 120 : 0),
           rank: getRank(current.score + (isPlantao ? 120 : 0)).label,
         }));
         shakeRef.current = 0.38;
-        addParticle(isPlantao ? "Plantao pesado!" : "Caos subiu!", item.x - 60, item.y, "bad");
-        setToast(isPlantao ? "Plantao pesado!" : "Boleto vindo!");
+        addParticle(isPlantao ? "Plantao pesado!" : isJuros ? "Juros apertou!" : "Caos subiu!", item.x - 60, item.y, "bad");
+        setToast(isPlantao ? "Plantao pesado!" : isJuros ? "Juros apertou!" : "Boleto vindo!");
         playTone("bad");
         return;
       }
@@ -330,8 +335,10 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       const isPower = item.kind === "power";
       const label = item.label.toLowerCase();
       if (label.includes("mutirao")) {
-        itemsRef.current = itemsRef.current.filter((falling) => falling.kind !== "bad" || falling.y > CANVAS_HEIGHT * 0.72);
-        addParticle("Mutirao!", item.x - 50, item.y, "power");
+        const cleared = itemsRef.current.filter((falling) => falling.kind === "bad" && falling.y < CANVAS_HEIGHT * 0.78).length;
+        itemsRef.current = itemsRef.current.filter((falling) => falling.kind !== "bad" || falling.y > CANVAS_HEIGHT * 0.78);
+        mutiraoPulseRef.current = 0.85;
+        addParticle(cleared > 1 ? "Mutirao limpou!" : "Mutirao!", item.x - 70, item.y, "power");
       }
       if (label.includes("organizacao")) interestFrozenRef.current = 5;
       if (label.includes("marmita")) reliefRef.current = 0.6;
@@ -339,9 +346,9 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       mutateState((current) => {
         const combo = current.combo + 1;
         const gain = isPower ? 260 + combo * 24 : 150 + combo * 16;
-        const breathGain = label.includes("marmita") || label.includes("descanso") ? 14 : 7;
-        const billRelief = label.includes("carona") || label.includes("vaquinha") || label.includes("pix") ? 9 : 4;
-        const chaosRelief = label.includes("apoio") || label.includes("organizacao") ? 12 : 6;
+        const breathGain = label.includes("marmita") || label.includes("descanso") ? 16 : 8;
+        const billRelief = label.includes("carona") || label.includes("vaquinha") || label.includes("pix") ? 11 : 5;
+        const chaosRelief = label.includes("apoio") || label.includes("organizacao") || label.includes("mutirao") ? 14 : 7;
         return {
           ...current,
           score: current.score + gain,
@@ -354,8 +361,8 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           rank: getRank(current.score + gain).label,
         };
       });
-      addParticle(isPower ? "Organizacao ajuda!" : "Marmita salvou!", item.x - 80, item.y, item.kind);
-      setToast(stateRef.current.combo >= 3 ? "Combo de apoio!" : "Marmita salvou!");
+      addParticle(isPower ? "Organizacao ajuda!" : label.includes("marmita") ? "Respira!" : "Apoio!", item.x - 80, item.y, item.kind);
+      setToast(stateRef.current.combo >= 3 ? "Combo de apoio!" : label.includes("marmita") ? "Respira!" : "Apoio chegou!");
       playTone(isPower ? "power" : "good");
     },
     [addParticle, mutateState, playTone],
@@ -391,14 +398,17 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       lastTickRef.current = now;
       const elapsed = now - startAtRef.current;
       const phase = elapsed / ROUND_DURATION_MS;
+      const grace = elapsed < 10000;
       const day = clamp(1 + Math.floor((elapsed / ROUND_DURATION_MS) * 30), 1, 30);
-      const speed = 185 + phase * 175 + stateRef.current.chaos * 0.8;
+      const speed = (grace ? 165 : 190) + phase * 165 + stateRef.current.chaos * (grace ? 0.45 : 0.72);
 
       if (stateRef.current.running) {
         if (elapsed >= nextSpawnAtRef.current) {
           const roll = Math.random();
-          spawnItem(roll < 0.58 ? "bad" : roll < 0.9 ? "good" : "power", elapsed);
-          nextSpawnAtRef.current = elapsed + clamp(1050 - phase * 380, 520, 1050);
+          const badChance = grace ? 0.43 : 0.5 + phase * 0.14;
+          const goodChance = grace ? 0.86 : 0.82;
+          spawnItem(roll < badChance ? "bad" : roll < goodChance ? "good" : "power", elapsed);
+          nextSpawnAtRef.current = elapsed + clamp((grace ? 1180 : 1040) - phase * 360, 540, 1180);
         }
         if (elapsed >= nextEventAtRef.current) {
           const message = events[Math.floor(Math.random() * events.length)];
@@ -417,10 +427,11 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           mutateState((current) => ({
             ...current,
             day,
-            breath: clamp(current.breath - 1.8, 0, 100),
-            bills: clamp(current.bills + 1.9, 0, 100),
-            chaos: clamp(current.chaos + (interestFrozenRef.current > 0 ? 0.4 : 1.3), 0, 100),
+            breath: clamp(current.breath - (grace ? 0.8 : 1.55), 0, 100),
+            bills: clamp(current.bills + (grace ? 1.1 : 1.75), 0, 100),
+            chaos: clamp(current.chaos + (interestFrozenRef.current > 0 ? 0.25 : grace ? 0.75 : 1.2), 0, 100),
           }));
+          if (day === 10 || day === 20) setToast("O salario nao caiu!");
           nextDayAtRef.current = elapsed + 2000;
         }
       }
@@ -428,6 +439,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       playerXRef.current += (targetXRef.current - playerXRef.current) * 0.2;
       if (shakeRef.current > 0) shakeRef.current = Math.max(0, shakeRef.current - dt);
       if (reliefRef.current > 0) reliefRef.current = Math.max(0, reliefRef.current - dt);
+      if (mutiraoPulseRef.current > 0) mutiraoPulseRef.current = Math.max(0, mutiraoPulseRef.current - dt * 1.8);
       if (interestFrozenRef.current > 0) interestFrozenRef.current = Math.max(0, interestFrozenRef.current - dt);
 
       const hitIds = new Set<number>();
@@ -439,6 +451,11 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               mutateState((current) => ({ ...current, billsDodged: current.billsDodged + 1, score: current.score + 18 }));
             }
             return false;
+          }
+          if (item.kind === "bad" && !item.nearMissed && item.y > PLAYER_Y + 38 && Math.abs(item.x - playerXRef.current) < 82) {
+            item.nearMissed = true;
+            addParticle("Passou raspando!", item.x - 78, PLAYER_Y - 70, "good");
+            mutateState((current) => ({ ...current, score: current.score + 36 }));
           }
           return true;
         });
@@ -470,7 +487,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
         finishRound();
       }
 
-      drawGame(ctx, stateRef.current, itemsRef.current, particlesRef.current, playerXRef.current, shakeRef.current, reliefRef.current, interestFrozenRef.current);
+      drawGame(ctx, stateRef.current, itemsRef.current, particlesRef.current, playerXRef.current, shakeRef.current, reliefRef.current, interestFrozenRef.current, mutiraoPulseRef.current);
       frameRef.current = window.requestAnimationFrame(render);
     };
 
@@ -478,7 +495,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
     return () => {
       if (frameRef.current) window.cancelAnimationFrame(frameRef.current);
     };
-  }, [collectItem, finishRound, mutateState, resetRound, spawnItem]);
+  }, [addParticle, collectItem, finishRound, mutateState, resetRound, spawnItem]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -586,6 +603,11 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           </div>
           <div className="mt-3 rounded-lg bg-[#130d10] px-4 py-3 text-xs font-black uppercase text-[#ffd554]">
             Salario: atrasado
+          </div>
+          <div className="mt-3 grid gap-2">
+            <MeterBar label="folego" value={snapshot.breath} color="#9ee8c1" />
+            <MeterBar label="contas" value={snapshot.bills} color="#ffd554" danger />
+            <MeterBar label="caos" value={snapshot.chaos} color="#ff3b30" danger />
           </div>
         </section>
 
@@ -711,6 +733,22 @@ function ResultMetric({ label, value }: { label: string; value: string }) {
   );
 }
 
+function MeterBar({ label, value, color, danger = false }: { label: string; value: number; color: string; danger?: boolean }) {
+  const width = clamp(value, 0, 100);
+  const alert = danger ? value >= 72 : value <= 28;
+  return (
+    <div className="rounded-lg bg-[#130d10] px-3 py-2">
+      <div className="mb-1 flex items-center justify-between text-[10px] font-black uppercase tracking-[0.14em]">
+        <span className={alert ? "text-[#ff6b5f]" : "text-[#9ee8c1]"}>{label}</span>
+        <span className="text-[#f7f1df]">{Math.round(value)}%</span>
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-[rgba(255,255,255,0.1)]">
+        <div className="h-full rounded-full" style={{ width: `${width}%`, backgroundColor: color }} />
+      </div>
+    </div>
+  );
+}
+
 function drawGame(
   ctx: CanvasRenderingContext2D,
   snapshot: GameSnapshot,
@@ -720,6 +758,7 @@ function drawGame(
   shake: number,
   relief: number,
   frozen: number,
+  mutiraoPulse: number,
 ) {
   ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   ctx.save();
@@ -738,12 +777,22 @@ function drawGame(
   ctx.strokeStyle = "rgba(255,213,84,0.22)";
   ctx.lineWidth = 5;
   ctx.strokeRect(46, 150, CANVAS_WIDTH - 92, 760);
+  if (mutiraoPulse > 0) {
+    ctx.save();
+    ctx.globalAlpha = mutiraoPulse;
+    ctx.strokeStyle = "#62d6ff";
+    ctx.lineWidth = 10;
+    ctx.strokeRect(58, 162, CANVAS_WIDTH - 116, 736);
+    ctx.fillStyle = "rgba(98,214,255,0.09)";
+    ctx.fillRect(58, 162, CANVAS_WIDTH - 116, 736);
+    ctx.restore();
+  }
 
   for (const item of items) {
     drawItem(ctx, item);
   }
 
-  drawPlayer(ctx, playerX, PLAYER_Y, relief, frozen);
+  drawPlayer(ctx, playerX, PLAYER_Y, relief, frozen, snapshot);
 
   for (const particle of particles) {
     ctx.save();
@@ -768,28 +817,51 @@ function drawItem(ctx: CanvasRenderingContext2D, item: FallingItem) {
   ctx.save();
   ctx.translate(item.x, item.y);
   if (item.kind === "bad") {
+    const label = item.label.toLowerCase();
+    const tag = label.includes("aluguel")
+      ? "ALUGUEL"
+      : label.includes("luz")
+        ? "LUZ"
+        : label.includes("mercado") || label.includes("geladeira")
+          ? "MERCADO"
+          : label.includes("juros") || label.includes("cobranca") || label.includes("cartao")
+            ? "JUROS"
+            : label.includes("plantao")
+              ? "PLANTAO"
+              : "BOLETO";
+    ctx.shadowColor = "rgba(255,59,48,0.55)";
+    ctx.shadowBlur = 18;
     ctx.fillStyle = "#f7f1df";
     ctx.fillRect(-38, -32, 76, 64);
     ctx.fillStyle = "#ff3b30";
     ctx.fillRect(-38, -32, 76, 12);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "rgba(19,13,16,0.12)";
+    ctx.fillRect(-25, -10, 50, 5);
+    ctx.fillRect(-25, 4, 50, 5);
     ctx.fillStyle = "#130d10";
-    ctx.font = '900 17px "Geist", sans-serif';
+    ctx.font = '900 14px "Geist", sans-serif';
     ctx.textAlign = "center";
-    ctx.fillText("BOLETO", 0, 10);
+    ctx.fillText(tag, 0, 24);
   } else {
-    ctx.fillStyle = item.kind === "power" ? "#62d6ff" : "#9ee8c1";
+    const label = item.label.toLowerCase();
+    const color = item.kind === "power" ? "#62d6ff" : label.includes("marmita") || label.includes("feira") ? "#9ee8c1" : "#ffd554";
+    ctx.shadowColor = color;
+    ctx.shadowBlur = item.kind === "power" ? 26 : 16;
+    ctx.fillStyle = color;
     ctx.beginPath();
     ctx.arc(0, 0, item.size, 0, Math.PI * 2);
     ctx.fill();
+    ctx.shadowBlur = 0;
     ctx.fillStyle = "#130d10";
     ctx.font = '900 16px "Geist", sans-serif';
     ctx.textAlign = "center";
-    ctx.fillText(item.kind === "power" ? "APOIO" : "SALVA", 0, 6);
+    ctx.fillText(item.kind === "power" ? "MUTIRAO" : label.includes("marmita") ? "MARMITA" : "APOIO", 0, 6);
   }
   ctx.restore();
 }
 
-function drawPlayer(ctx: CanvasRenderingContext2D, x: number, y: number, relief: number, frozen: number) {
+function drawPlayer(ctx: CanvasRenderingContext2D, x: number, y: number, relief: number, frozen: number, snapshot: GameSnapshot) {
   ctx.save();
   ctx.translate(x, y);
   if (relief > 0 || frozen > 0) {
@@ -803,7 +875,7 @@ function drawPlayer(ctx: CanvasRenderingContext2D, x: number, y: number, relief:
   ctx.beginPath();
   ctx.ellipse(0, 62, 48, 14, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#ffd554";
+  ctx.fillStyle = snapshot.breath < 25 || snapshot.chaos > 75 ? "#ffb04f" : "#ffd554";
   ctx.fillRect(-34, -48, 68, 96);
   ctx.fillStyle = "#f7f1df";
   ctx.beginPath();
@@ -817,7 +889,12 @@ function drawPlayer(ctx: CanvasRenderingContext2D, x: number, y: number, relief:
   ctx.strokeStyle = "#130d10";
   ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.arc(0, -60, 10, 0.1, Math.PI - 0.1);
+  if (snapshot.breath < 25 || snapshot.chaos > 75) {
+    ctx.moveTo(-12, -58);
+    ctx.lineTo(12, -58);
+  } else {
+    ctx.arc(0, -60, 10, 0.1, Math.PI - 0.1);
+  }
   ctx.stroke();
   ctx.restore();
 }

@@ -109,7 +109,7 @@ export default function Home() {
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-[0.14em]">
                       <span className="rounded-lg bg-[var(--surface-soft)] px-3 py-2 text-[var(--sand)]">
-                        45-60s
+                        {game.slug === "plantaono-vermelho" ? "1 min" : "45-60s"}
                       </span>
                       <span className="rounded-lg bg-[var(--surface-soft)] px-3 py-2 text-[var(--text-soft)]">
                         {game.slug === "onibus-zero"
@@ -118,6 +118,11 @@ export default function Home() {
                             ? "arcade survival"
                             : "toque rapido"}
                       </span>
+                      {game.slug === "plantaono-vermelho" ? (
+                        <span className="rounded-lg bg-[var(--surface-soft)] px-3 py-2 text-[var(--accent)]">
+                          sobreviva ao mes
+                        </span>
+                      ) : null}
                     </div>
                   </div>
                   <div className="shrink-0 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
