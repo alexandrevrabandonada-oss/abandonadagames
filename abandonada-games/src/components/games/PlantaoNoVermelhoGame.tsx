@@ -1,0 +1,823 @@
+"use client";
+
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { GameDefinition } from "@/lib/gameRegistry";
+import type { ScoreSubmission } from "@/lib/score";
+
+type ItemKind = "good" | "bad" | "power";
+
+type FallingItem = {
+  id: number;
+  kind: ItemKind;
+  x: number;
+  y: number;
+  size: number;
+  label: string;
+};
+
+type Particle = {
+  id: number;
+  x: number;
+  y: number;
+  text: string;
+  life: number;
+  tone: ItemKind;
+};
+
+type GameSnapshot = {
+  score: number;
+  day: number;
+  breath: number;
+  bills: number;
+  chaos: number;
+  combo: number;
+  maxCombo: number;
+  supports: number;
+  billsDodged: number;
+  bestScore: number;
+  rank: string;
+  running: boolean;
+  finished: boolean;
+};
+
+type AudioTone = "good" | "bad" | "power";
+
+const CANVAS_WIDTH = 720;
+const CANVAS_HEIGHT = 1080;
+const ROUND_DURATION_MS = 60000;
+const PLAYER_Y = 850;
+const BEST_SCORE_KEY = "abandonada:plantaono-vermelho:best-score";
+const PLAYER_NAME_KEY = "abandonada:plantaono-vermelho:player-name";
+
+const rankTable = [
+  { min: 0, label: "D", message: "O mes venceu." },
+  { min: 1300, label: "C", message: "Sobreviveu no sufoco." },
+  { min: 3100, label: "B", message: "Segurou a onda." },
+  { min: 5200, label: "A", message: "Virou o mes de pe." },
+  { min: 7600, label: "S", message: "Mutirao salvou geral." },
+];
+
+const events = [
+  "Salario atrasou!",
+  "Mercado subiu!",
+  "Conta venceu!",
+  "Plantao extra!",
+  "Apoio chegou!",
+  "Boleto surpresa!",
+  "Dia pesado!",
+  "Organizacao ajuda!",
+];
+
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function getRank(score: number) {
+  return [...rankTable].reverse().find((rank) => score >= rank.min) ?? rankTable[0];
+}
+
+function createInitialSnapshot(bestScore = 0): GameSnapshot {
+  return {
+    score: 0,
+    day: 1,
+    breath: 82,
+    bills: 18,
+    chaos: 14,
+    combo: 0,
+    maxCombo: 0,
+    supports: 0,
+    billsDodged: 0,
+    bestScore,
+    rank: "D",
+    running: false,
+    finished: false,
+  };
+}
+
+function resizeCanvas(canvas: HTMLCanvasElement, containerWidth: number) {
+  const width = Math.min(containerWidth, 560);
+  const height = width * (CANVAS_HEIGHT / CANVAS_WIDTH);
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+  canvas.width = CANVAS_WIDTH * window.devicePixelRatio;
+  canvas.height = CANVAS_HEIGHT * window.devicePixelRatio;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+  return ctx;
+}
+
+async function createResultCardFile(stats: GameSnapshot) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1080;
+  canvas.height = 1350;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+
+  const bg = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  bg.addColorStop(0, "#2a0d12");
+  bg.addColorStop(0.55, "#141414");
+  bg.addColorStop(1, "#071414");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "rgba(255,213,84,0.12)";
+  ctx.fillRect(70, 76, 940, 1198);
+  ctx.strokeStyle = "#ff3b30";
+  ctx.lineWidth = 12;
+  ctx.strokeRect(70, 76, 940, 1198);
+
+  ctx.fillStyle = "#f7f1df";
+  ctx.font = '900 78px "Geist", sans-serif';
+  ctx.fillText("Plantao no", 112, 210);
+  ctx.fillText("Vermelho", 112, 300);
+  ctx.fillStyle = "#ffd554";
+  ctx.font = '800 34px "Geist", sans-serif';
+  ctx.fillText("Como sobreviver com salario atrasado", 112, 365);
+
+  ctx.fillStyle = "#ff3b30";
+  ctx.font = '900 300px "Geist", sans-serif';
+  ctx.fillText(stats.rank, 112, 680);
+  ctx.fillStyle = "#f7f1df";
+  ctx.font = '900 76px "Geist", sans-serif';
+  ctx.fillText(`${stats.score} pts`, 112, 805);
+
+  ctx.fillStyle = "rgba(255,255,255,0.09)";
+  ctx.fillRect(112, 875, 856, 190);
+  ctx.fillStyle = "#f7f1df";
+  ctx.font = '900 44px "Geist", sans-serif';
+  ctx.fillText(`${stats.day}`, 150, 970);
+  ctx.fillText(`${stats.supports}`, 405, 970);
+  ctx.fillText(`${Math.round(stats.chaos)}%`, 690, 970);
+  ctx.fillStyle = "#9ee8c1";
+  ctx.font = '800 25px "Geist", sans-serif';
+  ctx.fillText("dias", 150, 1018);
+  ctx.fillText("apoios", 405, 1018);
+  ctx.fillText("caos", 690, 1018);
+
+  ctx.fillStyle = "#ffd554";
+  ctx.font = '900 48px "Geist", sans-serif';
+  ctx.fillText("O boleto veio, mas a gente resistiu.", 112, 1160);
+  ctx.fillStyle = "#f7f1df";
+  ctx.font = '900 38px "Geist", sans-serif';
+  ctx.fillText("Jogue tambem", 112, 1225);
+
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
+  if (!blob) return null;
+  return new File([blob], "plantaono-vermelho-resultado.png", { type: "image/png" });
+}
+
+export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const frameRef = useRef<number | null>(null);
+  const startAtRef = useRef(0);
+  const lastTickRef = useRef(0);
+  const nextSpawnAtRef = useRef(0);
+  const nextEventAtRef = useRef(6500);
+  const nextDayAtRef = useRef(2000);
+  const itemSeqRef = useRef(0);
+  const playerXRef = useRef(CANVAS_WIDTH / 2);
+  const targetXRef = useRef(CANVAS_WIDTH / 2);
+  const shakeRef = useRef(0);
+  const reliefRef = useRef(0);
+  const interestFrozenRef = useRef(0);
+  const itemsRef = useRef<FallingItem[]>([]);
+  const particlesRef = useRef<Particle[]>([]);
+  const initialBestScore =
+    typeof window !== "undefined"
+      ? Number.parseInt(window.localStorage.getItem(BEST_SCORE_KEY) ?? "0", 10) || 0
+      : 0;
+  const initialPlayerName =
+    typeof window !== "undefined" ? window.localStorage.getItem(PLAYER_NAME_KEY) ?? "Anon" : "Anon";
+  const bestScoreRef = useRef(initialBestScore);
+  const submittedRef = useRef(false);
+  const stateRef = useRef<GameSnapshot>(createInitialSnapshot(initialBestScore));
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  const [snapshot, setSnapshot] = useState<GameSnapshot>(() => createInitialSnapshot(initialBestScore));
+  const [playerName, setPlayerName] = useState(initialPlayerName);
+  const [toast, setToast] = useState("Segura o mes!");
+  const [copyLabel, setCopyLabel] = useState("Compartilhar");
+  const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
+
+  const rankMeta = useMemo(() => getRank(snapshot.score), [snapshot.score]);
+
+  const playTone = useCallback((tone: AudioTone) => {
+    try {
+      const AudioCtx = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      if (!audioContextRef.current) audioContextRef.current = new AudioCtx();
+      const ctx = audioContextRef.current;
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+      const config =
+        tone === "good"
+          ? { frequency: 720, duration: 0.08, gain: 0.04, type: "triangle" as OscillatorType }
+          : tone === "power"
+            ? { frequency: 920, duration: 0.14, gain: 0.055, type: "square" as OscillatorType }
+            : { frequency: 150, duration: 0.16, gain: 0.05, type: "sawtooth" as OscillatorType };
+      oscillator.type = config.type;
+      oscillator.frequency.value = config.frequency;
+      gain.gain.value = config.gain;
+      oscillator.start();
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + config.duration);
+      oscillator.stop(ctx.currentTime + config.duration);
+    } catch {}
+  }, []);
+
+  const updateBestScore = useCallback((score: number) => {
+    if (score <= bestScoreRef.current) return;
+    bestScoreRef.current = score;
+    try {
+      window.localStorage.setItem(BEST_SCORE_KEY, String(score));
+    } catch {}
+  }, []);
+
+  const mutateState = useCallback(
+    (updater: (current: GameSnapshot) => GameSnapshot) => {
+      const next = updater(stateRef.current);
+      stateRef.current = next;
+      updateBestScore(next.score);
+      if (bestScoreRef.current !== next.bestScore) {
+        stateRef.current = { ...next, bestScore: bestScoreRef.current };
+      }
+      setSnapshot(stateRef.current);
+    },
+    [updateBestScore],
+  );
+
+  const addParticle = useCallback((text: string, x: number, y: number, tone: ItemKind) => {
+    particlesRef.current.push({ id: Date.now() + Math.random(), x, y, text, life: 1, tone });
+  }, []);
+
+  const spawnItem = useCallback(
+    (kind: ItemKind, elapsed: number) => {
+      itemSeqRef.current += 1;
+      const pool =
+        kind === "bad"
+          ? game.obstacles
+          : kind === "power"
+            ? ["Mutirao", "Marmita garantida", "Carona", "Organizacao", "Apoio dos colegas"]
+            : game.powerUps;
+      itemsRef.current.push({
+        id: itemSeqRef.current + Math.floor(elapsed),
+        kind,
+        x: 90 + Math.random() * (CANVAS_WIDTH - 180),
+        y: -70,
+        size: kind === "power" ? 54 : 46,
+        label: pool[Math.floor(Math.random() * pool.length)],
+      });
+    },
+    [game.obstacles, game.powerUps],
+  );
+
+  const resetRound = useCallback(() => {
+    submittedRef.current = false;
+    itemSeqRef.current = 0;
+    playerXRef.current = CANVAS_WIDTH / 2;
+    targetXRef.current = CANVAS_WIDTH / 2;
+    nextSpawnAtRef.current = 300;
+    nextEventAtRef.current = 6500;
+    nextDayAtRef.current = 2000;
+    shakeRef.current = 0;
+    reliefRef.current = 0;
+    interestFrozenRef.current = 0;
+    itemsRef.current = [];
+    particlesRef.current = [];
+    const next = { ...createInitialSnapshot(bestScoreRef.current), running: true };
+    stateRef.current = next;
+    setSnapshot(next);
+    setToast("Segura o mes!");
+    startAtRef.current = performance.now();
+    lastTickRef.current = performance.now();
+  }, []);
+
+  const finishRound = useCallback(() => {
+    if (stateRef.current.finished) return;
+    const rank = getRank(stateRef.current.score).label;
+    mutateState((current) => ({
+      ...current,
+      running: false,
+      finished: true,
+      rank,
+      bestScore: bestScoreRef.current,
+    }));
+    setToast(rank === "D" ? "O mes venceu." : "Virou o mes!");
+  }, [mutateState]);
+
+  const collectItem = useCallback(
+    (item: FallingItem) => {
+      if (item.kind === "bad") {
+        const isPlantao = item.label.includes("plantao");
+        mutateState((current) => ({
+          ...current,
+          combo: 0,
+          breath: clamp(current.breath - (isPlantao ? 12 : 7), 0, 100),
+          bills: clamp(current.bills + (isPlantao ? 3 : 8), 0, 100),
+          chaos: clamp(current.chaos + (interestFrozenRef.current > 0 ? 4 : 8), 0, 100),
+          score: current.score + (isPlantao ? 120 : 0),
+          rank: getRank(current.score + (isPlantao ? 120 : 0)).label,
+        }));
+        shakeRef.current = 0.38;
+        addParticle(isPlantao ? "Plantao pesado!" : "Caos subiu!", item.x - 60, item.y, "bad");
+        setToast(isPlantao ? "Plantao pesado!" : "Boleto vindo!");
+        playTone("bad");
+        return;
+      }
+
+      const isPower = item.kind === "power";
+      const label = item.label.toLowerCase();
+      if (label.includes("mutirao")) {
+        itemsRef.current = itemsRef.current.filter((falling) => falling.kind !== "bad" || falling.y > CANVAS_HEIGHT * 0.72);
+        addParticle("Mutirao!", item.x - 50, item.y, "power");
+      }
+      if (label.includes("organizacao")) interestFrozenRef.current = 5;
+      if (label.includes("marmita")) reliefRef.current = 0.6;
+
+      mutateState((current) => {
+        const combo = current.combo + 1;
+        const gain = isPower ? 260 + combo * 24 : 150 + combo * 16;
+        const breathGain = label.includes("marmita") || label.includes("descanso") ? 14 : 7;
+        const billRelief = label.includes("carona") || label.includes("vaquinha") || label.includes("pix") ? 9 : 4;
+        const chaosRelief = label.includes("apoio") || label.includes("organizacao") ? 12 : 6;
+        return {
+          ...current,
+          score: current.score + gain,
+          combo,
+          maxCombo: Math.max(current.maxCombo, combo),
+          supports: current.supports + 1,
+          breath: clamp(current.breath + breathGain, 0, 100),
+          bills: clamp(current.bills - billRelief, 0, 100),
+          chaos: clamp(current.chaos - chaosRelief, 0, 100),
+          rank: getRank(current.score + gain).label,
+        };
+      });
+      addParticle(isPower ? "Organizacao ajuda!" : "Marmita salvou!", item.x - 80, item.y, item.kind);
+      setToast(stateRef.current.combo >= 3 ? "Combo de apoio!" : "Marmita salvou!");
+      playTone(isPower ? "power" : "good");
+    },
+    [addParticle, mutateState, playTone],
+  );
+
+  const movePlayer = useCallback((direction: -1 | 1) => {
+    targetXRef.current = clamp(targetXRef.current + direction * 92, 68, CANVAS_WIDTH - 68);
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      if (key === "arrowleft" || key === "a") movePlayer(-1);
+      if (key === "arrowright" || key === "d") movePlayer(1);
+      if (key === "arrowup" || key === "w") {
+        mutateState((current) => ({ ...current, breath: clamp(current.breath - 2, 0, 100), score: current.score + 8 }));
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [movePlayer, mutateState]);
+
+  useEffect(() => {
+    resetRound();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const parent = canvas.parentElement;
+    const ctx = resizeCanvas(canvas, parent?.clientWidth ?? 420);
+    if (!ctx) return;
+
+    const render = (now: number) => {
+      const dt = Math.min(0.033, (now - lastTickRef.current) / 1000);
+      lastTickRef.current = now;
+      const elapsed = now - startAtRef.current;
+      const phase = elapsed / ROUND_DURATION_MS;
+      const day = clamp(1 + Math.floor((elapsed / ROUND_DURATION_MS) * 30), 1, 30);
+      const speed = 185 + phase * 175 + stateRef.current.chaos * 0.8;
+
+      if (stateRef.current.running) {
+        if (elapsed >= nextSpawnAtRef.current) {
+          const roll = Math.random();
+          spawnItem(roll < 0.58 ? "bad" : roll < 0.9 ? "good" : "power", elapsed);
+          nextSpawnAtRef.current = elapsed + clamp(1050 - phase * 380, 520, 1050);
+        }
+        if (elapsed >= nextEventAtRef.current) {
+          const message = events[Math.floor(Math.random() * events.length)];
+          setToast(message);
+          if (message.includes("Juros") || message.includes("Mercado") || message.includes("Conta")) {
+            mutateState((current) => ({
+              ...current,
+              bills: clamp(current.bills + 4, 0, 100),
+              chaos: clamp(current.chaos + 4, 0, 100),
+            }));
+          }
+          if (message.includes("Apoio") || message.includes("Colegas")) spawnItem("power", elapsed);
+          nextEventAtRef.current = elapsed + 5200 + Math.random() * 1600;
+        }
+        if (elapsed >= nextDayAtRef.current) {
+          mutateState((current) => ({
+            ...current,
+            day,
+            breath: clamp(current.breath - 1.8, 0, 100),
+            bills: clamp(current.bills + 1.9, 0, 100),
+            chaos: clamp(current.chaos + (interestFrozenRef.current > 0 ? 0.4 : 1.3), 0, 100),
+          }));
+          nextDayAtRef.current = elapsed + 2000;
+        }
+      }
+
+      playerXRef.current += (targetXRef.current - playerXRef.current) * 0.2;
+      if (shakeRef.current > 0) shakeRef.current = Math.max(0, shakeRef.current - dt);
+      if (reliefRef.current > 0) reliefRef.current = Math.max(0, reliefRef.current - dt);
+      if (interestFrozenRef.current > 0) interestFrozenRef.current = Math.max(0, interestFrozenRef.current - dt);
+
+      const hitIds = new Set<number>();
+      itemsRef.current = itemsRef.current
+        .map((item) => ({ ...item, y: item.y + speed * dt }))
+        .filter((item) => {
+          if (item.y > CANVAS_HEIGHT + 80) {
+            if (item.kind === "bad") {
+              mutateState((current) => ({ ...current, billsDodged: current.billsDodged + 1, score: current.score + 18 }));
+            }
+            return false;
+          }
+          return true;
+        });
+
+      for (const item of itemsRef.current) {
+        const distance = Math.hypot(item.x - playerXRef.current, item.y - PLAYER_Y);
+        if (distance < item.size + 38) {
+          hitIds.add(item.id);
+          collectItem(item);
+        }
+      }
+      if (hitIds.size > 0) {
+        itemsRef.current = itemsRef.current.filter((item) => !hitIds.has(item.id));
+      }
+
+      particlesRef.current = particlesRef.current
+        .map((particle) => ({ ...particle, y: particle.y - 46 * dt, life: particle.life - dt * 1.25 }))
+        .filter((particle) => particle.life > 0);
+
+      if (stateRef.current.running) {
+        mutateState((current) => ({
+          ...current,
+          day,
+          bestScore: bestScoreRef.current,
+          rank: getRank(current.score).label,
+        }));
+      }
+      if ((day >= 30 || stateRef.current.breath <= 0 || stateRef.current.chaos >= 100 || stateRef.current.bills >= 100) && stateRef.current.running) {
+        finishRound();
+      }
+
+      drawGame(ctx, stateRef.current, itemsRef.current, particlesRef.current, playerXRef.current, shakeRef.current, reliefRef.current, interestFrozenRef.current);
+      frameRef.current = window.requestAnimationFrame(render);
+    };
+
+    frameRef.current = window.requestAnimationFrame(render);
+    return () => {
+      if (frameRef.current) window.cancelAnimationFrame(frameRef.current);
+    };
+  }, [collectItem, finishRound, mutateState, resetRound, spawnItem]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const parent = canvas.parentElement;
+    if (!parent) return;
+    resizeCanvas(canvas, parent.clientWidth);
+    const handleResize = () => resizeCanvas(canvas, parent.clientWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!snapshot.finished || submittedRef.current) return;
+    submittedRef.current = true;
+    const payload: ScoreSubmission = {
+      slug: game.slug,
+      player: playerName || "Anon",
+      score: snapshot.score,
+      durationMs: Math.round((snapshot.day / 30) * ROUND_DURATION_MS),
+      eventsHandled: Math.max(1, snapshot.supports + snapshot.billsDodged),
+    };
+    void fetch("/api/score/submit", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    }).catch(() => undefined);
+  }, [game.slug, playerName, snapshot]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(PLAYER_NAME_KEY, playerName);
+    } catch {}
+  }, [playerName]);
+
+  useEffect(() => {
+    if (!snapshot.finished) return;
+    let cancelled = false;
+    void createResultCardFile(snapshot).then((file) => {
+      if (!file || cancelled) return;
+      setResultImageUrl((current) => {
+        if (current) URL.revokeObjectURL(current);
+        return URL.createObjectURL(file);
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [snapshot]);
+
+  const shareResult = useCallback(async () => {
+    const text = `Joguei Plantao no Vermelho: sobrevivi ${snapshot.day} dias com salario atrasado, coletei ${snapshot.supports} apoios e terminei com rank ${snapshot.rank}. O boleto veio, mas a gente resistiu.`;
+    const imageFile = await createResultCardFile(snapshot);
+    const filePayload = imageFile ? { title: game.title, text, url: window.location.href, files: [imageFile] } : null;
+
+    if (filePayload && navigator.canShare?.({ files: filePayload.files })) {
+      await navigator.share(filePayload);
+      setCopyLabel("Compartilhado");
+      return;
+    }
+    if (navigator.share) {
+      await navigator.share({ title: game.title, text, url: window.location.href });
+      setCopyLabel("Compartilhado");
+      return;
+    }
+    await navigator.clipboard.writeText(text);
+    setCopyLabel("Copiado");
+    window.setTimeout(() => setCopyLabel("Compartilhar"), 1200);
+  }, [game.title, snapshot]);
+
+  function handlePointerDown(event: React.PointerEvent<HTMLCanvasElement>) {
+    if (!canvasRef.current) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    targetXRef.current = clamp(((event.clientX - rect.left) / rect.width) * CANVAS_WIDTH, 68, CANVAS_WIDTH - 68);
+  }
+
+  function handlePointerMove(event: React.PointerEvent<HTMLCanvasElement>) {
+    if (event.buttons !== 1 || !canvasRef.current) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    targetXRef.current = clamp(((event.clientX - rect.left) / rect.width) * CANVAS_WIDTH, 68, CANVAS_WIDTH - 68);
+  }
+
+  return (
+    <main className="min-h-screen bg-[#130d10] px-3 py-3 text-[#f7f1df] sm:px-5 sm:py-5">
+      <div className="mx-auto max-w-md">
+        <section className="rounded-[1.25rem] border border-[rgba(255,213,84,0.22)] bg-[#241015] p-4 shadow-[0_18px_60px_rgba(0,0,0,0.38)]">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#9ee8c1]">
+                salario atrasado survival
+              </p>
+              <h1 className="mt-2 text-3xl font-black uppercase leading-none">{game.title}</h1>
+            </div>
+            <Link href="/" className="rounded-lg border border-[rgba(255,255,255,0.14)] px-3 py-2 text-[11px] font-bold uppercase">
+              Inicio
+            </Link>
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            <HudBox label="dia" value={`${snapshot.day}/30`} />
+            <HudBox label="folego" value={`${Math.round(snapshot.breath)}%`} />
+            <HudBox label="caos" value={`${Math.round(snapshot.chaos)}%`} />
+            <HudBox label="contas" value={`${Math.round(snapshot.bills)}%`} />
+            <HudBox label="combo" value={`${snapshot.combo}x`} />
+            <HudBox label="score" value={`${snapshot.score}`} />
+          </div>
+          <div className="mt-3 rounded-lg bg-[#130d10] px-4 py-3 text-xs font-black uppercase text-[#ffd554]">
+            Salario: atrasado
+          </div>
+        </section>
+
+        <section className="relative mt-4 rounded-[1.25rem] border border-[rgba(255,255,255,0.1)] bg-[#111] p-2">
+          <canvas
+            ref={canvasRef}
+            className="block w-full touch-none rounded-lg"
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+          />
+          {!snapshot.finished ? (
+            <div className="pointer-events-none absolute inset-x-5 bottom-5 flex items-center justify-between rounded-lg bg-[rgba(19,13,16,0.78)] px-4 py-3 text-xs font-black uppercase backdrop-blur-sm">
+              <span>arraste</span>
+              <span>{toast}</span>
+            </div>
+          ) : null}
+        </section>
+
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => movePlayer(-1)}
+            className="rounded-lg border border-[rgba(255,255,255,0.14)] bg-[#241015] px-4 py-4 text-xl font-black"
+          >
+            &lt;
+          </button>
+          <button
+            type="button"
+            onClick={() => movePlayer(1)}
+            className="rounded-lg border border-[rgba(255,255,255,0.14)] bg-[#241015] px-4 py-4 text-xl font-black"
+          >
+            &gt;
+          </button>
+        </div>
+
+        {snapshot.finished ? (
+          <section className="mt-4 rounded-[1.25rem] border border-[rgba(255,213,84,0.24)] bg-[#241015] p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9ee8c1]">resultado</p>
+                <h2 className="mt-1 text-7xl font-black leading-none text-[#ff3b30]">{rankMeta.label}</h2>
+                <p className="mt-2 text-sm font-bold uppercase text-[#f7f1df]">{rankMeta.message}</p>
+              </div>
+              <div className="rounded-lg bg-[rgba(255,255,255,0.08)] px-4 py-3 text-right">
+                <div className="text-[10px] font-bold uppercase text-[#9ee8c1]">score</div>
+                <div className="mt-1 text-4xl font-black text-[#ffd554]">{snapshot.score}</div>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <ResultMetric label="dias" value={`${snapshot.day}`} />
+              <ResultMetric label="folego final" value={`${Math.round(snapshot.breath)}%`} />
+              <ResultMetric label="caos final" value={`${Math.round(snapshot.chaos)}%`} />
+              <ResultMetric label="boletos desviados" value={`${snapshot.billsDodged}`} />
+              <ResultMetric label="apoios" value={`${snapshot.supports}`} />
+              <ResultMetric label="combo max" value={`${snapshot.maxCombo}x`} />
+              <ResultMetric label="melhor score" value={`${snapshot.bestScore}`} />
+              <ResultMetric label="contas" value={`${Math.round(snapshot.bills)}%`} />
+            </div>
+            <div className="mt-4 overflow-hidden rounded-lg border border-[rgba(255,213,84,0.22)] bg-[#130d10]">
+              {resultImageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={resultImageUrl} alt="Card de resultado" className="block w-full" />
+              ) : (
+                <div className="flex aspect-[4/5] items-center justify-center text-xs font-black uppercase text-[#9ee8c1]">
+                  gerando card
+                </div>
+              )}
+            </div>
+            <input
+              value={playerName}
+              onChange={(event) => setPlayerName(event.target.value.slice(0, 18))}
+              className="mt-4 w-full rounded-lg border border-[rgba(255,255,255,0.12)] bg-[#130d10] px-4 py-3 text-sm text-[#f7f1df] outline-none"
+              placeholder="nome no ranking"
+            />
+            <div className="mt-4 flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setCopyLabel("Compartilhar");
+                  setResultImageUrl((current) => {
+                    if (current) URL.revokeObjectURL(current);
+                    return null;
+                  });
+                  resetRound();
+                }}
+                className="flex-[1.2] rounded-lg bg-[#ffd554] px-4 py-4 text-sm font-black uppercase text-[#130d10]"
+              >
+                Jogar de novo
+              </button>
+              <button
+                type="button"
+                onClick={() => void shareResult()}
+                className="flex-1 rounded-lg border border-[rgba(255,255,255,0.16)] px-4 py-4 text-sm font-black uppercase"
+              >
+                {copyLabel}
+              </button>
+            </div>
+            <Link href={`/ranking/${game.slug}`} className="mt-3 block rounded-lg bg-[#130d10] px-4 py-3 text-center text-sm font-black uppercase">
+              Ver ranking
+            </Link>
+          </section>
+        ) : null}
+      </div>
+    </main>
+  );
+}
+
+function HudBox({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg bg-[rgba(19,13,16,0.74)] px-3 py-3">
+      <div className="text-[10px] font-bold uppercase text-[#9ee8c1]">{label}</div>
+      <div className="mt-1 text-lg font-black text-[#f7f1df]">{value}</div>
+    </div>
+  );
+}
+
+function ResultMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg bg-[rgba(19,13,16,0.64)] px-4 py-3">
+      <div className="text-[10px] font-bold uppercase text-[#9ee8c1]">{label}</div>
+      <div className="mt-1 text-xl font-black text-[#f7f1df]">{value}</div>
+    </div>
+  );
+}
+
+function drawGame(
+  ctx: CanvasRenderingContext2D,
+  snapshot: GameSnapshot,
+  items: FallingItem[],
+  particles: Particle[],
+  playerX: number,
+  shake: number,
+  relief: number,
+  frozen: number,
+) {
+  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctx.save();
+  if (shake > 0) ctx.translate(Math.sin(Date.now() / 24) * shake * 16, Math.cos(Date.now() / 31) * shake * 16);
+
+  const bg = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+  bg.addColorStop(0, snapshot.chaos > 70 ? "#330b12" : "#221016");
+  bg.addColorStop(1, "#0f1110");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+  ctx.fillStyle = "rgba(255,255,255,0.035)";
+  for (let y = 90; y < CANVAS_HEIGHT; y += 90) ctx.fillRect(0, y, CANVAS_WIDTH, 1);
+  ctx.fillStyle = "rgba(255,213,84,0.08)";
+  ctx.fillRect(46, 150, CANVAS_WIDTH - 92, 760);
+  ctx.strokeStyle = "rgba(255,213,84,0.22)";
+  ctx.lineWidth = 5;
+  ctx.strokeRect(46, 150, CANVAS_WIDTH - 92, 760);
+
+  for (const item of items) {
+    drawItem(ctx, item);
+  }
+
+  drawPlayer(ctx, playerX, PLAYER_Y, relief, frozen);
+
+  for (const particle of particles) {
+    ctx.save();
+    ctx.globalAlpha = particle.life;
+    ctx.fillStyle = particle.tone === "bad" ? "#ff3b30" : particle.tone === "power" ? "#62d6ff" : "#9ee8c1";
+    ctx.font = '900 25px "Geist", sans-serif';
+    ctx.fillText(particle.text, particle.x, particle.y);
+    ctx.restore();
+  }
+
+  ctx.fillStyle = "rgba(19,13,16,0.82)";
+  ctx.fillRect(26, 24, CANVAS_WIDTH - 52, 94);
+  ctx.fillStyle = "#f7f1df";
+  ctx.font = '900 30px "Geist", sans-serif';
+  ctx.fillText(`Dia ${snapshot.day}`, 48, 80);
+  ctx.fillStyle = "#ffd554";
+  ctx.fillText(`Score ${snapshot.score}`, 460, 80);
+  ctx.restore();
+}
+
+function drawItem(ctx: CanvasRenderingContext2D, item: FallingItem) {
+  ctx.save();
+  ctx.translate(item.x, item.y);
+  if (item.kind === "bad") {
+    ctx.fillStyle = "#f7f1df";
+    ctx.fillRect(-38, -32, 76, 64);
+    ctx.fillStyle = "#ff3b30";
+    ctx.fillRect(-38, -32, 76, 12);
+    ctx.fillStyle = "#130d10";
+    ctx.font = '900 17px "Geist", sans-serif';
+    ctx.textAlign = "center";
+    ctx.fillText("BOLETO", 0, 10);
+  } else {
+    ctx.fillStyle = item.kind === "power" ? "#62d6ff" : "#9ee8c1";
+    ctx.beginPath();
+    ctx.arc(0, 0, item.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#130d10";
+    ctx.font = '900 16px "Geist", sans-serif';
+    ctx.textAlign = "center";
+    ctx.fillText(item.kind === "power" ? "APOIO" : "SALVA", 0, 6);
+  }
+  ctx.restore();
+}
+
+function drawPlayer(ctx: CanvasRenderingContext2D, x: number, y: number, relief: number, frozen: number) {
+  ctx.save();
+  ctx.translate(x, y);
+  if (relief > 0 || frozen > 0) {
+    ctx.strokeStyle = relief > 0 ? `rgba(158,232,193,${relief})` : "rgba(98,214,255,0.62)";
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    ctx.arc(0, 0, 68 + relief * 26, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.fillStyle = "rgba(0,0,0,0.32)";
+  ctx.beginPath();
+  ctx.ellipse(0, 62, 48, 14, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#ffd554";
+  ctx.fillRect(-34, -48, 68, 96);
+  ctx.fillStyle = "#f7f1df";
+  ctx.beginPath();
+  ctx.arc(0, -68, 30, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#130d10";
+  ctx.beginPath();
+  ctx.arc(-9, -73, 4, 0, Math.PI * 2);
+  ctx.arc(9, -73, 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#130d10";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.arc(0, -60, 10, 0.1, Math.PI - 0.1);
+  ctx.stroke();
+  ctx.restore();
+}
