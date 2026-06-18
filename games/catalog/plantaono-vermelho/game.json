@@ -1,0 +1,33 @@
+{
+  "slug": "plantaono-vermelho",
+  "title": "Plantao no Vermelho",
+  "template": "salary-survival",
+  "tagline": "Como sobreviver com salario atrasado.",
+  "summary": "Sobreviva ao mes enquanto o salario nao cai.",
+  "obstacles": [
+    "aluguel",
+    "conta de luz",
+    "mercado caro",
+    "farmacia",
+    "transporte",
+    "juros",
+    "cobranca",
+    "cartao estourado",
+    "plantao exaustivo",
+    "geladeira vazia",
+    "salario nao caiu",
+    "boleto surpresa"
+  ],
+  "powerUps": [
+    "marmita",
+    "carona",
+    "apoio dos colegas",
+    "vaquinha",
+    "bico honesto",
+    "dia de descanso",
+    "organizacao coletiva",
+    "pix de emergencia",
+    "feira barata",
+    "remedio garantido"
+  ]
+}

@@ -7,6 +7,8 @@ export default function Home() {
   const featuredMeta =
     featuredGame.slug === "onibus-zero"
       ? { theme: "Transporte", action: "3 faixas" }
+      : featuredGame.slug === "plantaono-vermelho"
+        ? { theme: "Salario", action: "Survival" }
       : { theme: "Saude publica", action: "Toque rapido" };
 
   return (
@@ -110,7 +112,11 @@ export default function Home() {
                         45-60s
                       </span>
                       <span className="rounded-lg bg-[var(--surface-soft)] px-3 py-2 text-[var(--text-soft)]">
-                        {game.slug === "onibus-zero" ? "3 faixas" : "toque rapido"}
+                        {game.slug === "onibus-zero"
+                          ? "3 faixas"
+                          : game.slug === "plantaono-vermelho"
+                            ? "arcade survival"
+                            : "toque rapido"}
                       </span>
                     </div>
                   </div>

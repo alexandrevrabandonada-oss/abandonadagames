@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { OnibusZeroGame } from "@/components/games/OnibusZeroGame";
+import { PlantaoNoVermelhoGame } from "@/components/games/PlantaoNoVermelhoGame";
 import { QueueChaosGame } from "@/components/games/QueueChaosGame";
 import { getGameBySlug, getGameSlugs } from "@/lib/gameRegistry";
 
@@ -19,6 +20,10 @@ export default async function PlayPage({
 
   if (game.slug === "onibus-zero" || game.template === "bus-runner") {
     return <OnibusZeroGame game={game} />;
+  }
+
+  if (game.slug === "plantaono-vermelho" || game.template === "salary-survival") {
+    return <PlantaoNoVermelhoGame game={game} />;
   }
 
   return <QueueChaosGame game={game} />;
