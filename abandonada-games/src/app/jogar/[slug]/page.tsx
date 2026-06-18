@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { OnibusZeroGame } from "@/components/games/OnibusZeroGame";
 import { QueueChaosGame } from "@/components/games/QueueChaosGame";
 import { getGameBySlug, getGameSlugs } from "@/lib/gameRegistry";
 
@@ -15,6 +16,10 @@ export default async function PlayPage({
   const game = getGameBySlug(slug);
 
   if (!game) notFound();
+
+  if (game.slug === "onibus-zero" || game.template === "bus-runner") {
+    return <OnibusZeroGame game={game} />;
+  }
 
   return <QueueChaosGame game={game} />;
 }
