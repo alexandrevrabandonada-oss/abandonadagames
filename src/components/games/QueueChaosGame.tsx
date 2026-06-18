@@ -27,6 +27,16 @@ type Particle = {
   tone: "good" | "bad" | "combo";
 };
 
+type ExitSprite = {
+  id: number;
+  x: number;
+  y: number;
+  life: number;
+  maxLife: number;
+  hue: string;
+  tone: "served" | "lost";
+};
+
 type WaveToast = {
   id: number;
   text: string;
@@ -66,17 +76,18 @@ type SpawnDirector = {
 
 const CANVAS_WIDTH = 720;
 const CANVAS_HEIGHT = 1180;
-const ROUND_DURATION_MS = 45000;
-const MAX_CITIZENS = 8;
+const ROUND_DURATION_MS = 50000;
+const MAX_CITIZENS = 9;
+const INITIAL_CHAOS = 12;
 const BEST_SCORE_KEY = "abandonada:fila-invisivel:best-score";
 const PLAYER_NAME_KEY = "abandonada:fila-invisivel:player-name";
 
 const rankTable = [
-  { min: 0, label: "D", message: "Fila colapsou" },
-  { min: 1200, label: "C", message: "Atendimento no limite" },
-  { min: 2800, label: "B", message: "Fluxo organizado" },
-  { min: 4500, label: "A", message: "Mutirao funcionando" },
-  { min: 6200, label: "S", message: "Fila derrotada" },
+  { min: 0, label: "D", message: "A fila engoliu o atendimento." },
+  { min: 1500, label: "C", message: "Voce segurou o caos por pouco." },
+  { min: 3400, label: "B", message: "A fila andou." },
+  { min: 5600, label: "A", message: "Mutirao funcionando!" },
+  { min: 8200, label: "S", message: "Fila derrotada!" },
 ];
 
 function getRank(score: number) {
@@ -94,7 +105,7 @@ function createCitizen(id: number, count: number): Citizen {
     x: -40 - Math.random() * 120,
     y: 250 + count * 96 + row * 8,
     radius: 34 + Math.random() * 5,
-    patience: 0.65 + Math.random() * 0.3,
+    patience: 0.78 + Math.random() * 0.22,
     hue: ["#ffca74", "#f7f1df", "#ff8f58", "#ffd86a"][id % 4],
     mood: "waiting",
   };
@@ -106,7 +117,7 @@ function createInitialSnapshot(bestScore = 0): GameSnapshot {
     combo: 0,
     maxCombo: 0,
     multiplier: 1,
-    chaos: 18,
+    chaos: INITIAL_CHAOS,
     timeLeft: ROUND_DURATION_MS / 1000,
     served: 0,
     lost: 0,
@@ -131,6 +142,72 @@ function resizeCanvas(canvas: HTMLCanvasElement, containerWidth: number) {
   return ctx;
 }
 
+async function createResultCardFile(stats: GameSnapshot, phrase: string) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1080;
+  canvas.height = 1350;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+
+  const bg = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  bg.addColorStop(0, "#1b1d1b");
+  bg.addColorStop(1, "#0d0f0d");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "rgba(255,202,116,0.08)";
+  ctx.fillRect(64, 70, 952, 1210);
+  drawHazardStripe(ctx, 64, 70, 952, 36);
+  drawHazardStripe(ctx, 64, 1244, 952, 36);
+
+  ctx.fillStyle = "#f7f1df";
+  ctx.font = '900 82px "Geist", sans-serif';
+  ctx.fillText("Fila Invisivel", 104, 220);
+
+  ctx.fillStyle = "#9d927d";
+  ctx.font = '700 34px "Geist", sans-serif';
+  ctx.fillText("Abandonada Games", 108, 280);
+
+  ctx.fillStyle = "#ffca74";
+  ctx.font = '900 300px "Geist", sans-serif';
+  ctx.fillText(stats.rank, 104, 585);
+
+  ctx.fillStyle = "#f7f1df";
+  ctx.font = '900 92px "Geist", sans-serif';
+  ctx.fillText(`${stats.score} pts`, 104, 735);
+
+  ctx.fillStyle = "#ff6d2b";
+  ctx.font = '900 48px "Geist", sans-serif';
+  ctx.fillText(phrase, 104, 820);
+
+  ctx.fillStyle = "rgba(255,255,255,0.08)";
+  ctx.fillRect(104, 890, 872, 188);
+
+  ctx.fillStyle = "#f7f1df";
+  ctx.font = '900 48px "Geist", sans-serif';
+  ctx.fillText(`${stats.served}`, 150, 990);
+  ctx.fillText(`${stats.maxCombo}x`, 430, 990);
+  ctx.fillText(`${stats.bestScore}`, 710, 990);
+
+  ctx.fillStyle = "#9d927d";
+  ctx.font = '700 26px "Geist", sans-serif';
+  ctx.fillText("atendidos", 150, 1036);
+  ctx.fillText("combo max", 430, 1036);
+  ctx.fillText("recorde", 710, 1036);
+
+  ctx.fillStyle = "#ffca74";
+  ctx.font = '900 54px "Geist", sans-serif';
+  ctx.fillText("A fila nao venceu hoje.", 104, 1165);
+
+  ctx.fillStyle = "#f7f1df";
+  ctx.font = '900 38px "Geist", sans-serif';
+  ctx.fillText("Jogue tambem", 104, 1228);
+
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
+  if (!blob) return null;
+  return new File([blob], "fila-invisivel-resultado.png", { type: "image/png" });
+}
+
 export function QueueChaosGame({ game }: { game: GameDefinition }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const frameRef = useRef<number | null>(null);
@@ -143,16 +220,20 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
   });
   const citizensRef = useRef<Citizen[]>([]);
   const particlesRef = useRef<Particle[]>([]);
+  const exitSpritesRef = useRef<ExitSprite[]>([]);
   const flashRef = useRef<{ life: number; tone: "good" | "bad" | "combo" } | null>(null);
+  const shakeRef = useRef(0);
+  const multiplierFlashRef = useRef(0);
+  const lastMultiplierRef = useRef(1);
   const comboWindowRef = useRef<number>(0);
-  const bestScoreRef = useRef(0);
-  const submittedRef = useRef(false);
   const initialBestScore =
     typeof window !== "undefined"
       ? Number.parseInt(window.localStorage.getItem(BEST_SCORE_KEY) ?? "0", 10) || 0
       : 0;
   const initialPlayerName =
     typeof window !== "undefined" ? window.localStorage.getItem(PLAYER_NAME_KEY) ?? "Anon" : "Anon";
+  const bestScoreRef = useRef(initialBestScore);
+  const submittedRef = useRef(false);
   const stateRef = useRef<GameSnapshot>(createInitialSnapshot(initialBestScore));
   const audioContextRef = useRef<AudioContext | null>(null);
 
@@ -160,6 +241,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
   const [playerName, setPlayerName] = useState(initialPlayerName);
   const [toast, setToast] = useState<WaveToast | null>(null);
   const [copyLabel, setCopyLabel] = useState("Compartilhar");
+  const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
 
   const rankMeta = useMemo(() => getRank(snapshot.score), [snapshot.score]);
 
@@ -213,6 +295,18 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
     [],
   );
 
+  const addExitSprite = useCallback((citizen: Citizen, tone: ExitSprite["tone"]) => {
+    exitSpritesRef.current.push({
+      id: Date.now() + Math.random(),
+      x: citizen.x,
+      y: citizen.y,
+      life: 1,
+      maxLife: 1,
+      hue: citizen.hue,
+      tone,
+    });
+  }, []);
+
   const updateBestScore = useCallback((nextScore: number) => {
     if (nextScore <= bestScoreRef.current) return;
     bestScoreRef.current = nextScore;
@@ -253,11 +347,15 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
     citizenSeqRef.current = 0;
     citizensRef.current = [];
     particlesRef.current = [];
+    exitSpritesRef.current = [];
     flashRef.current = null;
+    shakeRef.current = 0;
+    multiplierFlashRef.current = 0;
+    lastMultiplierRef.current = 1;
     comboWindowRef.current = 0;
     directorRef.current = {
       nextSpawnAt: 0,
-      nextEventAt: 3200,
+      nextEventAt: 7800,
     };
     const nextState: GameSnapshot = {
       ...createInitialSnapshot(bestScoreRef.current),
@@ -287,16 +385,18 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
         patience: clamp(citizen.patience + 0.18, 0, 1),
       }));
       flashRef.current = { life: 0.7, tone: "good" };
+      multiplierFlashRef.current = Math.max(multiplierFlashRef.current, 0.45);
       addParticle("Mutirao!", CANVAS_WIDTH / 2, 190, "combo");
       pushToast(label, "combo");
     } else {
       mutateState((current) => ({
         ...current,
-        chaos: clamp(current.chaos + 9, 0, 100),
+        chaos: clamp(current.chaos + 7, 0, 100),
         combo: 0,
         multiplier: 1,
       }));
       flashRef.current = { life: 0.9, tone: "bad" };
+      shakeRef.current = 0.45;
       addParticle("Caos subiu!", CANVAS_WIDTH / 2, 190, "bad");
       pushToast(label, "bad");
       playTone("miss");
@@ -311,11 +411,16 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
       citizensRef.current = citizensRef.current.filter((item) => item.id !== citizenId);
       const quickWindow = performance.now() - comboWindowRef.current < 1500;
       comboWindowRef.current = performance.now();
+      addExitSprite(citizen, "served");
 
       mutateState((current) => {
         const nextCombo = quickWindow ? current.combo + 1 : 1;
-        const multiplier = clamp(1 + Math.floor(nextCombo / 3), 1, 5);
-        const points = Math.round(110 * multiplier + citizen.patience * 90);
+        const multiplier = clamp(1 + Math.floor(nextCombo / 4), 1, 5);
+        const points = Math.round(125 * multiplier + citizen.patience * 110 + nextCombo * 8);
+        if (multiplier > lastMultiplierRef.current) {
+          multiplierFlashRef.current = 0.8;
+          lastMultiplierRef.current = multiplier;
+        }
         return {
           ...current,
           score: current.score + points,
@@ -323,21 +428,21 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
           maxCombo: Math.max(current.maxCombo, nextCombo),
           multiplier,
           served: current.served + 1,
-          chaos: clamp(current.chaos - 4, 0, 100),
+          chaos: clamp(current.chaos - 3.4, 0, 100),
           rank: getRank(current.score + points).label,
           bestScore: bestScoreRef.current,
         };
       });
 
       const message = quickWindow && stateRef.current.combo >= 2 ? "Combo!" : "Atendeu!";
-      addParticle(`+${90 * stateRef.current.multiplier}`, citizen.x, citizen.y - 14, "good");
+      addParticle(`+${120 * stateRef.current.multiplier}`, citizen.x, citizen.y - 14, "good");
       addParticle(message, citizen.x, citizen.y - 54, quickWindow ? "combo" : "good");
       pushToast(message, quickWindow ? "combo" : "good");
       flashRef.current = { life: 0.35, tone: quickWindow ? "combo" : "good" };
       playTone(quickWindow ? "combo" : "serve");
       spawnCitizen();
     },
-    [addParticle, mutateState, playTone, pushToast, spawnCitizen],
+    [addExitSprite, addParticle, mutateState, playTone, pushToast, spawnCitizen],
   );
 
   const handleCanvasPress = useCallback(
@@ -369,11 +474,12 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
           ...current,
           combo: 0,
           multiplier: 1,
-          chaos: clamp(current.chaos + 4, 0, 100),
+          chaos: clamp(current.chaos + 3, 0, 100),
         }));
         addParticle("Perdeu atendimento!", x, y, "bad");
         pushToast("Caos subiu!", "bad");
         flashRef.current = { life: 0.45, tone: "bad" };
+        shakeRef.current = 0.25;
         playTone("miss");
       }
     },
@@ -450,12 +556,12 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
       if (stateRef.current.running) {
         if (elapsed >= directorRef.current.nextSpawnAt) {
           spawnCitizen();
-          directorRef.current.nextSpawnAt = elapsed + clamp(1700 - elapsed / 40, 650, 1700);
+          directorRef.current.nextSpawnAt = elapsed + clamp(2200 - elapsed / 34, 760, 2200);
         }
 
         if (elapsed >= directorRef.current.nextEventAt) {
           applyPublicEvent();
-          directorRef.current.nextEventAt = elapsed + 3800 + Math.random() * 900;
+          directorRef.current.nextEventAt = elapsed + 4500 + Math.random() * 1100;
         }
       }
 
@@ -463,7 +569,10 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
         .map((citizen, index) => {
           const targetX = 148 + index * 66;
           const tension = Math.max(0, index - 3) * 0.03;
-          const patienceLoss = dt * (0.046 + tension + stateRef.current.chaos / 2400);
+          const phase = elapsed / ROUND_DURATION_MS;
+          const grace = elapsed < 15000 ? 0.7 : 1;
+          const patienceLoss =
+            dt * grace * (0.033 + phase * 0.04 + tension + stateRef.current.chaos / 3200);
           const patience = citizen.patience - patienceLoss;
           const mood: Citizen["mood"] = patience < 0.28 ? "panic" : "waiting";
 
@@ -477,19 +586,30 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
         })
         .filter((citizen) => {
           if (citizen.patience > 0) return true;
+          addExitSprite(citizen, "lost");
           mutateState((current) => ({
             ...current,
             combo: 0,
             multiplier: 1,
             lost: current.lost + 1,
-            chaos: clamp(current.chaos + 12, 0, 100),
+            chaos: clamp(current.chaos + 10, 0, 100),
           }));
           addParticle("Desistiu!", citizen.x, citizen.y - 24, "bad");
           pushToast("Perdeu atendimento!", "bad");
           flashRef.current = { life: 0.7, tone: "bad" };
+          shakeRef.current = 0.55;
           playTone("miss");
           return false;
         });
+
+      exitSpritesRef.current = exitSpritesRef.current
+        .map((sprite) => ({
+          ...sprite,
+          x: sprite.x + (sprite.tone === "served" ? 210 : -120) * dt,
+          y: sprite.y + (sprite.tone === "served" ? -55 : 70) * dt,
+          life: sprite.life - dt * 1.8,
+        }))
+        .filter((sprite) => sprite.life > 0);
 
       particlesRef.current = particlesRef.current
         .map((particle) => ({
@@ -505,6 +625,11 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
         if (flashRef.current.life <= 0) flashRef.current = null;
       }
 
+      if (shakeRef.current > 0) shakeRef.current = Math.max(0, shakeRef.current - dt);
+      if (multiplierFlashRef.current > 0) {
+        multiplierFlashRef.current = Math.max(0, multiplierFlashRef.current - dt);
+      }
+
       if (stateRef.current.running) {
         mutateState((current) => ({
           ...current,
@@ -518,7 +643,17 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
         finishRound();
       }
 
-      drawGame(ctx, elapsed, stateRef.current, citizensRef.current, particlesRef.current, flashRef.current);
+      drawGame(
+        ctx,
+        elapsed,
+        stateRef.current,
+        citizensRef.current,
+        exitSpritesRef.current,
+        particlesRef.current,
+        flashRef.current,
+        shakeRef.current,
+        multiplierFlashRef.current,
+      );
       frameRef.current = window.requestAnimationFrame(render);
     };
 
@@ -527,7 +662,17 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
     return () => {
       if (frameRef.current) window.cancelAnimationFrame(frameRef.current);
     };
-  }, [addParticle, applyPublicEvent, finishRound, mutateState, playTone, pushToast, resetRound, spawnCitizen]);
+  }, [
+    addExitSprite,
+    addParticle,
+    applyPublicEvent,
+    finishRound,
+    mutateState,
+    playTone,
+    pushToast,
+    resetRound,
+    spawnCitizen,
+  ]);
 
   useEffect(() => {
     if (!toast) return;
@@ -535,12 +680,38 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
+  useEffect(() => {
+    if (!snapshot.finished) return;
+
+    let cancelled = false;
+    void createResultCardFile(snapshot, rankMeta.message).then((file) => {
+      if (!file || cancelled) return;
+      setResultImageUrl((current) => {
+        if (current) URL.revokeObjectURL(current);
+        return URL.createObjectURL(file);
+      });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [rankMeta.message, snapshot]);
+
   const shareResult = useCallback(async () => {
-    const text = `Joguei Fila Invisivel: atendi ${snapshot.served} pessoas, fiz combo ${snapshot.maxCombo} e terminei com rank ${snapshot.rank}. A fila nao venceu hoje.`;
-    const payload = { title: game.title, text, url: window.location.href };
+    const text = `Joguei Fila Invisivel: atendi ${snapshot.served} pessoas, fiz combo ${snapshot.maxCombo}, marquei ${snapshot.score} pontos e terminei com rank ${snapshot.rank}. A fila nao venceu hoje.`;
+    const imageFile = await createResultCardFile(snapshot, rankMeta.message);
+    const filePayload = imageFile
+      ? { title: game.title, text, url: window.location.href, files: [imageFile] }
+      : null;
+
+    if (filePayload && navigator.canShare?.({ files: filePayload.files })) {
+      await navigator.share(filePayload);
+      setCopyLabel("Compartilhado");
+      return;
+    }
 
     if (navigator.share) {
-      await navigator.share(payload);
+      await navigator.share({ title: game.title, text, url: window.location.href });
       setCopyLabel("Compartilhado");
       return;
     }
@@ -548,7 +719,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
     await navigator.clipboard.writeText(text);
     setCopyLabel("Copiado");
     window.setTimeout(() => setCopyLabel("Compartilhar"), 1200);
-  }, [game.title, snapshot.maxCombo, snapshot.rank, snapshot.served]);
+  }, [game.title, rankMeta.message, snapshot]);
 
   return (
     <main className="min-h-screen bg-[var(--bg)] px-3 py-3 text-[var(--text)] sm:px-5 sm:py-5">
@@ -659,8 +830,12 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
                 <p className="text-xs uppercase tracking-[0.28em] text-[var(--text-muted)]">
                   resultado
                 </p>
-                <h2 className="mt-2 text-3xl font-black uppercase">{rankMeta.label}</h2>
-                <p className="mt-1 text-sm text-[var(--text-soft)]">{rankMeta.message}</p>
+                <h2 className="mt-1 text-7xl font-black uppercase leading-none text-[var(--sand)]">
+                  {rankMeta.label}
+                </h2>
+                <p className="mt-2 text-sm font-bold uppercase text-[var(--text-soft)]">
+                  {rankMeta.message}
+                </p>
               </div>
               <div className="rounded-2xl bg-[rgba(255,202,116,0.12)] px-4 py-3 text-right">
                 <div className="text-[10px] uppercase tracking-[0.24em] text-[var(--text-muted)]">
@@ -674,9 +849,24 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
 
             <div className="mt-4 grid grid-cols-2 gap-3">
               <ResultMetric label="maior combo" value={`${snapshot.maxCombo}x`} />
-              <ResultMetric label="caos final" value={`${Math.round(snapshot.chaos)}%`} />
+              <ResultMetric label="melhor score" value={`${snapshot.bestScore}`} />
               <ResultMetric label="atendidos" value={`${snapshot.served}`} />
-              <ResultMetric label="perdidos" value={`${snapshot.lost}`} />
+              <ResultMetric label="caos final" value={`${Math.round(snapshot.chaos)}%`} />
+            </div>
+
+            <div className="mt-4 overflow-hidden rounded-[1.6rem] border border-[rgba(255,202,116,0.18)] bg-[#111311]">
+              {resultImageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={resultImageUrl}
+                  alt="Card de resultado para compartilhamento"
+                  className="block w-full"
+                />
+              ) : (
+                <div className="flex aspect-[4/5] items-center justify-center text-sm font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                  gerando card
+                </div>
+              )}
             </div>
 
             <input
@@ -691,17 +881,21 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
                 type="button"
                 onClick={() => {
                   setCopyLabel("Compartilhar");
+                  setResultImageUrl((current) => {
+                    if (current) URL.revokeObjectURL(current);
+                    return null;
+                  });
                   resetRound();
                   for (let index = 0; index < 4; index += 1) spawnCitizen();
                 }}
-                className="flex-1 rounded-2xl border border-[var(--border)] px-4 py-3 text-sm font-bold uppercase tracking-[0.14em]"
+                className="flex-[1.2] rounded-2xl bg-[var(--sand)] px-4 py-4 text-sm font-black uppercase tracking-[0.14em] text-[var(--bg)] shadow-[0_12px_30px_rgba(255,202,116,0.18)]"
               >
                 Jogar de novo
               </button>
               <button
                 type="button"
                 onClick={() => void shareResult()}
-                className="flex-1 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--bg)]"
+                className="flex-1 rounded-2xl border border-[var(--border-strong)] px-4 py-4 text-sm font-black uppercase tracking-[0.14em] text-[var(--text)]"
               >
                 {copyLabel}
               </button>
@@ -786,10 +980,18 @@ function drawGame(
   elapsed: number,
   snapshot: GameSnapshot,
   citizens: Citizen[],
+  exitSprites: ExitSprite[],
   particles: Particle[],
   flash: { life: number; tone: "good" | "bad" | "combo" } | null,
+  shake: number,
+  multiplierFlash: number,
 ) {
   ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctx.save();
+  if (shake > 0) {
+    const amount = shake * 18;
+    ctx.translate(Math.sin(elapsed / 24) * amount, Math.cos(elapsed / 31) * amount);
+  }
 
   const bg = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
   bg.addColorStop(0, "#1b1d1b");
@@ -803,8 +1005,11 @@ function drawGame(
     ctx.fillRect(0, y, CANVAS_WIDTH, 1);
   }
 
-  ctx.fillStyle = "rgba(255,202,116,0.08)";
-  ctx.fillRect(44, 240, CANVAS_WIDTH - 88, 700);
+  ctx.fillStyle = "rgba(255,202,116,0.06)";
+  ctx.fillRect(36, 232, CANVAS_WIDTH - 72, 720);
+  ctx.strokeStyle = "rgba(255,202,116,0.22)";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(36, 232, CANVAS_WIDTH - 72, 720);
 
   drawHazardStripe(ctx, 0, 214, CANVAS_WIDTH, 26);
   drawHazardStripe(ctx, 0, 948, CANVAS_WIDTH, 26);
@@ -838,9 +1043,9 @@ function drawGame(
   ctx.bezierCurveTo(260, 618, 368, 622, 560, 620);
   ctx.stroke();
 
-  ctx.fillStyle = "#ffca74";
+  ctx.fillStyle = multiplierFlash > 0 ? "#f7f1df" : "#ffca74";
   ctx.beginPath();
-  ctx.arc(612, 620, 62, 0, Math.PI * 2);
+  ctx.arc(612, 620, 62 + multiplierFlash * 22, 0, Math.PI * 2);
   ctx.fill();
   ctx.fillStyle = "#111311";
   ctx.font = '900 28px "Geist", sans-serif';
@@ -848,6 +1053,10 @@ function drawGame(
 
   for (const citizen of citizens) {
     drawCitizen(ctx, citizen, elapsed);
+  }
+
+  for (const sprite of exitSprites) {
+    drawExitSprite(ctx, sprite, elapsed);
   }
 
   for (const particle of particles) {
@@ -886,6 +1095,20 @@ function drawGame(
   ctx.fillText(`Score ${snapshot.score}`, 48, 110);
   ctx.fillStyle = "#ffca74";
   ctx.fillText(`x${snapshot.multiplier}`, 548, 110);
+
+  if (snapshot.combo >= 3) {
+    const pulse = 1 + Math.sin(elapsed / 90) * 0.08;
+    ctx.save();
+    ctx.translate(CANVAS_WIDTH / 2, 178);
+    ctx.scale(pulse, pulse);
+    ctx.fillStyle = snapshot.multiplier >= 3 ? "#ffca74" : "#ff6d2b";
+    ctx.font = '900 30px "Geist", sans-serif';
+    ctx.textAlign = "center";
+    ctx.fillText(`COMBO ${snapshot.combo}  x${snapshot.multiplier}`, 0, 0);
+    ctx.restore();
+  }
+
+  ctx.restore();
 }
 
 function drawCitizen(ctx: CanvasRenderingContext2D, citizen: Citizen, elapsed: number) {
@@ -927,6 +1150,51 @@ function drawCitizen(ctx: CanvasRenderingContext2D, citizen: Citizen, elapsed: n
   ctx.fillRect(-citizen.radius, citizen.radius + 20, citizen.radius * 2, 12);
   ctx.fillStyle = citizen.patience > 0.32 ? "#ffca74" : "#d6451b";
   ctx.fillRect(-citizen.radius, citizen.radius + 20, citizen.radius * 2 * clamp(citizen.patience, 0, 1), 12);
+  ctx.restore();
+}
+
+function drawExitSprite(ctx: CanvasRenderingContext2D, sprite: ExitSprite, elapsed: number) {
+  const alpha = sprite.life / sprite.maxLife;
+  const smile = sprite.tone === "served";
+  const scale = smile ? 1 + (1 - alpha) * 0.15 : 1 - (1 - alpha) * 0.18;
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.translate(sprite.x, sprite.y + Math.sin(elapsed / 80 + sprite.id) * 5);
+  ctx.scale(scale, scale);
+
+  ctx.fillStyle = smile ? "rgba(255,202,116,0.2)" : "rgba(214,69,27,0.22)";
+  ctx.beginPath();
+  ctx.arc(0, 0, 54, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = sprite.hue;
+  ctx.beginPath();
+  ctx.arc(0, 0, 31, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#111311";
+  ctx.beginPath();
+  ctx.arc(-9, -6, 4, 0, Math.PI * 2);
+  ctx.arc(9, -6, 4, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = "#111311";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  if (smile) {
+    ctx.arc(0, 7, 12, 0.15, Math.PI - 0.15);
+  } else {
+    ctx.moveTo(-12, 12);
+    ctx.lineTo(0, 3);
+    ctx.lineTo(12, 12);
+  }
+  ctx.stroke();
+
+  ctx.fillStyle = smile ? "#ffca74" : "#ff8f58";
+  ctx.font = '900 22px "Geist", sans-serif';
+  ctx.textAlign = "center";
+  ctx.fillText(smile ? "Atendeu!" : "Perdeu!", 0, -46);
   ctx.restore();
 }
 
