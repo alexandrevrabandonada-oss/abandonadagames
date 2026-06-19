@@ -90,6 +90,13 @@ A referencia passa a ser um survival arcade com fantasia clara: enfermeiro em fr
 - Acoes viraram grade 2x2 no celular, reduzindo rolagem e reforcando a sensacao de controle arcade.
 - O canvas arcade fica invisivel como camada tecnica no visual principal mobile, evitando voltar ao aspecto de prototipo vertical.
 
+## Oitava iteracao de arte
+
+- Fachada hospitalar regenerada com mais gradientes, textura de asfalto, reflexos de janela, fila maior e sombras.
+- Cena ganhou luz diagonal e vinheta mais pictorica para reduzir a sensacao de formas chapadas.
+- Enfermeiro de costas ganhou mais volume no uniforme, luz lateral e separacao de torso/pernas.
+- Ainda falta o salto final de qualidade: assets continuam procedurais/vetoriais, enquanto a meta usa pintura/render com acabamento semi-realista.
+
 ## Proximas iteracoes
 
 - Trocar fundo hospitalar por arte mais rica em 16:9/vertical com fachada e emergencia.
