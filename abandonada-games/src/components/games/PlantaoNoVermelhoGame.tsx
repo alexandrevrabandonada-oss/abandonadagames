@@ -41,6 +41,9 @@ type GameSnapshot = {
   extraCostsAvoided: number;
   mentalCare: number;
   actionCount: number;
+  decisionStreak: number;
+  maxDecisionStreak: number;
+  lastActionAt: number;
   bestScore: number;
   rank: string;
   running: boolean;
@@ -78,7 +81,22 @@ const events = [
   "Boleto surpresa!",
   "Dia pesado!",
   "Organizacao ajuda!",
+  "Cafe virou almoco!",
+  "Escala mudou sem avisar!",
+  "Pix da vaquinha pingou!",
+  "Chefe mandou aguardar!",
+  "Transporte comeu o saldo!",
+  "Grupo do plantao ferveu!",
 ];
+
+const viralEvents = [
+  "Mercado subiu: energia custa caro.",
+  "Escala virou roleta: descanso foi cortado.",
+  "Conta venceu: o boleto nao negocia com cansaco.",
+  "Cafe virou almoco: folego comprado no fiado.",
+  "Grupo do plantao ferveu: todo mundo no limite.",
+  "Transporte comeu o saldo antes do turno.",
+] as const;
 
 const survivalActions = [
   {
@@ -88,9 +106,9 @@ const survivalActions = [
     icon: "/games/plantaono-vermelho/icon-work.png",
     tone: "bg-[#c96f08]",
     score: 220,
-    breath: -10,
-    bills: -8,
-    chaos: 4,
+    breath: -14,
+    bills: -5,
+    chaos: 7,
     tradeoff: "+R$ / -energia",
     toast: "Plantao pago em migalha.",
   },
@@ -101,9 +119,9 @@ const survivalActions = [
     icon: "/games/plantaono-vermelho/icon-tools.png",
     tone: "bg-[#086aa0]",
     score: 170,
-    breath: -13,
-    bills: -12,
-    chaos: 7,
+    breath: -18,
+    bills: -8,
+    chaos: 12,
     tradeoff: "+renda / +caos",
     toast: "Virou noite no bico.",
   },
@@ -114,9 +132,9 @@ const survivalActions = [
     icon: "/games/plantaono-vermelho/icon-pig.png",
     tone: "bg-[#6f2aa8]",
     score: 120,
-    breath: -4,
-    bills: -10,
-    chaos: 2,
+    breath: -7,
+    bills: -6,
+    chaos: 5,
     tradeoff: "-contas / -conforto",
     toast: "Cortou o minimo do minimo.",
   },
@@ -127,9 +145,9 @@ const survivalActions = [
     icon: "/games/plantaono-vermelho/icon-health.png",
     tone: "bg-[#247a26]",
     score: 90,
-    breath: 16,
-    bills: 2,
-    chaos: -8,
+    breath: 10,
+    bills: 7,
+    chaos: -5,
     tradeoff: "+energia / +conta",
     toast: "Respirou antes do colapso.",
   },
@@ -188,13 +206,58 @@ function getRank(score: number) {
   return [...rankTable].reverse().find((rank) => score >= rank.min) ?? rankTable[0];
 }
 
+function getViralHeadline(stats: GameSnapshot) {
+  if (stats.day >= 30) return "Virei o mes sem salario. O sistema perdeu no detalhe.";
+  if (stats.maxDecisionStreak >= 7) return `Segurei ${stats.maxDecisionStreak} decisoes no reflexo e ainda faltou mes.`;
+  if (stats.breath <= 18) return `Cheguei ao dia ${stats.day} com ${Math.round(stats.breath)}% de folego.`;
+  if (stats.bills >= 92) return `O boleto encostou no pescoco no dia ${stats.day}.`;
+  if (stats.chaos >= 92) return `Caos em ${Math.round(stats.chaos)}%. Quem segura esse plantao?`;
+  return `Sobrevivi ${stats.day} dias com salario atrasado.`;
+}
+
+function getViralChallenge(stats: GameSnapshot) {
+  const missingDays = Math.max(0, 30 - stats.day);
+  if (missingDays === 0) return "Desafio: fecha o mes com mais ritmo que eu.";
+  return `Desafio: falta so ${missingDays} dias. Voce vira esse mes?`;
+}
+
+function getResultMessage(stats: GameSnapshot) {
+  if (stats.day < 30 && stats.rank === "A") return "Quase virou o mes.";
+  if (stats.day < 30 && stats.rank === "S") return "Pontuou alto, mas o mes esmagou.";
+  return getRank(stats.score).message;
+}
+
+function getSocialChallenge(stats: GameSnapshot) {
+  const targetScore = Math.ceil((stats.score + Math.max(420, (30 - stats.day) * 95)) / 10) * 10;
+  const position =
+    stats.score >= 7600 ? 1 :
+    stats.score >= 6200 ? 3 :
+    stats.score >= 5200 ? 7 :
+    stats.score >= 4200 ? 13 :
+    stats.score >= 3100 ? 21 :
+    34;
+  const percentile =
+    position <= 3 ? "top 3%" :
+    position <= 7 ? "top 8%" :
+    position <= 13 ? "top 15%" :
+    position <= 21 ? "top 30%" :
+    "sobreviventes do sufoco";
+  return {
+    position,
+    percentile,
+    targetScore,
+    defeated: Math.max(12, 58 - position),
+    callout: `Bata ${targetScore} pts e passe meu plantao.`,
+  };
+}
+
 function createInitialSnapshot(bestScore = 0): GameSnapshot {
   return {
-    score: 0,
-    day: 1,
-    breath: 88,
-    bills: 12,
-    chaos: 10,
+    score: 3200,
+    day: 12,
+    breath: 60,
+    bills: 84,
+    chaos: 62,
     combo: 0,
     maxCombo: 0,
     supports: 0,
@@ -204,8 +267,11 @@ function createInitialSnapshot(bestScore = 0): GameSnapshot {
     extraCostsAvoided: 0,
     mentalCare: 0,
     actionCount: 0,
+    decisionStreak: 0,
+    maxDecisionStreak: 0,
+    lastActionAt: 0,
     bestScore,
-    rank: "D",
+    rank: getRank(3200).label,
     running: false,
     finished: false,
   };
@@ -230,57 +296,97 @@ async function createResultCardFile(stats: GameSnapshot) {
   canvas.height = 1350;
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
+  const headline = getViralHeadline(stats);
+  const challenge = getViralChallenge(stats);
+  const social = getSocialChallenge(stats);
 
   const bg = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  bg.addColorStop(0, "#2a0d12");
-  bg.addColorStop(0.55, "#141414");
+  bg.addColorStop(0, "#114569");
+  bg.addColorStop(0.42, "#241015");
   bg.addColorStop(1, "#071414");
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "rgba(255,213,84,0.12)";
-  ctx.fillRect(70, 76, 940, 1198);
+  ctx.fillStyle = "rgba(255,213,84,0.1)";
+  ctx.fillRect(54, 58, 972, 1234);
   ctx.strokeStyle = "#ff3b30";
-  ctx.lineWidth = 12;
-  ctx.strokeRect(70, 76, 940, 1198);
+  ctx.lineWidth = 14;
+  ctx.strokeRect(54, 58, 972, 1234);
+  ctx.fillStyle = "rgba(0,0,0,0.26)";
+  ctx.fillRect(88, 92, 904, 150);
 
   ctx.fillStyle = "#f7f1df";
-  ctx.font = '900 78px "Geist", sans-serif';
-  ctx.fillText("Plantao no", 112, 210);
-  ctx.fillText("Vermelho", 112, 300);
+  ctx.font = '900 62px "Geist", sans-serif';
+  ctx.fillText("PLANTAO NO VERMELHO", 112, 162);
   ctx.fillStyle = "#ffd554";
-  ctx.font = '800 34px "Geist", sans-serif';
-  ctx.fillText("Como sobreviver com salario atrasado", 112, 365);
+  ctx.font = '900 34px "Geist", sans-serif';
+  ctx.fillText("como sobreviver com salario atrasado", 112, 212);
 
   ctx.fillStyle = "#ff3b30";
-  ctx.font = '900 300px "Geist", sans-serif';
-  ctx.fillText(stats.rank, 112, 680);
+  ctx.font = '900 240px "Geist", sans-serif';
+  ctx.fillText(stats.rank, 108, 475);
   ctx.fillStyle = "#f7f1df";
-  ctx.font = '900 76px "Geist", sans-serif';
-  ctx.fillText(`${stats.score} pts`, 112, 805);
+  ctx.font = '900 56px "Geist", sans-serif';
+  ctx.fillText(`${stats.score} pts`, 355, 390);
+  ctx.fillStyle = "#ffd554";
+  ctx.fillRect(356, 424, 432, 72);
+  ctx.fillStyle = "#130d10";
+  ctx.font = '900 24px "Geist", sans-serif';
+  ctx.fillText(`#${social.position} RANKING LOCAL`, 382, 454);
+  ctx.fillText(`ALVO ${social.targetScore}`, 382, 486);
+  ctx.fillStyle = "#ffd554";
+  ctx.font = '900 46px "Geist", sans-serif';
+  wrapCanvasText(ctx, headline, 112, 610, 840, 58, 3);
 
   ctx.fillStyle = "rgba(255,255,255,0.09)";
-  ctx.fillRect(112, 875, 856, 190);
+  ctx.fillRect(112, 775, 856, 218);
   ctx.fillStyle = "#f7f1df";
-  ctx.font = '900 44px "Geist", sans-serif';
-  ctx.fillText(`${stats.day}`, 150, 970);
-  ctx.fillText(`${stats.supports}`, 405, 970);
-  ctx.fillText(`${Math.round(stats.chaos)}%`, 690, 970);
+  ctx.font = '900 50px "Geist", sans-serif';
+  ctx.fillText(`${stats.day}/30`, 150, 875);
+  ctx.fillText(`${stats.maxDecisionStreak}x`, 405, 875);
+  ctx.fillText(`${Math.round(stats.bills)}%`, 690, 875);
   ctx.fillStyle = "#9ee8c1";
   ctx.font = '800 25px "Geist", sans-serif';
-  ctx.fillText("dias", 150, 1018);
-  ctx.fillText("apoios", 405, 1018);
-  ctx.fillText("caos", 690, 1018);
+  ctx.fillText("dias", 150, 925);
+  ctx.fillText("ritmo", 405, 925);
+  ctx.fillText("contas", 690, 925);
 
   ctx.fillStyle = "#ffd554";
-  ctx.font = '900 48px "Geist", sans-serif';
-  ctx.fillText("O boleto veio, mas a gente resistiu.", 112, 1160);
+  ctx.font = '900 44px "Geist", sans-serif';
+  wrapCanvasText(ctx, challenge, 112, 1080, 820, 52, 2);
   ctx.fillStyle = "#f7f1df";
-  ctx.font = '900 38px "Geist", sans-serif';
-  ctx.fillText("Jogue tambem", 112, 1225);
+  ctx.font = '900 34px "Geist", sans-serif';
+  wrapCanvasText(ctx, `#${social.position} no ranking local - ${social.callout}`, 112, 1194, 830, 42, 2);
+  ctx.fillText("jogue, printe e desafie outro plantao", 112, 1270);
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
   if (!blob) return null;
   return new File([blob], "plantaono-vermelho-resultado.png", { type: "image/png" });
+}
+
+function wrapCanvasText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+  maxLines: number,
+) {
+  const words = text.split(" ");
+  let line = "";
+  let lineCount = 0;
+  for (const word of words) {
+    const testLine = line ? `${line} ${word}` : word;
+    if (ctx.measureText(testLine).width > maxWidth && line) {
+      ctx.fillText(line, x, y + lineCount * lineHeight);
+      line = word;
+      lineCount += 1;
+      if (lineCount >= maxLines) return;
+    } else {
+      line = testLine;
+    }
+  }
+  if (line && lineCount < maxLines) ctx.fillText(line, x, y + lineCount * lineHeight);
 }
 
 export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
@@ -559,8 +665,8 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             ...current,
             day,
             breath: clamp(current.breath - (grace ? 0.8 : 1.55), 0, 100),
-            bills: clamp(current.bills + (grace ? 1.1 : 1.75), 0, 100),
-            chaos: clamp(current.chaos + (interestFrozenRef.current > 0 ? 0.25 : grace ? 0.75 : 1.2), 0, 100),
+          bills: clamp(current.bills + (grace ? 0.82 : 1.28), 0, 100),
+          chaos: clamp(current.chaos + (interestFrozenRef.current > 0 ? 0.18 : grace ? 0.58 : 0.92), 0, 100),
           }));
           if (day === 10 || day === 20) setToast("O salario nao caiu!");
           nextDayAtRef.current = elapsed + 2000;
@@ -689,7 +795,8 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   }, [snapshot]);
 
   const shareResult = useCallback(async () => {
-    const text = `Joguei Plantao no Vermelho: sobrevivi ${snapshot.day} dias com salario atrasado, coletei ${snapshot.supports} apoios e terminei com rank ${snapshot.rank}. O boleto veio, mas a gente resistiu.`;
+    const social = getSocialChallenge(snapshot);
+    const text = `${getViralHeadline(snapshot)} ${social.callout} ${getViralChallenge(snapshot)} Jogue Plantao no Vermelho.`;
     const imageFile = await createResultCardFile(snapshot);
     const filePayload = imageFile ? { title: game.title, text, url: window.location.href, files: [imageFile] } : null;
 
@@ -711,29 +818,39 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   const applySurvivalAction = useCallback(
     (action: (typeof survivalActions)[number]) => {
       if (!stateRef.current.running || stateRef.current.finished) return;
+      const now = performance.now();
+      let streakForFlash = 1;
       mutateState((current) => {
-        const nextScore = current.score + action.score;
+        const keepsStreak = current.lastActionAt > 0 && now - current.lastActionAt < 2400;
+        const decisionStreak = keepsStreak ? clamp(current.decisionStreak + 1, 1, 9) : 1;
+        streakForFlash = decisionStreak;
+        const streakBonus = decisionStreak >= 3 ? 90 + decisionStreak * 18 : decisionStreak >= 2 ? 42 : 0;
+        const nextScore = current.score + action.score + streakBonus;
         const dayBoost = action.id === "trabalhar" ? 2 : 1;
         return {
           ...current,
           score: nextScore,
           day: clamp(current.day + dayBoost, 1, 30),
-          breath: clamp(current.breath + action.breath, 0, 100),
-          bills: clamp(current.bills + action.bills, 0, 100),
-          chaos: clamp(current.chaos + action.chaos, 0, 100),
+          breath: clamp(current.breath + action.breath + (decisionStreak >= 3 ? 3 : 0), 0, 100),
+          bills: clamp(current.bills + action.bills - (decisionStreak >= 4 ? 2 : 0), 0, 100),
+          chaos: clamp(current.chaos + action.chaos - (decisionStreak >= 3 ? 2 : 0), 0, 100),
           shiftsWorked: current.shiftsWorked + (action.id === "trabalhar" ? 1 : 0),
           essentialsBought: current.essentialsBought + (action.id === "economizar" || action.id === "trabalhar" ? 1 : 0),
           extraCostsAvoided: current.extraCostsAvoided + (action.id === "economizar" ? 1 : 0),
           mentalCare: current.mentalCare + (action.id === "saude" ? 1 : 0),
           actionCount: current.actionCount + 1,
+          decisionStreak,
+          maxDecisionStreak: Math.max(current.maxDecisionStreak, decisionStreak),
+          lastActionAt: now,
           rank: getRank(nextScore).label,
         };
       });
       reliefRef.current = action.id === "saude" ? 0.75 : reliefRef.current;
       shakeRef.current = action.breath < -8 ? 0.18 : shakeRef.current;
-      addParticle(action.title, playerXRef.current - 56, PLAYER_Y - 112, action.id === "saude" ? "good" : "power");
-      setToast(action.toast);
-      setDecisionFlash({ title: action.title, subtitle: action.toast, tone: action.tone });
+      const streakText = streakForFlash >= 3 ? `Sequencia ${streakForFlash}x!` : action.title;
+      addParticle(streakText, playerXRef.current - 64, PLAYER_Y - 112, action.id === "saude" || streakForFlash >= 3 ? "good" : "power");
+      setToast(streakForFlash >= 3 ? `${action.toast} Ritmo ${streakForFlash}x.` : action.toast);
+      setDecisionFlash({ title: streakText, subtitle: streakForFlash >= 3 ? "Decidiu rapido, respirou pouco." : action.toast, tone: action.tone });
       window.setTimeout(() => setDecisionFlash(null), 1300);
       playTone(action.id === "saude" ? "good" : "power");
       if (stateRef.current.day >= 30 || stateRef.current.breath <= 0 || stateRef.current.chaos >= 100 || stateRef.current.bills >= 100) {
@@ -755,19 +872,18 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
     targetXRef.current = clamp(((event.clientX - rect.left) / rect.width) * CANVAS_WIDTH, 68, CANVAS_WIDTH - 68);
   }
 
-  const salaryLeft = clamp(950 - snapshot.bills * 8.6 + snapshot.supports * 24 + snapshot.score * 0.025, -1400, 950);
+  const lateMonthCrush = Math.max(0, snapshot.day - 22) ** 2 * 8;
+  const salaryLeft = clamp(520 - snapshot.bills * 5.8 - snapshot.day * 7.8 - lateMonthCrush + snapshot.supports * 10 + snapshot.score * 0.0032, -1400, 620);
   const debtTotal = dueBills.reduce((total, [, value]) => total + value, 0);
   const paidRatio = clamp((100 - snapshot.bills) / 100, 0, 1);
   const pressure = clamp((snapshot.chaos + Math.max(0, 55 - snapshot.breath)) / 145, 0, 1);
   const unlockedAchievements = achievementDefs.filter((achievement) => achievement.unlocked(snapshot));
-  const dayEvent =
-    snapshot.day >= 24
-      ? "Fim do mes: qualquer erro vira colapso."
-      : snapshot.day >= 16
-        ? "Juros rondando: economizar vale mais."
-        : snapshot.day >= 8
-          ? "Mercado subiu: energia custa caro."
-          : "Comeco do mes: escolha seu folego.";
+  const viralHeadline = getViralHeadline(snapshot);
+  const viralChallenge = getViralChallenge(snapshot);
+  const resultMessage = getResultMessage(snapshot);
+  const socialChallenge = getSocialChallenge(snapshot);
+  const eventIndex = Math.abs(snapshot.day + snapshot.actionCount + Math.floor(snapshot.score / 900)) % viralEvents.length;
+  const dayEvent = snapshot.day >= 24 ? "Fim do mes: qualquer erro vira colapso." : viralEvents[eventIndex];
   const recommendedAction =
     snapshot.breath < 42
       ? "saude"
@@ -789,15 +905,15 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
 
   return (
     <main
-      className="relative min-h-screen overflow-x-hidden bg-[#071018] px-3 py-3 text-[#f7f1df] sm:px-5 sm:py-5 lg:h-screen lg:overflow-hidden lg:px-4 lg:py-4"
+      className="relative min-h-screen overflow-x-hidden bg-[#071018] px-3 pb-52 pt-3 text-[#f7f1df] sm:px-5 sm:py-5 lg:h-screen lg:overflow-hidden lg:px-4 lg:py-4"
       style={{
         backgroundImage:
-          "linear-gradient(180deg, rgba(8,18,27,0.08), rgba(6,8,10,0.58)), url('/games/plantaono-vermelho/hospital-facade.png')",
+          "linear-gradient(180deg, rgba(8,18,27,0.02), rgba(6,8,10,0.24)), url('/games/plantaono-vermelho/hospital-facade.png')",
         backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundPosition: "center bottom",
       }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.05),rgba(0,0,0,0.46)_72%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.05),rgba(0,0,0,0.14)_78%)]" />
       <div
         className="pointer-events-none absolute inset-0 transition-opacity duration-500"
         style={{
@@ -808,19 +924,19 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       {snapshot.breath < 36 ? (
         <div className="pointer-events-none absolute inset-0 animate-pulse bg-[radial-gradient(circle_at_50%_50%,transparent_42%,rgba(0,0,0,0.42)_100%)]" />
       ) : null}
-      <div className="pointer-events-none absolute left-[38%] top-[41%] hidden -translate-x-1/2 lg:block">
+      <div className="pointer-events-none absolute left-[37%] top-[28%] hidden -translate-x-1/2 lg:block">
         <div className="absolute left-1/2 top-[92%] h-10 w-56 -translate-x-1/2 rounded-full bg-black/55 blur-md" />
         <div className="absolute left-1/2 top-[84%] h-28 w-40 -translate-x-1/2 rounded-full bg-[#62d6ff]/10 blur-2xl" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/games/plantaono-vermelho/nurse-back.png"
           alt=""
-          className="h-[51vh] min-h-[470px] max-h-[660px] drop-shadow-[0_24px_30px_rgba(0,0,0,0.7)]"
+          className="h-[61vh] min-h-[540px] max-h-[720px] drop-shadow-[0_24px_30px_rgba(0,0,0,0.7)]"
         />
       </div>
 
       <div className="relative z-10 mx-auto grid max-w-[1520px] gap-3 lg:h-full lg:grid-cols-[280px_minmax(430px,1fr)_292px] lg:grid-rows-[auto_1fr_auto] lg:items-start">
-        <section className="order-2 rounded-[1.25rem] border border-[#0b2e4b] bg-[linear-gradient(180deg,rgba(8,44,70,0.96),rgba(3,15,25,0.94))] p-3 shadow-[0_10px_0_rgba(0,0,0,0.35),0_18px_60px_rgba(0,0,0,0.42)] lg:order-none lg:row-span-2">
+        <section className="order-4 rounded-[1.25rem] border border-[#0b2e4b] bg-[linear-gradient(180deg,rgba(8,44,70,0.96),rgba(3,15,25,0.94))] p-3 shadow-[0_10px_0_rgba(0,0,0,0.35),0_18px_60px_rgba(0,0,0,0.42)] lg:order-none lg:row-span-2">
           <div className="flex items-start justify-between gap-3">
             <div className="flex size-20 shrink-0 items-center justify-center rounded-full border-[5px] border-[#43b5ff] bg-[#1f3448] text-4xl font-black shadow-[0_0_0_4px_rgba(0,0,0,0.45)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -852,32 +968,47 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           <BillPanel paidRatio={paidRatio} total={debtTotal} />
         </section>
 
-        <section className="pointer-events-auto relative order-1 min-h-[72vh] overflow-hidden rounded-[1.25rem] border border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.12)] p-2 lg:order-none lg:col-start-2 lg:row-span-2 lg:min-h-0 lg:h-full lg:border-0 lg:bg-transparent lg:p-0">
+        <section className="pointer-events-auto relative order-1 min-h-[34vh] overflow-hidden rounded-[1.25rem] border border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.12)] p-2 sm:min-h-[46vh] lg:order-none lg:col-start-2 lg:row-span-2 lg:min-h-0 lg:h-full lg:border-0 lg:bg-transparent lg:p-0">
+          <div
+            className="pointer-events-none absolute inset-0 bg-contain bg-center bg-no-repeat lg:hidden"
+            style={{
+              backgroundImage:
+                "linear-gradient(180deg, rgba(8,18,27,0.04), rgba(6,8,10,0.18)), url('/games/plantaono-vermelho/hospital-facade.png')",
+            }}
+          />
+          <div className="pointer-events-none absolute inset-x-12 top-[29%] z-[1] rounded-sm bg-white/80 px-3 py-1 text-center text-[clamp(0.72rem,3.7vw,1rem)] font-black uppercase leading-tight tracking-[0.12em] text-[#1d3047] shadow-[0_3px_10px_rgba(0,0,0,0.18)] lg:hidden">
+            Hospital Regional<br />
+            Zilda Arns
+          </div>
           <div className="pointer-events-none absolute bottom-[22vh] left-1/2 hidden w-[min(58vw,560px)] -translate-x-1/2 rounded-xl border border-white/10 bg-[rgba(3,14,22,0.52)] px-4 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-[2px] lg:block">
             Entrada do hospital: escolha como atravessar mais um dia sem salario
           </div>
           <LivingQueue chaos={snapshot.chaos} day={snapshot.day} />
-          <div className="pointer-events-none absolute inset-x-4 top-1 z-20 text-center lg:top-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/games/plantaono-vermelho/logo-salario-atrasado.png"
-              alt="Como sobreviver com salario atrasado"
-              className="mx-auto w-[min(92vw,760px)] rotate-[-2deg] drop-shadow-[0_8px_0_#041b40]"
-            />
-            <div className="mx-auto mt-1 w-fit rounded-lg bg-[#062d70] px-5 py-2 text-sm font-black uppercase tracking-[0.08em] shadow-[0_5px_0_#041b40]">
+          <div className="pointer-events-none absolute inset-x-4 top-3 z-20 text-center lg:top-2">
+            <div
+              className="mx-auto w-fit rotate-[-2deg] text-center font-black uppercase leading-[0.82] tracking-tight text-white"
+              style={{
+                textShadow: "0 5px 0 #041b40, 0 9px 16px rgba(0,0,0,0.45)",
+                WebkitTextStroke: "2px #061a34",
+              }}
+            >
+              <div className="text-[clamp(1.12rem,6.2vw,4.15rem)] lg:text-[clamp(2rem,3.7vw,4.15rem)]">Como sobreviver</div>
+              <div className="text-[clamp(0.92rem,5.1vw,3.55rem)] text-[#ffd02d] lg:text-[clamp(1.75rem,3.15vw,3.55rem)]">com salario atrasado</div>
+            </div>
+            <div className="mx-auto mt-1.5 w-fit rounded-lg bg-[#062d70] px-3 py-1 text-[9px] font-black uppercase tracking-[0.08em] shadow-[0_4px_0_#041b40] lg:px-5 lg:py-1.5 lg:text-xs">
               Missao: chegar ao fim do mes!
             </div>
           </div>
-          <div className="pointer-events-none absolute bottom-12 left-1/2 z-10 -translate-x-1/2 lg:hidden">
+          <div className="pointer-events-none absolute bottom-9 left-1/2 z-10 -translate-x-1/2 lg:hidden">
             <div className="absolute left-1/2 top-[90%] h-8 w-44 -translate-x-1/2 rounded-full bg-black/60 blur-md" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/games/plantaono-vermelho/nurse-back.png"
               alt=""
-              className="h-[48vh] max-h-[430px] min-h-[310px] drop-shadow-[0_22px_28px_rgba(0,0,0,0.72)]"
+              className="h-[23vh] max-h-[260px] min-h-[170px] drop-shadow-[0_22px_28px_rgba(0,0,0,0.72)] sm:h-[32vh]"
             />
           </div>
-          <div className="pointer-events-none absolute inset-x-3 bottom-3 z-20 grid grid-cols-3 gap-2 lg:hidden">
+          <div className="pointer-events-none absolute inset-x-3 bottom-2 z-20 grid grid-cols-3 gap-2 lg:hidden">
             <MiniStatus label="dia" value={`${snapshot.day}/30`} />
             <MiniStatus label="energia" value={`${Math.round(snapshot.breath)}%`} danger={snapshot.breath < 36} />
             <MiniStatus label="saldo" value={`R$ ${Math.round(salaryLeft)}`} />
@@ -889,7 +1020,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             onPointerMove={handlePointerMove}
           />
           {!snapshot.finished ? (
-            <div className="pointer-events-none absolute inset-x-5 bottom-5 flex items-center justify-between rounded-lg bg-[rgba(19,13,16,0.78)] px-4 py-3 text-xs font-black uppercase backdrop-blur-sm">
+            <div className="pointer-events-none absolute inset-x-5 bottom-5 hidden items-center justify-between rounded-lg bg-[rgba(19,13,16,0.78)] px-4 py-3 text-xs font-black uppercase backdrop-blur-sm lg:flex">
               <span>arraste</span>
               <span>{toast}</span>
             </div>
@@ -903,57 +1034,73 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           ) : null}
         </section>
 
-        <section className="order-3 grid grid-cols-2 gap-3 lg:order-none lg:col-start-3 lg:row-span-2 lg:grid-cols-1">
+        <section className="order-2 grid grid-cols-2 gap-3 lg:order-none lg:col-start-3 lg:row-span-2 lg:grid-cols-1 lg:gap-2">
           <div className="hidden justify-end gap-3 lg:flex">
             <CircleMenu label="opcoes" icon="/games/plantaono-vermelho/icon-options.png" />
             <CircleMenu label={`${unlockedAchievements.length}/4`} icon="/games/plantaono-vermelho/icon-trophy.png" />
           </div>
-          <div className="col-span-2 rounded-xl border-[3px] border-[#30343c] bg-[#f7f1df] px-4 py-3 text-center text-[#130d10] shadow-[0_5px_0_rgba(0,0,0,0.45)] lg:col-span-1">
+          <div className="col-span-2 rounded-xl border-[3px] border-[#30343c] bg-[#f7f1df] px-4 py-3 text-center text-[#130d10] shadow-[0_5px_0_rgba(0,0,0,0.45)] lg:col-span-1 lg:py-2">
             <div className="rounded-t-lg bg-[#b9231d] py-1 text-xs font-black uppercase text-white">Dia</div>
-            <div className="text-4xl font-black">{snapshot.day} / 30</div>
+            <div className="text-4xl font-black lg:text-3xl">{snapshot.day} / 30</div>
             <div className="text-[10px] font-black uppercase">sobreviver ate o dia 30</div>
           </div>
-          <div className="col-span-2 rounded-xl border border-[#ffd554]/30 bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
+          <div className="col-span-2 rounded-xl border border-[#ffd554]/30 bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1 lg:py-2">
             <div className="text-xs font-black uppercase text-[#ffd554]">evento do dia</div>
             <div className="mt-1 text-sm font-black uppercase text-white">{dayEvent}</div>
           </div>
-          <div className="col-span-2 rounded-xl border border-[#62d6ff]/30 bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
+          <div className="col-span-2 rounded-xl border border-[#62d6ff]/30 bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1 lg:py-2">
             <div className="text-xs font-black uppercase text-[#62d6ff]">plano rapido</div>
             <div className="mt-1 text-sm font-black uppercase text-white">{recommendationText}</div>
           </div>
-          <div className="col-span-2 rounded-xl border border-[rgba(255,255,255,0.18)] bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
+          <div className="col-span-2 rounded-xl border border-[#ffd554]/30 bg-[rgba(3,14,22,0.82)] px-4 py-2 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-xs font-black uppercase text-[#ffd554]">ritmo</div>
+                <div className="text-[10px] font-black uppercase text-white/70">decisoes rapidas</div>
+              </div>
+              <div className="rounded-lg bg-[#ffd554] px-3 py-1 text-2xl font-black text-[#130d10]">{snapshot.decisionStreak}x</div>
+            </div>
+          </div>
+          <div className="col-span-2 rounded-xl border border-[rgba(255,255,255,0.18)] bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1 lg:hidden">
             <div className="text-xs font-black uppercase text-[#9ee8c1]">decisoes tomadas</div>
             <div className="mt-1 text-3xl font-black text-[#ffd554]">{snapshot.actionCount}</div>
             <div className="mt-1 text-[10px] font-black uppercase text-white/70">
               cada escolha cobra do corpo ou das contas
             </div>
           </div>
-          <AchievementPanel snapshot={snapshot} />
-          {survivalActions.map((action) => (
-            <button
-              key={action.id}
-              type="button"
-              onClick={() => applySurvivalAction(action)}
-              className={`${action.tone} flex min-h-28 items-center gap-3 rounded-xl border px-3 py-3 text-left shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition active:scale-[0.98] lg:min-h-0 lg:px-4 lg:py-4 ${
-                action.id === recommendedAction ? "border-[#ffd554] ring-2 ring-[#ffd554]/70" : "border-[rgba(255,255,255,0.22)]"
-              }`}
-            >
-              <span className="flex size-12 items-center justify-center rounded-lg bg-[rgba(255,255,255,0.18)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={action.icon} alt="" className="size-10 object-contain drop-shadow-[0_2px_0_rgba(0,0,0,0.35)]" />
-              </span>
-              <span>
-                <span className="block text-base font-black uppercase leading-none lg:text-lg">{action.title}</span>
-                <span className="mt-1 block text-xs font-black uppercase text-white/80">{action.subtitle}</span>
-                <span className="mt-2 inline-block rounded-full bg-black/25 px-2 py-1 text-[10px] font-black uppercase text-white/75">
-                  {action.tradeoff}
-                </span>
-              </span>
-            </button>
-          ))}
+          <AchievementPanel snapshot={snapshot} compact />
+          {!snapshot.finished
+            ? survivalActions.map((action) => (
+                <button
+                  key={action.id}
+                  type="button"
+                  onClick={() => applySurvivalAction(action)}
+                  className={`${action.tone} hidden min-h-28 items-center gap-3 rounded-xl border px-3 py-3 text-left shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition active:scale-[0.98] lg:flex lg:min-h-[76px] lg:px-4 lg:py-2 ${
+                    action.id === recommendedAction ? "border-[#ffd554] ring-2 ring-[#ffd554]/70" : "border-[rgba(255,255,255,0.22)]"
+                  }`}
+                >
+                  <span className="flex size-12 items-center justify-center rounded-lg bg-[rgba(255,255,255,0.18)] lg:size-11">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={action.icon} alt="" className="size-10 object-contain drop-shadow-[0_2px_0_rgba(0,0,0,0.35)] lg:size-9" />
+                  </span>
+                  <span>
+                    <span className="block text-base font-black uppercase leading-none lg:text-[1.05rem]">{action.title}</span>
+                    <span className="mt-1 block text-xs font-black uppercase text-white/80">{action.subtitle}</span>
+                    <span className="mt-2 inline-block rounded-full bg-black/25 px-2 py-1 text-[10px] font-black uppercase text-white/75 lg:mt-1">
+                      {action.tradeoff}
+                    </span>
+                  </span>
+                </button>
+              ))
+            : (
+                <div className="col-span-2 rounded-xl border border-[#ffd554]/35 bg-[rgba(3,14,22,0.84)] px-4 py-4 text-center shadow-[0_8px_24px_rgba(0,0,0,0.28)] lg:col-span-1">
+                  <div className="text-sm font-black uppercase text-[#ffd554]">Rodada encerrada</div>
+                  <div className="mt-1 text-xs font-black uppercase text-white/75">Tente virar o mes com outra rota.</div>
+                </div>
+              )}
         </section>
 
-        <section className="order-4 lg:order-none lg:col-start-2 lg:row-start-3">
+        <section className="order-3 lg:order-none lg:col-start-2 lg:row-start-3">
           <NeedsPanel snapshot={snapshot} />
         </section>
 
@@ -980,12 +1127,29 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9ee8c1]">resultado</p>
                 <h2 className="mt-1 text-7xl font-black leading-none text-[#ff3b30]">{rankMeta.label}</h2>
-                <p className="mt-2 text-sm font-bold uppercase text-[#f7f1df]">{rankMeta.message}</p>
+                <p className="mt-2 text-sm font-bold uppercase text-[#f7f1df]">{resultMessage}</p>
+                <p className="mt-3 max-w-[560px] text-xl font-black uppercase leading-tight text-[#ffd554]">{viralHeadline}</p>
+                <p className="mt-1 text-sm font-black uppercase text-[#9ee8c1]">{viralChallenge}</p>
               </div>
               <div className="rounded-lg bg-[rgba(255,255,255,0.08)] px-4 py-3 text-right">
                 <div className="text-[10px] font-bold uppercase text-[#9ee8c1]">score</div>
                 <div className="mt-1 text-4xl font-black text-[#ffd554]">{snapshot.score}</div>
+                <div className="mt-3 rounded-md bg-[#ffd554] px-2 py-1 text-center text-[#130d10]">
+                  <div className="text-[9px] font-black uppercase">ranking local</div>
+                  <div className="text-xl font-black">#{socialChallenge.position}</div>
+                </div>
               </div>
+            </div>
+            <div className="mt-3 rounded-xl border border-[#ffd554]/35 bg-[linear-gradient(135deg,rgba(255,213,84,0.16),rgba(255,59,48,0.08))] px-4 py-3">
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-sm font-black uppercase text-white">
+                  {socialChallenge.percentile} · passou {socialChallenge.defeated} plantoes
+                </div>
+                <div className="shrink-0 rounded-lg bg-[#ffd554] px-3 py-1 text-sm font-black uppercase text-[#130d10]">
+                  alvo {socialChallenge.targetScore}
+                </div>
+              </div>
+              <div className="mt-1 text-xs font-black uppercase text-[#9ee8c1]">{socialChallenge.callout}</div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3">
               <ResultMetric label="dias" value={`${snapshot.day}`} />
@@ -994,6 +1158,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               <ResultMetric label="boletos desviados" value={`${snapshot.billsDodged}`} />
               <ResultMetric label="apoios" value={`${snapshot.supports}`} />
               <ResultMetric label="combo max" value={`${snapshot.maxCombo}x`} />
+              <ResultMetric label="ritmo max" value={`${snapshot.maxDecisionStreak}x`} />
               <ResultMetric label="melhor score" value={`${snapshot.bestScore}`} />
               <ResultMetric label="contas" value={`${Math.round(snapshot.bills)}%`} />
             </div>
@@ -1013,6 +1178,24 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               className="mt-4 w-full rounded-lg border border-[rgba(255,255,255,0.12)] bg-[#130d10] px-4 py-3 text-sm text-[#f7f1df] outline-none"
               placeholder="nome no ranking"
             />
+            <div className="mt-3 rounded-xl border border-[#ffd554]/35 bg-[linear-gradient(135deg,rgba(255,213,84,0.16),rgba(255,59,48,0.08))] p-4 lg:hidden">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-xs font-black uppercase tracking-[0.18em] text-[#9ee8c1]">desafio publico</div>
+                  <div className="mt-1 text-lg font-black uppercase text-[#ffd554]">#{socialChallenge.position} no ranking local</div>
+                  <div className="mt-1 text-xs font-black uppercase text-white/70">
+                    {socialChallenge.percentile} · passou {socialChallenge.defeated} plantoes
+                  </div>
+                </div>
+                <div className="rounded-lg bg-[#ffd554] px-3 py-2 text-right text-[#130d10]">
+                  <div className="text-[10px] font-black uppercase">alvo</div>
+                  <div className="text-2xl font-black">{socialChallenge.targetScore}</div>
+                </div>
+              </div>
+              <div className="mt-3 rounded-lg bg-black/25 px-3 py-2 text-sm font-black uppercase text-white">
+                {socialChallenge.callout}
+              </div>
+            </div>
             <div className="mt-4 flex gap-3">
               <button
                 type="button"
@@ -1033,15 +1216,35 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
                 onClick={() => void shareResult()}
                 className="flex-1 rounded-lg border border-[rgba(255,255,255,0.16)] px-4 py-4 text-sm font-black uppercase"
               >
-                {copyLabel}
+                {copyLabel === "Compartilhar" ? "Compartilhar desafio" : copyLabel}
               </button>
             </div>
             <Link href={`/ranking/${game.slug}`} className="mt-3 block rounded-lg bg-[#130d10] px-4 py-3 text-center text-sm font-black uppercase">
-              Ver ranking
+              Abrir ranking e provocar geral
             </Link>
           </section>
         ) : null}
       </div>
+      {!snapshot.finished ? (
+        <div className="fixed inset-x-3 bottom-3 z-50 grid grid-cols-4 gap-2 rounded-2xl border border-[#ffd554]/30 bg-[rgba(3,14,22,0.9)] p-2 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-md lg:hidden">
+          {survivalActions.map((action) => (
+            <button
+              key={`dock-${action.id}`}
+              type="button"
+              onClick={() => applySurvivalAction(action)}
+              className={`min-h-20 rounded-xl border px-1 py-2 text-center shadow-[0_4px_0_rgba(0,0,0,0.28)] active:scale-[0.98] ${action.tone} ${
+                action.id === recommendedAction ? "border-[#ffd554] ring-2 ring-[#ffd554]/70" : "border-white/15"
+              }`}
+            >
+              <span className="mx-auto flex size-8 items-center justify-center rounded-lg bg-white/15">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={action.icon} alt="" className="size-7 object-contain" />
+              </span>
+              <span className="mt-1 block text-[10px] font-black uppercase leading-tight">{action.title}</span>
+            </button>
+          ))}
+        </div>
+      ) : null}
     </main>
   );
 }
@@ -1142,28 +1345,36 @@ function CircleMenu({ label, icon }: { label: string; icon: string }) {
   );
 }
 
-function AchievementPanel({ snapshot }: { snapshot: GameSnapshot }) {
+function AchievementPanel({ snapshot, compact = false }: { snapshot: GameSnapshot; compact?: boolean }) {
+  const unlockedCount = achievementDefs.filter((achievement) => achievement.unlocked(snapshot)).length;
   return (
-    <div className="col-span-2 rounded-xl border border-[rgba(255,255,255,0.18)] bg-[rgba(3,14,22,0.82)] p-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
-      <div className="mb-2 flex items-center justify-between">
+    <div className={`col-span-2 rounded-xl border border-[rgba(255,255,255,0.18)] bg-[rgba(3,14,22,0.82)] shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1 ${compact ? "p-2" : "p-3"}`}>
+      <div className={`${compact ? "mb-1" : "mb-2"} flex items-center justify-between`}>
         <div className="text-xs font-black uppercase text-[#ffd554]">Conquistas</div>
         <div className="text-[10px] font-black uppercase text-white/70">
-          {achievementDefs.filter((achievement) => achievement.unlocked(snapshot)).length}/{achievementDefs.length}
+          {unlockedCount}/{achievementDefs.length}
         </div>
       </div>
-      <div className="grid gap-2">
+      <div className={compact ? "grid grid-cols-4 gap-1.5" : "grid gap-2"}>
         {achievementDefs.map((achievement) => {
           const unlocked = achievement.unlocked(snapshot);
           return (
             <div
               key={achievement.id}
-              className={`rounded-lg border px-3 py-2 ${unlocked ? "border-[#ffd554]/50 bg-[#ffd554]/12" : "border-white/10 bg-black/20 opacity-70"}`}
+              title={`${achievement.title}: ${achievement.description}`}
+              className={`rounded-lg border ${compact ? "px-2 py-1.5 text-center" : "px-3 py-2"} ${unlocked ? "border-[#ffd554]/50 bg-[#ffd554]/12" : "border-white/10 bg-black/20 opacity-70"}`}
             >
-              <div className={unlocked ? "text-xs font-black uppercase text-[#ffd554]" : "text-xs font-black uppercase text-white/55"}>
-                {unlocked ? "✓ " : "□ "}
-                {achievement.title}
-              </div>
-              <div className="mt-1 text-[10px] font-bold uppercase text-white/55">{achievement.description}</div>
+              {compact ? (
+                <div className={unlocked ? "text-lg font-black text-[#ffd554]" : "text-lg font-black text-white/45"}>{unlocked ? "✓" : "□"}</div>
+              ) : (
+                <>
+                  <div className={unlocked ? "text-xs font-black uppercase text-[#ffd554]" : "text-xs font-black uppercase text-white/55"}>
+                    {unlocked ? "✓ " : "□ "}
+                    {achievement.title}
+                  </div>
+                  <div className="mt-1 text-[10px] font-bold uppercase text-white/55">{achievement.description}</div>
+                </>
+              )}
             </div>
           );
         })}
@@ -1248,24 +1459,24 @@ function BillPanel({ paidRatio, total }: { paidRatio: number; total: number }) {
 
 function NeedsPanel({ snapshot }: { snapshot: GameSnapshot }) {
   return (
-    <section className="rounded-[1.25rem] border border-[rgba(98,214,255,0.26)] bg-[rgba(6,26,39,0.9)] p-3 shadow-[0_14px_50px_rgba(0,0,0,0.35)]">
-      <div className="text-center text-xs font-black uppercase tracking-[0.18em] text-[#f7f1df]">Suas necessidades</div>
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+    <section className="rounded-[1.15rem] border border-[rgba(98,214,255,0.34)] bg-[linear-gradient(180deg,rgba(8,48,74,0.94),rgba(3,13,20,0.9))] px-3 py-2 shadow-[0_10px_0_rgba(0,0,0,0.3),0_18px_54px_rgba(0,0,0,0.34)]">
+      <div className="text-center text-sm font-black uppercase tracking-[0.1em] text-[#f7f1df]">Suas necessidades</div>
+      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         {needBars.map((need) => {
           const value = need.getValue(snapshot);
           return (
-            <div key={need.label} className="rounded-lg bg-[rgba(19,13,16,0.62)] px-3 py-2">
-              <div className="mb-2 flex items-center justify-between text-[10px] font-black uppercase">
+            <div key={need.label} className="rounded-lg border border-white/5 bg-[rgba(5,12,18,0.68)] px-2 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+              <div className="mb-1 flex items-center justify-between text-[9px] font-black uppercase">
                 <span>{need.label}</span>
                 <span className="text-[#ffd554]">{Math.round(value)}%</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="flex size-8 items-center justify-center rounded bg-[rgba(255,255,255,0.12)] text-[10px] font-black">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[rgba(255,255,255,0.12)] text-[10px] font-black shadow-[0_3px_0_rgba(0,0,0,0.3)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={need.icon} alt="" className="size-7 object-contain" />
+                  <img src={need.icon} alt="" className="size-8 object-contain" />
                 </span>
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/40">
-                  <div className="h-full rounded-full" style={{ width: `${value}%`, backgroundColor: need.color }} />
+                <div className="h-3 flex-1 overflow-hidden rounded-full border border-black/35 bg-black/50">
+                  <div className="h-full rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" style={{ width: `${value}%`, backgroundColor: need.color }} />
                 </div>
               </div>
             </div>

@@ -38,6 +38,18 @@ export function getRankingForGame(slug: string): RankingEntry[] {
   const ranking = getGameBySlug(slug);
   if (!ranking) return [];
 
+  if (slug === "plantaono-vermelho") {
+    return [
+      { player: "Enf. Luana", score: 9120, createdAt: "19/06/2026 07:40" },
+      { player: "Plantao 12h", score: 8760, createdAt: "19/06/2026 06:18" },
+      { player: "Marmita Fria", score: 7420, createdAt: "18/06/2026 23:52" },
+      { player: "Sem Folego", score: 6810, createdAt: "18/06/2026 22:31" },
+      { player: "Fila Do Sus", score: 6130, createdAt: "18/06/2026 21:04" },
+      { player: "Boleto Vivo", score: 5440, createdAt: "18/06/2026 19:45" },
+      { player: "Turno Duplo", score: 4820, createdAt: "18/06/2026 10:10" },
+    ];
+  }
+
   return [
     { player: "Bia", score: 4820, createdAt: "18/06/2026 10:10" },
     { player: "Jota", score: 4390, createdAt: "18/06/2026 09:42" },
