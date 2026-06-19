@@ -36,6 +36,11 @@ type GameSnapshot = {
   maxCombo: number;
   supports: number;
   billsDodged: number;
+  shiftsWorked: number;
+  essentialsBought: number;
+  extraCostsAvoided: number;
+  mentalCare: number;
+  actionCount: number;
   bestScore: number;
   rank: string;
   running: boolean;
@@ -127,12 +132,12 @@ const survivalActions = [
 ];
 
 const needBars = [
-  { label: "alimentacao", icon: "AL", color: "#ffd554", getValue: (snapshot: GameSnapshot) => clamp(100 - snapshot.bills * 0.65, 8, 100) },
-  { label: "transporte", icon: "▣", color: "#62d6ff", getValue: (snapshot: GameSnapshot) => clamp(92 - snapshot.bills * 0.45, 10, 100) },
-  { label: "saude", icon: "+", color: "#9ee8c1", getValue: (snapshot: GameSnapshot) => clamp(snapshot.breath, 0, 100) },
+  { label: "alimentacao", icon: "/games/plantaono-vermelho/icon-pig.png", color: "#ffd554", getValue: (snapshot: GameSnapshot) => clamp(100 - snapshot.bills * 0.65, 8, 100) },
+  { label: "transporte", icon: "/games/plantaono-vermelho/icon-money.png", color: "#62d6ff", getValue: (snapshot: GameSnapshot) => clamp(92 - snapshot.bills * 0.45, 10, 100) },
+  { label: "saude", icon: "/games/plantaono-vermelho/icon-health.png", color: "#9ee8c1", getValue: (snapshot: GameSnapshot) => clamp(snapshot.breath, 0, 100) },
   { label: "lazer", icon: "◇", color: "#ff9a62", getValue: (snapshot: GameSnapshot) => clamp(70 - snapshot.chaos * 0.7, 5, 100) },
   { label: "sono", icon: "▰", color: "#62d6ff", getValue: (snapshot: GameSnapshot) => clamp(snapshot.breath - snapshot.chaos * 0.22, 5, 100) },
-  { label: "saude mental", icon: "●", color: "#d778ff", getValue: (snapshot: GameSnapshot) => clamp(105 - snapshot.chaos, 4, 100) },
+  { label: "saude mental", icon: "/games/plantaono-vermelho/icon-energy.png", color: "#d778ff", getValue: (snapshot: GameSnapshot) => clamp(105 - snapshot.chaos, 4, 100) },
 ];
 
 const dueBills = [
@@ -163,6 +168,11 @@ function createInitialSnapshot(bestScore = 0): GameSnapshot {
     maxCombo: 0,
     supports: 0,
     billsDodged: 0,
+    shiftsWorked: 0,
+    essentialsBought: 0,
+    extraCostsAvoided: 0,
+    mentalCare: 0,
+    actionCount: 0,
     bestScore,
     rank: "D",
     running: false,
@@ -487,7 +497,8 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       const elapsed = now - startAtRef.current;
       const phase = elapsed / ROUND_DURATION_MS;
       const grace = elapsed < 10000;
-      const day = clamp(1 + Math.floor((elapsed / ROUND_DURATION_MS) * 30), 1, 30);
+      const timeDay = clamp(1 + Math.floor((elapsed / ROUND_DURATION_MS) * 30), 1, 30);
+      const day = Math.max(stateRef.current.day, timeDay);
       const speed = (grace ? 165 : 190) + phase * 165 + stateRef.current.chaos * (grace ? 0.45 : 0.72);
 
       if (stateRef.current.running) {
@@ -670,12 +681,19 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       if (!stateRef.current.running || stateRef.current.finished) return;
       mutateState((current) => {
         const nextScore = current.score + action.score;
+        const dayBoost = action.id === "trabalhar" ? 2 : 1;
         return {
           ...current,
           score: nextScore,
+          day: clamp(current.day + dayBoost, 1, 30),
           breath: clamp(current.breath + action.breath, 0, 100),
           bills: clamp(current.bills + action.bills, 0, 100),
           chaos: clamp(current.chaos + action.chaos, 0, 100),
+          shiftsWorked: current.shiftsWorked + (action.id === "trabalhar" ? 1 : 0),
+          essentialsBought: current.essentialsBought + (action.id === "economizar" || action.id === "trabalhar" ? 1 : 0),
+          extraCostsAvoided: current.extraCostsAvoided + (action.id === "economizar" ? 1 : 0),
+          mentalCare: current.mentalCare + (action.id === "saude" ? 1 : 0),
+          actionCount: current.actionCount + 1,
           rank: getRank(nextScore).label,
         };
       });
@@ -684,8 +702,11 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       addParticle(action.title, playerXRef.current - 56, PLAYER_Y - 112, action.id === "saude" ? "good" : "power");
       setToast(action.toast);
       playTone(action.id === "saude" ? "good" : "power");
+      if (stateRef.current.day >= 30 || stateRef.current.breath <= 0 || stateRef.current.chaos >= 100 || stateRef.current.bills >= 100) {
+        window.setTimeout(() => finishRound(), 80);
+      }
     },
-    [addParticle, mutateState, playTone],
+    [addParticle, finishRound, mutateState, playTone],
   );
 
   function handlePointerDown(event: React.PointerEvent<HTMLCanvasElement>) {
@@ -790,6 +811,13 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             <div className="rounded-t-lg bg-[#b9231d] py-1 text-xs font-black uppercase text-white">Dia</div>
             <div className="text-4xl font-black">{snapshot.day} / 30</div>
             <div className="text-[10px] font-black uppercase">sobreviver ate o dia 30</div>
+          </div>
+          <div className="rounded-xl border border-[rgba(255,255,255,0.18)] bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)]">
+            <div className="text-xs font-black uppercase text-[#9ee8c1]">decisoes tomadas</div>
+            <div className="mt-1 text-3xl font-black text-[#ffd554]">{snapshot.actionCount}</div>
+            <div className="mt-1 text-[10px] font-black uppercase text-white/70">
+              cada escolha cobra do corpo ou das contas
+            </div>
           </div>
           {survivalActions.map((action) => (
             <button
@@ -976,10 +1004,10 @@ function MeterBar({ label, value, color, danger = false }: { label: string; valu
 
 function SurvivalChecklist({ snapshot }: { snapshot: GameSnapshot }) {
   const goals = [
-    { label: "trabalhar 1 plantao", done: snapshot.score >= 220 },
-    { label: "comprar o essencial", done: snapshot.bills < 45 },
-    { label: "evitar gastos extras", done: snapshot.billsDodged >= 4 },
-    { label: "manter a saude mental", done: snapshot.chaos < 62 },
+    { label: "trabalhar 1 plantao", done: snapshot.shiftsWorked >= 1 },
+    { label: "comprar o essencial", done: snapshot.essentialsBought >= 1 || snapshot.bills < 40 },
+    { label: "evitar gastos extras", done: snapshot.extraCostsAvoided >= 1 || snapshot.billsDodged >= 4 },
+    { label: "manter a saude mental", done: snapshot.mentalCare >= 1 || snapshot.chaos < 42 },
   ];
 
   return (
@@ -1037,8 +1065,13 @@ function NeedsPanel({ snapshot }: { snapshot: GameSnapshot }) {
                 <span className="text-[#ffd554]">{Math.round(value)}%</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="flex size-7 items-center justify-center rounded bg-[rgba(255,255,255,0.12)] text-[10px] font-black">
-                  {need.icon}
+                <span className="flex size-8 items-center justify-center rounded bg-[rgba(255,255,255,0.12)] text-[10px] font-black">
+                  {need.icon.endsWith(".png") ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={need.icon} alt="" className="size-7 object-contain" />
+                  ) : (
+                    need.icon
+                  )}
                 </span>
                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/40">
                   <div className="h-full rounded-full" style={{ width: `${value}%`, backgroundColor: need.color }} />

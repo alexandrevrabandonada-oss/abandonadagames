@@ -58,6 +58,14 @@ A referencia passa a ser um survival arcade com fantasia clara: enfermeiro em fr
 - Energia, saldo e botoes de acao passaram a usar PNGs proprios em vez de texto/simbolos soltos.
 - A linguagem visual ficou mais perto de HUD arcade, embora ainda falte acabamento pictorico/realista.
 
+## Quarta iteracao de jogabilidade
+
+- As decisoes laterais agora avancam a sobrevivencia do mes, aproximando a mecanica da referencia.
+- O jogo registra `plantoes trabalhados`, `essenciais comprados`, `gastos evitados`, `cuidado mental` e `decisoes tomadas`.
+- Objetivos do dia agora respondem diretamente as escolhas do jogador, nao apenas ao score.
+- Cada acao continua tendo trade-off: dinheiro/contas versus energia/caos.
+- Painel lateral mostra quantas decisoes foram tomadas e reforca a regra: cada escolha cobra do corpo ou das contas.
+
 ## Proximas iteracoes
 
 - Trocar fundo hospitalar por arte mais rica em 16:9/vertical com fachada e emergencia.
