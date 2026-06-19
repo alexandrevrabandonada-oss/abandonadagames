@@ -705,42 +705,65 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   const paidRatio = clamp((100 - snapshot.bills) / 100, 0, 1);
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,#124c73_0%,#130d10_42%,#07090a_100%)] px-3 py-3 text-[#f7f1df] sm:px-5 sm:py-5">
-      <div className="mx-auto grid max-w-6xl gap-3 lg:grid-cols-[280px_minmax(360px,560px)_280px] lg:items-start">
-        <section className="rounded-[1.25rem] border border-[rgba(98,214,255,0.3)] bg-[rgba(6,26,39,0.9)] p-4 shadow-[0_18px_60px_rgba(0,0,0,0.38)]">
+    <main
+      className="relative min-h-screen overflow-hidden bg-[#071018] px-3 py-3 text-[#f7f1df] sm:px-5 sm:py-5 lg:h-screen lg:px-4 lg:py-4"
+      style={{
+        backgroundImage:
+          "linear-gradient(180deg, rgba(8,18,27,0.08), rgba(6,8,10,0.58)), url('/games/plantaono-vermelho/hospital-facade.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.05),rgba(0,0,0,0.46)_72%)]" />
+      <div className="pointer-events-none absolute left-[38%] top-[41%] hidden -translate-x-1/2 lg:block">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/games/plantaono-vermelho/nurse-back.png"
+          alt=""
+          className="h-[51vh] min-h-[470px] max-h-[660px] drop-shadow-[0_24px_30px_rgba(0,0,0,0.7)]"
+        />
+      </div>
+
+      <div className="relative z-10 mx-auto grid max-w-[1520px] gap-3 lg:h-full lg:grid-cols-[280px_minmax(430px,1fr)_292px] lg:grid-rows-[auto_1fr_auto] lg:items-start">
+        <section className="rounded-[1.25rem] border border-[#0b2e4b] bg-[linear-gradient(180deg,rgba(8,44,70,0.96),rgba(3,15,25,0.94))] p-3 shadow-[0_10px_0_rgba(0,0,0,0.35),0_18px_60px_rgba(0,0,0,0.42)] lg:row-span-2">
           <div className="flex items-start justify-between gap-3">
+            <div className="flex size-20 shrink-0 items-center justify-center rounded-full border-[5px] border-[#43b5ff] bg-[#1f3448] text-4xl font-black shadow-[0_0_0_4px_rgba(0,0,0,0.45)]">
+              ENF
+            </div>
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#9ee8c1]">
-                enfermeiro nivel {Math.max(1, Math.floor(snapshot.score / 1600) + 1)}
+                Enfermeiro
               </p>
-              <h1 className="mt-2 text-2xl font-black uppercase leading-none">Como sobreviver com salario atrasado</h1>
+              <h1 className="mt-1 text-xl font-black uppercase leading-none">Nivel {Math.max(1, Math.floor(snapshot.score / 1600) + 1)}</h1>
+              <div className="mt-2">
+                <MeterBar label="xp" value={clamp((snapshot.score % 1600) / 16, 0, 100)} color="#29d443" />
+              </div>
             </div>
-            <Link href="/" className="rounded-lg border border-[rgba(255,255,255,0.14)] px-3 py-2 text-[11px] font-bold uppercase">
+            <Link href="/" className="rounded-lg border border-[rgba(255,255,255,0.14)] px-2 py-2 text-[10px] font-bold uppercase">
               Inicio
             </Link>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <HudBox label="dia" value={`${snapshot.day}/30`} />
+          <div className="mt-4 grid gap-2">
+            <StatusStrip label="energia" value={`${Math.round(snapshot.breath)}/100`} color="#ff3b30" icon="♥" />
             <HudBox label="saldo" value={`R$ ${salaryLeft.toFixed(2).replace(".", ",")}`} />
-            <HudBox label="energia" value={`${Math.round(snapshot.breath)}/100`} />
-            <HudBox label="score" value={`${snapshot.score}`} />
-          </div>
-          <div className="mt-3 rounded-lg bg-[#061a27] px-4 py-3 text-xs font-black uppercase text-[#ffd554]">
-            Missao: chegar ao fim do mes
-          </div>
-          <div className="mt-3 grid gap-2">
-            <MeterBar label="energia" value={snapshot.breath} color="#29d443" />
-            <MeterBar label="contas" value={snapshot.bills} color="#ffd554" danger />
-            <MeterBar label="caos" value={snapshot.chaos} color="#ff3b30" danger />
           </div>
           <SurvivalChecklist snapshot={snapshot} />
           <BillPanel paidRatio={paidRatio} total={debtTotal} />
         </section>
 
-        <section className="relative rounded-[1.25rem] border border-[rgba(255,255,255,0.1)] bg-[#111] p-2">
+        <section className="pointer-events-auto relative min-h-[520px] overflow-hidden rounded-[1.25rem] border border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.12)] p-2 lg:col-start-2 lg:row-span-2 lg:min-h-0 lg:h-full lg:border-0 lg:bg-transparent lg:p-0">
+          <div className="pointer-events-none absolute inset-x-4 top-1 z-20 text-center lg:top-0">
+            <div className="mx-auto inline-block rotate-[-2deg] text-balance rounded-[1.1rem] px-4 py-1 text-4xl font-black uppercase leading-[0.9] text-white drop-shadow-[0_6px_0_#09294c] [-webkit-text-stroke:2px_#09294c] sm:text-5xl lg:text-6xl">
+              Como sobreviver
+              <span className="block text-[#ffd554] [-webkit-text-stroke:2px_#09294c]">com salario atrasado</span>
+            </div>
+            <div className="mx-auto mt-1 w-fit rounded-lg bg-[#062d70] px-5 py-2 text-sm font-black uppercase tracking-[0.08em] shadow-[0_5px_0_#041b40]">
+              Missao: chegar ao fim do mes!
+            </div>
+          </div>
           <canvas
             ref={canvasRef}
-            className="block w-full touch-none rounded-lg"
+            className="mx-auto block w-full max-w-[420px] touch-none rounded-lg opacity-70 mix-blend-screen lg:absolute lg:bottom-[4vh] lg:left-1/2 lg:max-w-[390px] lg:-translate-x-1/2 lg:opacity-0"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
           />
@@ -752,9 +775,13 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           ) : null}
         </section>
 
-        <section className="grid gap-3 rounded-[1.25rem] border border-[rgba(98,214,255,0.22)] bg-[rgba(6,26,39,0.86)] p-4">
-          <div className="rounded-xl border border-[rgba(255,255,255,0.12)] bg-[#f7f1df] px-4 py-3 text-center text-[#130d10]">
-            <div className="text-xs font-black uppercase">Dia</div>
+        <section className="grid gap-3 lg:col-start-3 lg:row-span-2">
+          <div className="hidden justify-end gap-3 lg:flex">
+            <CircleMenu label="opcoes" icon="⚙" />
+            <CircleMenu label="conquistas" icon="🏆" />
+          </div>
+          <div className="rounded-xl border-[3px] border-[#30343c] bg-[#f7f1df] px-4 py-3 text-center text-[#130d10] shadow-[0_5px_0_rgba(0,0,0,0.45)]">
+            <div className="rounded-t-lg bg-[#b9231d] py-1 text-xs font-black uppercase text-white">Dia</div>
             <div className="text-4xl font-black">{snapshot.day} / 30</div>
             <div className="text-[10px] font-black uppercase">sobreviver ate o dia 30</div>
           </div>
@@ -776,11 +803,11 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           ))}
         </section>
 
-        <section className="lg:col-start-2">
+        <section className="lg:col-start-2 lg:row-start-3">
           <NeedsPanel snapshot={snapshot} />
         </section>
 
-        <div className="grid grid-cols-2 gap-3 lg:col-start-2">
+        <div className="grid grid-cols-2 gap-3 lg:col-start-2 lg:hidden">
           <button
             type="button"
             onClick={() => movePlayer(-1)}
@@ -874,6 +901,38 @@ function HudBox({ label, value }: { label: string; value: string }) {
     <div className="rounded-lg bg-[rgba(19,13,16,0.74)] px-3 py-3">
       <div className="text-[10px] font-bold uppercase text-[#9ee8c1]">{label}</div>
       <div className="mt-1 text-lg font-black text-[#f7f1df]">{value}</div>
+    </div>
+  );
+}
+
+function StatusStrip({ label, value, color, icon }: { label: string; value: string; color: string; icon: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg bg-[rgba(3,14,22,0.78)] px-3 py-3 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]">
+      <span className="text-3xl font-black" style={{ color }}>
+        {icon}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 flex items-center justify-between text-sm font-black uppercase">
+          <span>{label}</span>
+          <span>{value}</span>
+        </div>
+        <div className="h-3 overflow-hidden rounded-full bg-black/50">
+          <div className="h-full rounded-full" style={{ width: value.split("/")[0] + "%", backgroundColor: color }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CircleMenu({ label, icon }: { label: string; icon: string }) {
+  return (
+    <div className="text-center">
+      <div className="mx-auto flex size-16 items-center justify-center rounded-full border-[3px] border-[#2a3b47] bg-[linear-gradient(180deg,#3b4b54,#111820)] text-3xl shadow-[0_5px_0_rgba(0,0,0,0.55)]">
+        {icon}
+      </div>
+      <div className="mt-1 rounded-full bg-[#071724] px-3 py-1 text-[10px] font-black uppercase shadow-[0_3px_0_rgba(0,0,0,0.45)]">
+        {label}
+      </div>
     </div>
   );
 }

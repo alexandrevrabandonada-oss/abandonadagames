@@ -32,6 +32,24 @@ A referencia passa a ser um survival arcade com fantasia clara: enfermeiro em fr
 - Painel inferior de necessidades.
 - Canvas mantido jogavel, com assets PNG hospital/enfermeiro ja integrados.
 
+## Segunda iteracao visual
+
+- A tela desktop passou a usar uma fachada hospitalar full-screen como mundo.
+- O enfermeiro de costas virou elemento central da composicao.
+- O canvas arcade vertical deixou de dominar a tela no desktop e permanece mais util no mobile.
+- O titulo ganhou tratamento grande, centralizado e com contorno, mais proximo de tela de jogo.
+- Acoes, dia, opcoes e conquistas foram concentrados na lateral direita.
+- Painel de status, objetivos e contas permanece na esquerda, como na referencia.
+
+## Comparacao contra a meta
+
+- A composicao geral agora segue a meta: hospital ao fundo, personagem central, HUD nas bordas.
+- Ainda falta arte de alto nivel: a fachada atual e o enfermeiro ainda sao vetoriais simples.
+- Falta retrato do enfermeiro no painel esquerdo.
+- Falta iconografia propria para botoes, necessidades, opcoes e conquistas.
+- Falta profundidade/camera mais realista no fundo, incluindo pessoas, bancos, palmeiras e ambulancia mais detalhada.
+- Falta fazer a versao mobile preservar a sensacao de cena, nao apenas empilhar paineis.
+
 ## Proximas iteracoes
 
 - Trocar fundo hospitalar por arte mais rica em 16:9/vertical com fachada e emergencia.
