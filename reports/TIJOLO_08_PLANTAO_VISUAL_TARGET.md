@@ -97,6 +97,13 @@ A referencia passa a ser um survival arcade com fantasia clara: enfermeiro em fr
 - Enfermeiro de costas ganhou mais volume no uniforme, luz lateral e separacao de torso/pernas.
 - Ainda falta o salto final de qualidade: assets continuam procedurais/vetoriais, enquanto a meta usa pintura/render com acabamento semi-realista.
 
+## Nona iteracao de sistema
+
+- O icone de conquistas agora reflete progresso real (`x/4`).
+- Adicionado painel de conquistas com estados bloqueado/desbloqueado.
+- Adicionado `evento do dia`, mudando conforme o avanco do mes.
+- A jogabilidade ganha mais estrutura de survival: o jogador entende fase do mes, metas e recompensas alem do score.
+
 ## Proximas iteracoes
 
 - Trocar fundo hospitalar por arte mais rica em 16:9/vertical com fachada e emergencia.
