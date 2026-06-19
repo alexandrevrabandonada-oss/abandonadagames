@@ -104,6 +104,13 @@ A referencia passa a ser um survival arcade com fantasia clara: enfermeiro em fr
 - Adicionado `evento do dia`, mudando conforme o avanco do mes.
 - A jogabilidade ganha mais estrutura de survival: o jogador entende fase do mes, metas e recompensas alem do score.
 
+## Decima iteracao de cena viva
+
+- Adicionada camada DOM de fila/pessoas sobre a fachada do hospital.
+- A quantidade de pessoas varia conforme `caos` e `dia`, tornando a cena menos estatica.
+- Ambulancia e aviso de fila aparecem como elementos de cena, conectando estado do jogo com o mundo visual.
+- A referencia tem hospital vivo e povoado; esta iteracao aproxima a composicao desse requisito sem depender de novo render externo.
+
 ## Proximas iteracoes
 
 - Trocar fundo hospitalar por arte mais rica em 16:9/vertical com fachada e emergencia.

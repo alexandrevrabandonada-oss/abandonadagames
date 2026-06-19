@@ -838,6 +838,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           <div className="pointer-events-none absolute bottom-[22vh] left-1/2 hidden w-[min(58vw,560px)] -translate-x-1/2 rounded-xl border border-white/10 bg-[rgba(3,14,22,0.52)] px-4 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-[2px] lg:block">
             Entrada do hospital: escolha como atravessar mais um dia sem salario
           </div>
+          <LivingQueue chaos={snapshot.chaos} day={snapshot.day} />
           <div className="pointer-events-none absolute inset-x-4 top-1 z-20 text-center lg:top-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -1059,6 +1060,46 @@ function MiniStatus({ label, value, danger = false }: { label: string; value: st
     <div className={`rounded-xl border px-2 py-2 text-center shadow-[0_5px_0_rgba(0,0,0,0.35)] backdrop-blur-sm ${danger ? "border-[#ff3b30] bg-[rgba(80,0,0,0.72)]" : "border-white/15 bg-[rgba(3,14,22,0.78)]"}`}>
       <div className="text-[9px] font-black uppercase tracking-[0.12em] text-[#9ee8c1]">{label}</div>
       <div className="mt-1 text-sm font-black text-white">{value}</div>
+    </div>
+  );
+}
+
+function LivingQueue({ chaos, day }: { chaos: number; day: number }) {
+  const crowd = Math.min(10, 4 + Math.floor(chaos / 14) + Math.floor(day / 10));
+  return (
+    <div className="pointer-events-none absolute inset-0 hidden lg:block">
+      <div className="absolute bottom-[24vh] left-[16%] h-9 w-28 rounded-md border border-white/20 bg-white/70 shadow-[0_8px_18px_rgba(0,0,0,0.32)]">
+        <div className="absolute inset-x-0 top-4 h-2 bg-[#b9231d]" />
+        <div className="absolute left-4 top-2 h-5 w-6 bg-[#0c6b42]" />
+        <div className="absolute -bottom-2 left-5 size-4 rounded-full bg-black" />
+        <div className="absolute -bottom-2 right-5 size-4 rounded-full bg-black" />
+      </div>
+      {Array.from({ length: crowd }).map((_, index) => {
+        const row = index % 2;
+        const left = 39 + (index % 5) * 5.4 + row * 2;
+        const bottom = 31 + row * 4 + Math.sin((day + index) * 0.8) * 0.5;
+        const shirt = ["#2f8a52", "#9a6d2d", "#2f6fa8", "#7b4a2a", "#325f7a"][index % 5];
+        return (
+          <div
+            key={index}
+            className="absolute transition-all duration-500"
+            style={{
+              left: `${left}%`,
+              bottom: `${bottom}vh`,
+              opacity: 0.58 + Math.min(0.32, chaos / 180),
+              transform: `scale(${0.72 + index * 0.015})`,
+            }}
+          >
+            <div className="mx-auto size-3 rounded-full bg-[#3b271d]" />
+            <div className="h-8 w-4 rounded-sm shadow-[0_5px_0_rgba(0,0,0,0.22)]" style={{ backgroundColor: shirt }} />
+          </div>
+        );
+      })}
+      {chaos > 62 ? (
+        <div className="absolute bottom-[37vh] left-[45%] rounded-lg bg-[#b9231d] px-3 py-2 text-[10px] font-black uppercase text-white shadow-[0_5px_0_rgba(0,0,0,0.35)]">
+          fila aumentando
+        </div>
+      ) : null}
     </div>
   );
 }
