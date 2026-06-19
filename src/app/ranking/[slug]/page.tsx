@@ -13,6 +13,10 @@ export default async function RankingPage({
   if (!game) notFound();
 
   const ranking = getRankingForGame(slug);
+  const subtitle =
+    slug === "merendeira-no-vermelho"
+      ? "Quem segura a cozinha, serve mais pratos e ainda dribla o contrato intermitente?"
+      : "Ranking publico mockado localmente, com a interface pronta para trocar a persistencia por Supabase.";
 
   return (
     <main className="min-h-screen bg-[var(--bg)] px-5 py-6 text-[var(--text)]">
@@ -25,8 +29,7 @@ export default async function RankingPage({
         </Link>
         <h1 className="text-4xl font-black uppercase">{game.title}</h1>
         <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
-          Ranking publico mockado localmente, com a interface pronta para trocar
-          a persistencia por Supabase.
+          {subtitle}
         </p>
 
         <div className="mt-6 space-y-3">

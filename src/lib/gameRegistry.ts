@@ -38,6 +38,15 @@ export function getRankingForGame(slug: string): RankingEntry[] {
   const ranking = getGameBySlug(slug);
   if (!ranking) return [];
 
+  if (slug === "merendeira-no-vermelho") {
+    return [
+      { player: "Mutirao Quente", score: 4280, createdAt: "19/06/2026 14:32" },
+      { player: "Panela Firme", score: 3960, createdAt: "19/06/2026 13:58" },
+      { player: "Dia Virado", score: 3540, createdAt: "19/06/2026 13:17" },
+      { player: "Merenda Viva", score: 3180, createdAt: "19/06/2026 12:41" },
+    ];
+  }
+
   return [
     { player: "Bia", score: 4820, createdAt: "18/06/2026 10:10" },
     { player: "Jota", score: 4390, createdAt: "18/06/2026 09:42" },

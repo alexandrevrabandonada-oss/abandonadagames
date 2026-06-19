@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { MerendeiraNoVermelhoGame } from "@/components/games/MerendeiraNoVermelhoGame";
 import { OnibusZeroGame } from "@/components/games/OnibusZeroGame";
 import { PlantaoNoVermelhoGame } from "@/components/games/PlantaoNoVermelhoGame";
 import { QueueChaosGame } from "@/components/games/QueueChaosGame";
@@ -24,6 +25,10 @@ export default async function PlayPage({
 
   if (game.slug === "plantaono-vermelho" || game.template === "salary-survival") {
     return <PlantaoNoVermelhoGame game={game} />;
+  }
+
+  if (game.slug === "merendeira-no-vermelho" || game.template === "kitchen-survival") {
+    return <MerendeiraNoVermelhoGame game={game} />;
   }
 
   return <QueueChaosGame game={game} />;

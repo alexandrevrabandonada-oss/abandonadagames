@@ -1,0 +1,33 @@
+{
+  "slug": "merendeira-no-vermelho",
+  "title": "Merendeira no Vermelho",
+  "template": "kitchen-survival",
+  "tagline": "Salario atrasado, contrato intermitente e a luta para virar o mes.",
+  "summary": "Sirva a merenda, desvie dos boletos e sobreviva ao contrato intermitente.",
+  "obstacles": [
+    "aluguel",
+    "luz",
+    "mercado caro",
+    "transporte",
+    "juros",
+    "cartao estourado",
+    "salario nao caiu",
+    "dia sem convocacao",
+    "escala incerta",
+    "boleto surpresa"
+  ],
+  "powerUps": [
+    "arroz",
+    "feijao",
+    "legume",
+    "fruta",
+    "leite",
+    "pao",
+    "marmita garantida",
+    "apoio das colegas",
+    "organizacao coletiva",
+    "feira barata",
+    "escala garantida",
+    "mutirao da cozinha"
+  ]
+}

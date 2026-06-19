@@ -7,6 +7,8 @@ export default function Home() {
   const featuredMeta =
     featuredGame.slug === "onibus-zero"
       ? { theme: "Transporte", action: "3 faixas" }
+      : featuredGame.slug === "merendeira-no-vermelho"
+        ? { theme: "Merenda", action: "Arcade survival" }
       : featuredGame.slug === "plantaono-vermelho"
         ? { theme: "Salario", action: "Survival" }
       : { theme: "Saude publica", action: "Toque rapido" };
@@ -109,15 +111,22 @@ export default function Home() {
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-[0.14em]">
                       <span className="rounded-lg bg-[var(--surface-soft)] px-3 py-2 text-[var(--sand)]">
-                        {game.slug === "plantaono-vermelho" ? "1 min" : "45-60s"}
+                        {game.slug === "plantaono-vermelho" || game.slug === "merendeira-no-vermelho" ? "1 min" : "45-60s"}
                       </span>
                       <span className="rounded-lg bg-[var(--surface-soft)] px-3 py-2 text-[var(--text-soft)]">
                         {game.slug === "onibus-zero"
                           ? "3 faixas"
+                          : game.slug === "merendeira-no-vermelho"
+                            ? "arcade survival"
                           : game.slug === "plantaono-vermelho"
                             ? "arcade survival"
                             : "toque rapido"}
                       </span>
+                      {game.slug === "merendeira-no-vermelho" ? (
+                        <span className="rounded-lg bg-[var(--surface-soft)] px-3 py-2 text-[var(--accent)]">
+                          repetitividade 9
+                        </span>
+                      ) : null}
                       {game.slug === "plantaono-vermelho" ? (
                         <span className="rounded-lg bg-[var(--surface-soft)] px-3 py-2 text-[var(--accent)]">
                           sobreviva ao mes

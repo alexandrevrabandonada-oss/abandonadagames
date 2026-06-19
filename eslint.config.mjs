@@ -12,6 +12,15 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Non-web project artifacts in this mixed workspace:
+    "Builds/**",
+    "Library/**",
+    "Logs/**",
+    "Assets/**",
+    "Packages/**",
+    "ProjectSettings/**",
+    "UserSettings/**",
+    "abandonada-games/**",
   ]),
 ]);
 
