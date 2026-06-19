@@ -80,7 +80,7 @@ const survivalActions = [
     id: "trabalhar",
     title: "Trabalhar",
     subtitle: "+ dinheiro",
-    icon: "✚",
+    icon: "/games/plantaono-vermelho/icon-work.png",
     tone: "bg-[#c96f08]",
     score: 220,
     breath: -10,
@@ -92,7 +92,7 @@ const survivalActions = [
     id: "bico",
     title: "Fazer bico",
     subtitle: "+ renda extra",
-    icon: "$",
+    icon: "/games/plantaono-vermelho/icon-tools.png",
     tone: "bg-[#086aa0]",
     score: 170,
     breath: -13,
@@ -104,7 +104,7 @@ const survivalActions = [
     id: "economizar",
     title: "Economizar",
     subtitle: "- gastos",
-    icon: "¢",
+    icon: "/games/plantaono-vermelho/icon-pig.png",
     tone: "bg-[#6f2aa8]",
     score: 120,
     breath: -4,
@@ -116,7 +116,7 @@ const survivalActions = [
     id: "saude",
     title: "Cuidar da saude",
     subtitle: "+ energia",
-    icon: "♥",
+    icon: "/games/plantaono-vermelho/icon-health.png",
     tone: "bg-[#247a26]",
     score: 90,
     breath: 16,
@@ -728,7 +728,8 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
         <section className="rounded-[1.25rem] border border-[#0b2e4b] bg-[linear-gradient(180deg,rgba(8,44,70,0.96),rgba(3,15,25,0.94))] p-3 shadow-[0_10px_0_rgba(0,0,0,0.35),0_18px_60px_rgba(0,0,0,0.42)] lg:row-span-2">
           <div className="flex items-start justify-between gap-3">
             <div className="flex size-20 shrink-0 items-center justify-center rounded-full border-[5px] border-[#43b5ff] bg-[#1f3448] text-4xl font-black shadow-[0_0_0_4px_rgba(0,0,0,0.45)]">
-              ENF
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/games/plantaono-vermelho/portrait-nurse.png" alt="" className="size-full rounded-full object-cover" />
             </div>
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#9ee8c1]">
@@ -744,8 +745,13 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             </Link>
           </div>
           <div className="mt-4 grid gap-2">
-            <StatusStrip label="energia" value={`${Math.round(snapshot.breath)}/100`} color="#ff3b30" icon="♥" />
-            <HudBox label="saldo" value={`R$ ${salaryLeft.toFixed(2).replace(".", ",")}`} />
+            <StatusStrip
+              label="energia"
+              value={`${Math.round(snapshot.breath)}/100`}
+              color="#ff3b30"
+              icon="/games/plantaono-vermelho/icon-energy.png"
+            />
+            <MoneyStrip value={`R$ ${salaryLeft.toFixed(2).replace(".", ",")}`} />
           </div>
           <SurvivalChecklist snapshot={snapshot} />
           <BillPanel paidRatio={paidRatio} total={debtTotal} />
@@ -792,8 +798,9 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               onClick={() => applySurvivalAction(action)}
               className={`${action.tone} flex items-center gap-3 rounded-xl border border-[rgba(255,255,255,0.22)] px-4 py-4 text-left shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition active:scale-[0.98]`}
             >
-              <span className="flex size-11 items-center justify-center rounded-lg bg-[rgba(255,255,255,0.18)] text-2xl font-black">
-                {action.icon}
+              <span className="flex size-12 items-center justify-center rounded-lg bg-[rgba(255,255,255,0.18)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={action.icon} alt="" className="size-10 object-contain drop-shadow-[0_2px_0_rgba(0,0,0,0.35)]" />
               </span>
               <span>
                 <span className="block text-lg font-black uppercase leading-none">{action.title}</span>
@@ -896,20 +903,12 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   );
 }
 
-function HudBox({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-[rgba(19,13,16,0.74)] px-3 py-3">
-      <div className="text-[10px] font-bold uppercase text-[#9ee8c1]">{label}</div>
-      <div className="mt-1 text-lg font-black text-[#f7f1df]">{value}</div>
-    </div>
-  );
-}
-
 function StatusStrip({ label, value, color, icon }: { label: string; value: string; color: string; icon: string }) {
   return (
     <div className="flex items-center gap-3 rounded-lg bg-[rgba(3,14,22,0.78)] px-3 py-3 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]">
-      <span className="text-3xl font-black" style={{ color }}>
-        {icon}
+      <span className="flex size-11 shrink-0 items-center justify-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={icon} alt="" className="size-11 object-contain drop-shadow-[0_2px_0_rgba(0,0,0,0.45)]" />
       </span>
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex items-center justify-between text-sm font-black uppercase">
@@ -919,6 +918,19 @@ function StatusStrip({ label, value, color, icon }: { label: string; value: stri
         <div className="h-3 overflow-hidden rounded-full bg-black/50">
           <div className="h-full rounded-full" style={{ width: value.split("/")[0] + "%", backgroundColor: color }} />
         </div>
+      </div>
+    </div>
+  );
+}
+
+function MoneyStrip({ value }: { value: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg bg-[rgba(3,14,22,0.78)] px-3 py-3 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/games/plantaono-vermelho/icon-money.png" alt="" className="size-11 object-contain" />
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-black uppercase">saldo</div>
+        <div className="text-2xl font-black text-white">{value}</div>
       </div>
     </div>
   );

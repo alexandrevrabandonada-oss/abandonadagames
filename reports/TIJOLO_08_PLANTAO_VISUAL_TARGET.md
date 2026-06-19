@@ -50,6 +50,14 @@ A referencia passa a ser um survival arcade com fantasia clara: enfermeiro em fr
 - Falta profundidade/camera mais realista no fundo, incluindo pessoas, bancos, palmeiras e ambulancia mais detalhada.
 - Falta fazer a versao mobile preservar a sensacao de cena, nao apenas empilhar paineis.
 
+## Terceira iteracao visual
+
+- Fachada hospitalar redesenhada com mais detalhes: pessoas, fila, bancos, ambulancia, palmeira, placas e area de emergencia.
+- Enfermeiro de costas ganhou proporcao mais humana, pele/cabelo e luz de uniforme.
+- Painel esquerdo ganhou retrato proprio do enfermeiro.
+- Energia, saldo e botoes de acao passaram a usar PNGs proprios em vez de texto/simbolos soltos.
+- A linguagem visual ficou mais perto de HUD arcade, embora ainda falte acabamento pictorico/realista.
+
 ## Proximas iteracoes
 
 - Trocar fundo hospitalar por arte mais rica em 16:9/vertical com fachada e emergencia.
