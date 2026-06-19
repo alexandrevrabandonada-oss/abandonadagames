@@ -111,6 +111,12 @@ A referencia passa a ser um survival arcade com fantasia clara: enfermeiro em fr
 - Ambulancia e aviso de fila aparecem como elementos de cena, conectando estado do jogo com o mundo visual.
 - A referencia tem hospital vivo e povoado; esta iteracao aproxima a composicao desse requisito sem depender de novo render externo.
 
+## Decima primeira iteracao de decisao
+
+- Adicionado `plano rapido` com recomendacao dinamica baseada em energia, contas, caos, dia e saldo.
+- O botao recomendado recebe destaque visual com borda/ring amarelo.
+- O jogador passa a ter leitura de estrategia imediata, aproximando a jogabilidade de survival economico da meta.
+
 ## Proximas iteracoes
 
 - Trocar fundo hospitalar por arte mais rica em 16:9/vertical com fachada e emergencia.

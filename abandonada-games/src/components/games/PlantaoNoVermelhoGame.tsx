@@ -768,6 +768,24 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
         : snapshot.day >= 8
           ? "Mercado subiu: energia custa caro."
           : "Comeco do mes: escolha seu folego.";
+  const recommendedAction =
+    snapshot.breath < 42
+      ? "saude"
+      : snapshot.bills > 62
+        ? "economizar"
+        : snapshot.chaos > 64
+          ? "saude"
+          : snapshot.day > 18 && salaryLeft < 120
+            ? "bico"
+            : "trabalhar";
+  const recommendationText =
+    recommendedAction === "saude"
+      ? "Recomendado: recuperar energia antes do proximo plantao."
+      : recommendedAction === "economizar"
+        ? "Recomendado: conter contas antes que virem colapso."
+        : recommendedAction === "bico"
+          ? "Recomendado: renda extra para fechar o mes."
+          : "Recomendado: fazer plantao enquanto ainda ha folego.";
 
   return (
     <main
@@ -899,6 +917,10 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             <div className="text-xs font-black uppercase text-[#ffd554]">evento do dia</div>
             <div className="mt-1 text-sm font-black uppercase text-white">{dayEvent}</div>
           </div>
+          <div className="col-span-2 rounded-xl border border-[#62d6ff]/30 bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
+            <div className="text-xs font-black uppercase text-[#62d6ff]">plano rapido</div>
+            <div className="mt-1 text-sm font-black uppercase text-white">{recommendationText}</div>
+          </div>
           <div className="col-span-2 rounded-xl border border-[rgba(255,255,255,0.18)] bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
             <div className="text-xs font-black uppercase text-[#9ee8c1]">decisoes tomadas</div>
             <div className="mt-1 text-3xl font-black text-[#ffd554]">{snapshot.actionCount}</div>
@@ -912,7 +934,9 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               key={action.id}
               type="button"
               onClick={() => applySurvivalAction(action)}
-              className={`${action.tone} flex min-h-28 items-center gap-3 rounded-xl border border-[rgba(255,255,255,0.22)] px-3 py-3 text-left shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition active:scale-[0.98] lg:min-h-0 lg:px-4 lg:py-4`}
+              className={`${action.tone} flex min-h-28 items-center gap-3 rounded-xl border px-3 py-3 text-left shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition active:scale-[0.98] lg:min-h-0 lg:px-4 lg:py-4 ${
+                action.id === recommendedAction ? "border-[#ffd554] ring-2 ring-[#ffd554]/70" : "border-[rgba(255,255,255,0.22)]"
+              }`}
             >
               <span className="flex size-12 items-center justify-center rounded-lg bg-[rgba(255,255,255,0.18)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
