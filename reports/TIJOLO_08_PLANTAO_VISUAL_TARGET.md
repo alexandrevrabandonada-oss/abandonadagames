@@ -73,6 +73,15 @@ A referencia passa a ser um survival arcade com fantasia clara: enfermeiro em fr
 - Todas as necessidades do painel inferior agora usam icones PNG: alimentacao, transporte, saude, lazer, sono e saude mental.
 - O HUD ficou menos dependente de texto cru e mais proximo da linguagem visual da referencia.
 
+## Sexta iteracao de feedback
+
+- A cena agora reage ao estado do jogador com vinheta vermelha quando caos/pressao sobem.
+- Energia baixa adiciona pulso visual de perigo.
+- Cada decisao mostra um card temporario no centro da cena, reforcando causa e consequencia.
+- Botoes de acao exibem trade-off direto antes do clique.
+- Enfermeiro ganhou sombra/halo para se integrar melhor ao chao do hospital.
+- A cena central ganhou uma faixa contextual de entrada do hospital para aproximar mundo e mecanica.
+
 ## Proximas iteracoes
 
 - Trocar fundo hospitalar por arte mais rica em 16:9/vertical com fachada e emergencia.
