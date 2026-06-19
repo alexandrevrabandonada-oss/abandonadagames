@@ -91,6 +91,7 @@ const survivalActions = [
     breath: -10,
     bills: -8,
     chaos: 4,
+    tradeoff: "+R$ / -energia",
     toast: "Plantao pago em migalha.",
   },
   {
@@ -103,6 +104,7 @@ const survivalActions = [
     breath: -13,
     bills: -12,
     chaos: 7,
+    tradeoff: "+renda / +caos",
     toast: "Virou noite no bico.",
   },
   {
@@ -115,6 +117,7 @@ const survivalActions = [
     breath: -4,
     bills: -10,
     chaos: 2,
+    tradeoff: "-contas / -conforto",
     toast: "Cortou o minimo do minimo.",
   },
   {
@@ -127,6 +130,7 @@ const survivalActions = [
     breath: 16,
     bills: 2,
     chaos: -8,
+    tradeoff: "+energia / +conta",
     toast: "Respirou antes do colapso.",
   },
 ];
@@ -286,6 +290,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   const [toast, setToast] = useState("Segura o mes!");
   const [copyLabel, setCopyLabel] = useState("Compartilhar");
   const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
+  const [decisionFlash, setDecisionFlash] = useState<{ title: string; subtitle: string; tone: string } | null>(null);
 
   const rankMeta = useMemo(() => getRank(snapshot.score), [snapshot.score]);
 
@@ -701,6 +706,8 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       shakeRef.current = action.breath < -8 ? 0.18 : shakeRef.current;
       addParticle(action.title, playerXRef.current - 56, PLAYER_Y - 112, action.id === "saude" ? "good" : "power");
       setToast(action.toast);
+      setDecisionFlash({ title: action.title, subtitle: action.toast, tone: action.tone });
+      window.setTimeout(() => setDecisionFlash(null), 1300);
       playTone(action.id === "saude" ? "good" : "power");
       if (stateRef.current.day >= 30 || stateRef.current.breath <= 0 || stateRef.current.chaos >= 100 || stateRef.current.bills >= 100) {
         window.setTimeout(() => finishRound(), 80);
@@ -724,6 +731,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   const salaryLeft = clamp(950 - snapshot.bills * 8.6 + snapshot.supports * 24 + snapshot.score * 0.025, -1400, 950);
   const debtTotal = dueBills.reduce((total, [, value]) => total + value, 0);
   const paidRatio = clamp((100 - snapshot.bills) / 100, 0, 1);
+  const pressure = clamp((snapshot.chaos + Math.max(0, 55 - snapshot.breath)) / 145, 0, 1);
 
   return (
     <main
@@ -736,7 +744,19 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       }}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.05),rgba(0,0,0,0.46)_72%)]" />
+      <div
+        className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+        style={{
+          opacity: pressure,
+          background: "radial-gradient(circle at 50% 48%, rgba(255,59,48,0.06), rgba(90,0,0,0.38) 72%)",
+        }}
+      />
+      {snapshot.breath < 36 ? (
+        <div className="pointer-events-none absolute inset-0 animate-pulse bg-[radial-gradient(circle_at_50%_50%,transparent_42%,rgba(0,0,0,0.42)_100%)]" />
+      ) : null}
       <div className="pointer-events-none absolute left-[38%] top-[41%] hidden -translate-x-1/2 lg:block">
+        <div className="absolute left-1/2 top-[92%] h-10 w-56 -translate-x-1/2 rounded-full bg-black/55 blur-md" />
+        <div className="absolute left-1/2 top-[84%] h-28 w-40 -translate-x-1/2 rounded-full bg-[#62d6ff]/10 blur-2xl" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/games/plantaono-vermelho/nurse-back.png"
@@ -779,6 +799,9 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
         </section>
 
         <section className="pointer-events-auto relative min-h-[520px] overflow-hidden rounded-[1.25rem] border border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.12)] p-2 lg:col-start-2 lg:row-span-2 lg:min-h-0 lg:h-full lg:border-0 lg:bg-transparent lg:p-0">
+          <div className="pointer-events-none absolute bottom-[22vh] left-1/2 hidden w-[min(58vw,560px)] -translate-x-1/2 rounded-xl border border-white/10 bg-[rgba(3,14,22,0.52)] px-4 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-[2px] lg:block">
+            Entrada do hospital: escolha como atravessar mais um dia sem salario
+          </div>
           <div className="pointer-events-none absolute inset-x-4 top-1 z-20 text-center lg:top-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -800,6 +823,13 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             <div className="pointer-events-none absolute inset-x-5 bottom-5 flex items-center justify-between rounded-lg bg-[rgba(19,13,16,0.78)] px-4 py-3 text-xs font-black uppercase backdrop-blur-sm">
               <span>arraste</span>
               <span>{toast}</span>
+            </div>
+          ) : null}
+          {decisionFlash ? (
+            <div className="pointer-events-none absolute left-1/2 top-[34%] z-30 w-[min(86vw,420px)] -translate-x-1/2 rounded-2xl border border-white/25 bg-[rgba(3,14,22,0.9)] p-4 text-center shadow-[0_12px_0_rgba(0,0,0,0.28),0_24px_60px_rgba(0,0,0,0.45)]">
+              <div className={`mx-auto mb-2 h-2 w-28 rounded-full ${decisionFlash.tone}`} />
+              <div className="text-3xl font-black uppercase text-[#ffd554]">{decisionFlash.title}</div>
+              <div className="mt-1 text-sm font-black uppercase text-white">{decisionFlash.subtitle}</div>
             </div>
           ) : null}
         </section>
@@ -835,6 +865,9 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               <span>
                 <span className="block text-lg font-black uppercase leading-none">{action.title}</span>
                 <span className="mt-1 block text-xs font-black uppercase text-white/80">{action.subtitle}</span>
+                <span className="mt-2 inline-block rounded-full bg-black/25 px-2 py-1 text-[10px] font-black uppercase text-white/75">
+                  {action.tradeoff}
+                </span>
               </span>
             </button>
           ))}
