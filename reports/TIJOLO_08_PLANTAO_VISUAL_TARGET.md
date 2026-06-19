@@ -66,6 +66,13 @@ A referencia passa a ser um survival arcade com fantasia clara: enfermeiro em fr
 - Cada acao continua tendo trade-off: dinheiro/contas versus energia/caos.
 - Painel lateral mostra quantas decisoes foram tomadas e reforca a regra: cada escolha cobra do corpo ou das contas.
 
+## Quinta iteracao visual
+
+- O titulo principal passou a ser um PNG proprio, com contorno, sombra e linha de energia, mais proximo de logo arcade.
+- Opcoes e conquistas deixaram de usar caracteres soltos e ganharam icones PNG.
+- Todas as necessidades do painel inferior agora usam icones PNG: alimentacao, transporte, saude, lazer, sono e saude mental.
+- O HUD ficou menos dependente de texto cru e mais proximo da linguagem visual da referencia.
+
 ## Proximas iteracoes
 
 - Trocar fundo hospitalar por arte mais rica em 16:9/vertical com fachada e emergencia.

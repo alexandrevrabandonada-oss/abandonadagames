@@ -132,12 +132,12 @@ const survivalActions = [
 ];
 
 const needBars = [
-  { label: "alimentacao", icon: "/games/plantaono-vermelho/icon-pig.png", color: "#ffd554", getValue: (snapshot: GameSnapshot) => clamp(100 - snapshot.bills * 0.65, 8, 100) },
-  { label: "transporte", icon: "/games/plantaono-vermelho/icon-money.png", color: "#62d6ff", getValue: (snapshot: GameSnapshot) => clamp(92 - snapshot.bills * 0.45, 10, 100) },
+  { label: "alimentacao", icon: "/games/plantaono-vermelho/icon-food.png", color: "#ffd554", getValue: (snapshot: GameSnapshot) => clamp(100 - snapshot.bills * 0.65, 8, 100) },
+  { label: "transporte", icon: "/games/plantaono-vermelho/icon-bus.png", color: "#62d6ff", getValue: (snapshot: GameSnapshot) => clamp(92 - snapshot.bills * 0.45, 10, 100) },
   { label: "saude", icon: "/games/plantaono-vermelho/icon-health.png", color: "#9ee8c1", getValue: (snapshot: GameSnapshot) => clamp(snapshot.breath, 0, 100) },
-  { label: "lazer", icon: "◇", color: "#ff9a62", getValue: (snapshot: GameSnapshot) => clamp(70 - snapshot.chaos * 0.7, 5, 100) },
-  { label: "sono", icon: "▰", color: "#62d6ff", getValue: (snapshot: GameSnapshot) => clamp(snapshot.breath - snapshot.chaos * 0.22, 5, 100) },
-  { label: "saude mental", icon: "/games/plantaono-vermelho/icon-energy.png", color: "#d778ff", getValue: (snapshot: GameSnapshot) => clamp(105 - snapshot.chaos, 4, 100) },
+  { label: "lazer", icon: "/games/plantaono-vermelho/icon-gamepad.png", color: "#ff9a62", getValue: (snapshot: GameSnapshot) => clamp(70 - snapshot.chaos * 0.7, 5, 100) },
+  { label: "sono", icon: "/games/plantaono-vermelho/icon-sleep.png", color: "#62d6ff", getValue: (snapshot: GameSnapshot) => clamp(snapshot.breath - snapshot.chaos * 0.22, 5, 100) },
+  { label: "saude mental", icon: "/games/plantaono-vermelho/icon-brain.png", color: "#d778ff", getValue: (snapshot: GameSnapshot) => clamp(105 - snapshot.chaos, 4, 100) },
 ];
 
 const dueBills = [
@@ -780,10 +780,12 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
 
         <section className="pointer-events-auto relative min-h-[520px] overflow-hidden rounded-[1.25rem] border border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.12)] p-2 lg:col-start-2 lg:row-span-2 lg:min-h-0 lg:h-full lg:border-0 lg:bg-transparent lg:p-0">
           <div className="pointer-events-none absolute inset-x-4 top-1 z-20 text-center lg:top-0">
-            <div className="mx-auto inline-block rotate-[-2deg] text-balance rounded-[1.1rem] px-4 py-1 text-4xl font-black uppercase leading-[0.9] text-white drop-shadow-[0_6px_0_#09294c] [-webkit-text-stroke:2px_#09294c] sm:text-5xl lg:text-6xl">
-              Como sobreviver
-              <span className="block text-[#ffd554] [-webkit-text-stroke:2px_#09294c]">com salario atrasado</span>
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/games/plantaono-vermelho/logo-salario-atrasado.png"
+              alt="Como sobreviver com salario atrasado"
+              className="mx-auto w-[min(92vw,760px)] rotate-[-2deg] drop-shadow-[0_8px_0_#041b40]"
+            />
             <div className="mx-auto mt-1 w-fit rounded-lg bg-[#062d70] px-5 py-2 text-sm font-black uppercase tracking-[0.08em] shadow-[0_5px_0_#041b40]">
               Missao: chegar ao fim do mes!
             </div>
@@ -804,8 +806,8 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
 
         <section className="grid gap-3 lg:col-start-3 lg:row-span-2">
           <div className="hidden justify-end gap-3 lg:flex">
-            <CircleMenu label="opcoes" icon="⚙" />
-            <CircleMenu label="conquistas" icon="🏆" />
+            <CircleMenu label="opcoes" icon="/games/plantaono-vermelho/icon-options.png" />
+            <CircleMenu label="conquistas" icon="/games/plantaono-vermelho/icon-trophy.png" />
           </div>
           <div className="rounded-xl border-[3px] border-[#30343c] bg-[#f7f1df] px-4 py-3 text-center text-[#130d10] shadow-[0_5px_0_rgba(0,0,0,0.45)]">
             <div className="rounded-t-lg bg-[#b9231d] py-1 text-xs font-black uppercase text-white">Dia</div>
@@ -967,8 +969,9 @@ function MoneyStrip({ value }: { value: string }) {
 function CircleMenu({ label, icon }: { label: string; icon: string }) {
   return (
     <div className="text-center">
-      <div className="mx-auto flex size-16 items-center justify-center rounded-full border-[3px] border-[#2a3b47] bg-[linear-gradient(180deg,#3b4b54,#111820)] text-3xl shadow-[0_5px_0_rgba(0,0,0,0.55)]">
-        {icon}
+      <div className="mx-auto flex size-16 items-center justify-center rounded-full border-[3px] border-[#2a3b47] bg-[linear-gradient(180deg,#3b4b54,#111820)] shadow-[0_5px_0_rgba(0,0,0,0.55)]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={icon} alt="" className="size-12 object-contain" />
       </div>
       <div className="mt-1 rounded-full bg-[#071724] px-3 py-1 text-[10px] font-black uppercase shadow-[0_3px_0_rgba(0,0,0,0.45)]">
         {label}
@@ -1066,12 +1069,8 @@ function NeedsPanel({ snapshot }: { snapshot: GameSnapshot }) {
               </div>
               <div className="flex items-center gap-2">
                 <span className="flex size-8 items-center justify-center rounded bg-[rgba(255,255,255,0.12)] text-[10px] font-black">
-                  {need.icon.endsWith(".png") ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={need.icon} alt="" className="size-7 object-contain" />
-                  ) : (
-                    need.icon
-                  )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={need.icon} alt="" className="size-7 object-contain" />
                 </span>
                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/40">
                   <div className="h-full rounded-full" style={{ width: `${value}%`, backgroundColor: need.color }} />
