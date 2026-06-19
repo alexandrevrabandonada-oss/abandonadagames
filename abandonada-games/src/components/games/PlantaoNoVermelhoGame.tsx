@@ -153,6 +153,33 @@ const dueBills = [
   ["transporte", 120],
 ] as const;
 
+const achievementDefs = [
+  {
+    id: "plantao",
+    title: "Plantao cumprido",
+    description: "Trabalhe ao menos um plantao.",
+    unlocked: (snapshot: GameSnapshot) => snapshot.shiftsWorked >= 1,
+  },
+  {
+    id: "respiro",
+    title: "Respiro coletivo",
+    description: "Cuide da saude mental.",
+    unlocked: (snapshot: GameSnapshot) => snapshot.mentalCare >= 1 || snapshot.chaos < 35,
+  },
+  {
+    id: "contas",
+    title: "Boleto contido",
+    description: "Baixe as contas abaixo de 35%.",
+    unlocked: (snapshot: GameSnapshot) => snapshot.bills < 35,
+  },
+  {
+    id: "mes",
+    title: "Chegou ao fim",
+    description: "Alcance o dia 30.",
+    unlocked: (snapshot: GameSnapshot) => snapshot.day >= 30,
+  },
+] as const;
+
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
@@ -732,6 +759,15 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   const debtTotal = dueBills.reduce((total, [, value]) => total + value, 0);
   const paidRatio = clamp((100 - snapshot.bills) / 100, 0, 1);
   const pressure = clamp((snapshot.chaos + Math.max(0, 55 - snapshot.breath)) / 145, 0, 1);
+  const unlockedAchievements = achievementDefs.filter((achievement) => achievement.unlocked(snapshot));
+  const dayEvent =
+    snapshot.day >= 24
+      ? "Fim do mes: qualquer erro vira colapso."
+      : snapshot.day >= 16
+        ? "Juros rondando: economizar vale mais."
+        : snapshot.day >= 8
+          ? "Mercado subiu: energia custa caro."
+          : "Comeco do mes: escolha seu folego.";
 
   return (
     <main
@@ -851,12 +887,16 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
         <section className="order-3 grid grid-cols-2 gap-3 lg:order-none lg:col-start-3 lg:row-span-2 lg:grid-cols-1">
           <div className="hidden justify-end gap-3 lg:flex">
             <CircleMenu label="opcoes" icon="/games/plantaono-vermelho/icon-options.png" />
-            <CircleMenu label="conquistas" icon="/games/plantaono-vermelho/icon-trophy.png" />
+            <CircleMenu label={`${unlockedAchievements.length}/4`} icon="/games/plantaono-vermelho/icon-trophy.png" />
           </div>
           <div className="col-span-2 rounded-xl border-[3px] border-[#30343c] bg-[#f7f1df] px-4 py-3 text-center text-[#130d10] shadow-[0_5px_0_rgba(0,0,0,0.45)] lg:col-span-1">
             <div className="rounded-t-lg bg-[#b9231d] py-1 text-xs font-black uppercase text-white">Dia</div>
             <div className="text-4xl font-black">{snapshot.day} / 30</div>
             <div className="text-[10px] font-black uppercase">sobreviver ate o dia 30</div>
+          </div>
+          <div className="col-span-2 rounded-xl border border-[#ffd554]/30 bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
+            <div className="text-xs font-black uppercase text-[#ffd554]">evento do dia</div>
+            <div className="mt-1 text-sm font-black uppercase text-white">{dayEvent}</div>
           </div>
           <div className="col-span-2 rounded-xl border border-[rgba(255,255,255,0.18)] bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
             <div className="text-xs font-black uppercase text-[#9ee8c1]">decisoes tomadas</div>
@@ -865,6 +905,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               cada escolha cobra do corpo ou das contas
             </div>
           </div>
+          <AchievementPanel snapshot={snapshot} />
           {survivalActions.map((action) => (
             <button
               key={action.id}
@@ -1031,6 +1072,36 @@ function CircleMenu({ label, icon }: { label: string; icon: string }) {
       </div>
       <div className="mt-1 rounded-full bg-[#071724] px-3 py-1 text-[10px] font-black uppercase shadow-[0_3px_0_rgba(0,0,0,0.45)]">
         {label}
+      </div>
+    </div>
+  );
+}
+
+function AchievementPanel({ snapshot }: { snapshot: GameSnapshot }) {
+  return (
+    <div className="col-span-2 rounded-xl border border-[rgba(255,255,255,0.18)] bg-[rgba(3,14,22,0.82)] p-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
+      <div className="mb-2 flex items-center justify-between">
+        <div className="text-xs font-black uppercase text-[#ffd554]">Conquistas</div>
+        <div className="text-[10px] font-black uppercase text-white/70">
+          {achievementDefs.filter((achievement) => achievement.unlocked(snapshot)).length}/{achievementDefs.length}
+        </div>
+      </div>
+      <div className="grid gap-2">
+        {achievementDefs.map((achievement) => {
+          const unlocked = achievement.unlocked(snapshot);
+          return (
+            <div
+              key={achievement.id}
+              className={`rounded-lg border px-3 py-2 ${unlocked ? "border-[#ffd554]/50 bg-[#ffd554]/12" : "border-white/10 bg-black/20 opacity-70"}`}
+            >
+              <div className={unlocked ? "text-xs font-black uppercase text-[#ffd554]" : "text-xs font-black uppercase text-white/55"}>
+                {unlocked ? "✓ " : "□ "}
+                {achievement.title}
+              </div>
+              <div className="mt-1 text-[10px] font-bold uppercase text-white/55">{achievement.description}</div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
