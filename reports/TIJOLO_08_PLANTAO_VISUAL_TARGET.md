@@ -82,6 +82,14 @@ A referencia passa a ser um survival arcade com fantasia clara: enfermeiro em fr
 - Enfermeiro ganhou sombra/halo para se integrar melhor ao chao do hospital.
 - A cena central ganhou uma faixa contextual de entrada do hospital para aproximar mundo e mecanica.
 
+## Setima iteracao mobile-first
+
+- No mobile, a primeira tela agora preserva a cena: hospital, logo, enfermeiro e status compacto aparecem antes dos paineis.
+- O layout deixa de abrir com o HUD inteiro empilhado, aproximando a experiencia inicial da imagem-meta.
+- Status essenciais (`dia`, `energia`, `saldo`) aparecem como chips sobre a cena.
+- Acoes viraram grade 2x2 no celular, reduzindo rolagem e reforcando a sensacao de controle arcade.
+- O canvas arcade fica invisivel como camada tecnica no visual principal mobile, evitando voltar ao aspecto de prototipo vertical.
+
 ## Proximas iteracoes
 
 - Trocar fundo hospitalar por arte mais rica em 16:9/vertical com fachada e emergencia.

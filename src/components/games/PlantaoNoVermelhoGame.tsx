@@ -735,7 +735,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
 
   return (
     <main
-      className="relative min-h-screen overflow-hidden bg-[#071018] px-3 py-3 text-[#f7f1df] sm:px-5 sm:py-5 lg:h-screen lg:px-4 lg:py-4"
+      className="relative min-h-screen overflow-x-hidden bg-[#071018] px-3 py-3 text-[#f7f1df] sm:px-5 sm:py-5 lg:h-screen lg:overflow-hidden lg:px-4 lg:py-4"
       style={{
         backgroundImage:
           "linear-gradient(180deg, rgba(8,18,27,0.08), rgba(6,8,10,0.58)), url('/games/plantaono-vermelho/hospital-facade.png')",
@@ -766,7 +766,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       </div>
 
       <div className="relative z-10 mx-auto grid max-w-[1520px] gap-3 lg:h-full lg:grid-cols-[280px_minmax(430px,1fr)_292px] lg:grid-rows-[auto_1fr_auto] lg:items-start">
-        <section className="rounded-[1.25rem] border border-[#0b2e4b] bg-[linear-gradient(180deg,rgba(8,44,70,0.96),rgba(3,15,25,0.94))] p-3 shadow-[0_10px_0_rgba(0,0,0,0.35),0_18px_60px_rgba(0,0,0,0.42)] lg:row-span-2">
+        <section className="order-2 rounded-[1.25rem] border border-[#0b2e4b] bg-[linear-gradient(180deg,rgba(8,44,70,0.96),rgba(3,15,25,0.94))] p-3 shadow-[0_10px_0_rgba(0,0,0,0.35),0_18px_60px_rgba(0,0,0,0.42)] lg:order-none lg:row-span-2">
           <div className="flex items-start justify-between gap-3">
             <div className="flex size-20 shrink-0 items-center justify-center rounded-full border-[5px] border-[#43b5ff] bg-[#1f3448] text-4xl font-black shadow-[0_0_0_4px_rgba(0,0,0,0.45)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -798,7 +798,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           <BillPanel paidRatio={paidRatio} total={debtTotal} />
         </section>
 
-        <section className="pointer-events-auto relative min-h-[520px] overflow-hidden rounded-[1.25rem] border border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.12)] p-2 lg:col-start-2 lg:row-span-2 lg:min-h-0 lg:h-full lg:border-0 lg:bg-transparent lg:p-0">
+        <section className="pointer-events-auto relative order-1 min-h-[72vh] overflow-hidden rounded-[1.25rem] border border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.12)] p-2 lg:order-none lg:col-start-2 lg:row-span-2 lg:min-h-0 lg:h-full lg:border-0 lg:bg-transparent lg:p-0">
           <div className="pointer-events-none absolute bottom-[22vh] left-1/2 hidden w-[min(58vw,560px)] -translate-x-1/2 rounded-xl border border-white/10 bg-[rgba(3,14,22,0.52)] px-4 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-[2px] lg:block">
             Entrada do hospital: escolha como atravessar mais um dia sem salario
           </div>
@@ -813,9 +813,23 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               Missao: chegar ao fim do mes!
             </div>
           </div>
+          <div className="pointer-events-none absolute bottom-12 left-1/2 z-10 -translate-x-1/2 lg:hidden">
+            <div className="absolute left-1/2 top-[90%] h-8 w-44 -translate-x-1/2 rounded-full bg-black/60 blur-md" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/games/plantaono-vermelho/nurse-back.png"
+              alt=""
+              className="h-[48vh] max-h-[430px] min-h-[310px] drop-shadow-[0_22px_28px_rgba(0,0,0,0.72)]"
+            />
+          </div>
+          <div className="pointer-events-none absolute inset-x-3 bottom-3 z-20 grid grid-cols-3 gap-2 lg:hidden">
+            <MiniStatus label="dia" value={`${snapshot.day}/30`} />
+            <MiniStatus label="energia" value={`${Math.round(snapshot.breath)}%`} danger={snapshot.breath < 36} />
+            <MiniStatus label="saldo" value={`R$ ${Math.round(salaryLeft)}`} />
+          </div>
           <canvas
             ref={canvasRef}
-            className="mx-auto block w-full max-w-[420px] touch-none rounded-lg opacity-70 mix-blend-screen lg:absolute lg:bottom-[4vh] lg:left-1/2 lg:max-w-[390px] lg:-translate-x-1/2 lg:opacity-0"
+            className="mx-auto block w-full max-w-[420px] touch-none rounded-lg opacity-0 mix-blend-screen lg:absolute lg:bottom-[4vh] lg:left-1/2 lg:max-w-[390px] lg:-translate-x-1/2"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
           />
@@ -834,17 +848,17 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           ) : null}
         </section>
 
-        <section className="grid gap-3 lg:col-start-3 lg:row-span-2">
+        <section className="order-3 grid grid-cols-2 gap-3 lg:order-none lg:col-start-3 lg:row-span-2 lg:grid-cols-1">
           <div className="hidden justify-end gap-3 lg:flex">
             <CircleMenu label="opcoes" icon="/games/plantaono-vermelho/icon-options.png" />
             <CircleMenu label="conquistas" icon="/games/plantaono-vermelho/icon-trophy.png" />
           </div>
-          <div className="rounded-xl border-[3px] border-[#30343c] bg-[#f7f1df] px-4 py-3 text-center text-[#130d10] shadow-[0_5px_0_rgba(0,0,0,0.45)]">
+          <div className="col-span-2 rounded-xl border-[3px] border-[#30343c] bg-[#f7f1df] px-4 py-3 text-center text-[#130d10] shadow-[0_5px_0_rgba(0,0,0,0.45)] lg:col-span-1">
             <div className="rounded-t-lg bg-[#b9231d] py-1 text-xs font-black uppercase text-white">Dia</div>
             <div className="text-4xl font-black">{snapshot.day} / 30</div>
             <div className="text-[10px] font-black uppercase">sobreviver ate o dia 30</div>
           </div>
-          <div className="rounded-xl border border-[rgba(255,255,255,0.18)] bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)]">
+          <div className="col-span-2 rounded-xl border border-[rgba(255,255,255,0.18)] bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
             <div className="text-xs font-black uppercase text-[#9ee8c1]">decisoes tomadas</div>
             <div className="mt-1 text-3xl font-black text-[#ffd554]">{snapshot.actionCount}</div>
             <div className="mt-1 text-[10px] font-black uppercase text-white/70">
@@ -856,14 +870,14 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               key={action.id}
               type="button"
               onClick={() => applySurvivalAction(action)}
-              className={`${action.tone} flex items-center gap-3 rounded-xl border border-[rgba(255,255,255,0.22)] px-4 py-4 text-left shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition active:scale-[0.98]`}
+              className={`${action.tone} flex min-h-28 items-center gap-3 rounded-xl border border-[rgba(255,255,255,0.22)] px-3 py-3 text-left shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition active:scale-[0.98] lg:min-h-0 lg:px-4 lg:py-4`}
             >
               <span className="flex size-12 items-center justify-center rounded-lg bg-[rgba(255,255,255,0.18)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={action.icon} alt="" className="size-10 object-contain drop-shadow-[0_2px_0_rgba(0,0,0,0.35)]" />
               </span>
               <span>
-                <span className="block text-lg font-black uppercase leading-none">{action.title}</span>
+                <span className="block text-base font-black uppercase leading-none lg:text-lg">{action.title}</span>
                 <span className="mt-1 block text-xs font-black uppercase text-white/80">{action.subtitle}</span>
                 <span className="mt-2 inline-block rounded-full bg-black/25 px-2 py-1 text-[10px] font-black uppercase text-white/75">
                   {action.tradeoff}
@@ -873,11 +887,11 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           ))}
         </section>
 
-        <section className="lg:col-start-2 lg:row-start-3">
+        <section className="order-4 lg:order-none lg:col-start-2 lg:row-start-3">
           <NeedsPanel snapshot={snapshot} />
         </section>
 
-        <div className="grid grid-cols-2 gap-3 lg:col-start-2 lg:hidden">
+        <div className="order-5 grid grid-cols-2 gap-3 lg:col-start-2 lg:hidden">
           <button
             type="button"
             onClick={() => movePlayer(-1)}
@@ -995,6 +1009,15 @@ function MoneyStrip({ value }: { value: string }) {
         <div className="text-sm font-black uppercase">saldo</div>
         <div className="text-2xl font-black text-white">{value}</div>
       </div>
+    </div>
+  );
+}
+
+function MiniStatus({ label, value, danger = false }: { label: string; value: string; danger?: boolean }) {
+  return (
+    <div className={`rounded-xl border px-2 py-2 text-center shadow-[0_5px_0_rgba(0,0,0,0.35)] backdrop-blur-sm ${danger ? "border-[#ff3b30] bg-[rgba(80,0,0,0.72)]" : "border-white/15 bg-[rgba(3,14,22,0.78)]"}`}>
+      <div className="text-[9px] font-black uppercase tracking-[0.12em] text-[#9ee8c1]">{label}</div>
+      <div className="mt-1 text-sm font-black text-white">{value}</div>
     </div>
   );
 }
