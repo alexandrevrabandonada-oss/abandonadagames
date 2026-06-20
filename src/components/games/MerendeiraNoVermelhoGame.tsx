@@ -1059,22 +1059,22 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
     { border: "border-slate-400", text: "text-slate-200", bg: "from-slate-800 to-slate-950", shadow: "shadow-none" };
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-[#071319] px-3 pb-20 pt-3 text-[#f7f3df]">
+    <main className="relative min-h-screen overflow-x-hidden bg-[#071319] px-3 pb-6 xs:pb-12 pt-3 text-[#f7f3df]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,114,51,0.22),transparent_24%),radial-gradient(circle_at_80%_20%,rgba(114,214,255,0.12),transparent_18%),linear-gradient(180deg,#08202b,#0d1113_70%)]" />
       <div className="relative z-10 mx-auto max-w-md">
-        <header className="rounded-[1.6rem] border border-white/10 bg-[rgba(7,14,20,0.72)] px-4 py-4 shadow-[0_16px_50px_rgba(0,0,0,0.36)]">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="text-[11px] font-black uppercase tracking-[0.22em] text-[#ffd45c]">salário atrasado + contrato intermitente</div>
-              <h1 className="mt-2 text-[2.25rem] font-black uppercase leading-[0.88] text-[#f3f0dd]">
+        <header className="rounded-[1.6rem] border border-white/10 bg-[rgba(7,14,20,0.72)] px-3 py-3 xs:px-4 xs:py-4 shadow-[0_16px_50px_rgba(0,0,0,0.36)]">
+          <div className="flex items-start justify-between gap-2.5 min-w-0">
+            <div className="min-w-0 flex-1">
+              <div className="text-[9px] xs:text-[11px] font-black uppercase tracking-[0.12em] xs:tracking-[0.22em] text-[#ffd45c] leading-tight">salário atrasado + contrato intermitente</div>
+              <h1 className="mt-1.5 text-[1.65rem] xs:text-[2.25rem] font-black uppercase leading-[0.9] text-[#f3f0dd] break-words">
                 Merendeira
                 <span className="block text-[#ff5e2f]">no Vermelho</span>
               </h1>
             </div>
-            <div className="rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-right">
-              <div className="text-[10px] font-black uppercase text-white/55">score</div>
-              <div className="text-3xl font-black text-[#ffd45c]">{snapshot.score}</div>
-              <div className="text-[10px] font-black uppercase text-[#ff9a6e]">combo x{Math.max(1, snapshot.combo)}</div>
+            <div className="shrink-0 rounded-xl border border-white/10 bg-black/25 px-2.5 py-1.5 xs:px-3 xs:py-2 text-right">
+              <div className="text-[9px] xs:text-[10px] font-black uppercase text-white/55 leading-none">score</div>
+              <div className="text-2xl xs:text-3xl font-black text-[#ffd45c] leading-none mt-0.5">{snapshot.score}</div>
+              <div className="text-[9px] xs:text-[10px] font-black uppercase text-[#ff9a6e] leading-none mt-1">combo x{Math.max(1, snapshot.combo)}</div>
             </div>
           </div>
           <div className="mt-4 grid grid-cols-5 gap-1.5 xs:gap-2">
@@ -1086,8 +1086,8 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
           </div>
         </header>
 
-        <section className="mt-3 overflow-hidden rounded-[1.7rem] border border-white/10 bg-[rgba(10,19,26,0.88)] shadow-[0_18px_56px_rgba(0,0,0,0.42)]">
-          <div className="border-b border-white/10 p-3">
+        <section className="mt-2.5 xs:mt-3 overflow-hidden rounded-[1.7rem] border border-white/10 bg-[rgba(10,19,26,0.88)] shadow-[0_18px_56px_rgba(0,0,0,0.42)]">
+          <div className="border-b border-white/10 p-2.5 xs:p-3">
             <canvas
               ref={canvasRef}
               className="block w-full touch-none rounded-[1.2rem]"
@@ -1107,7 +1107,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
                 };
               }}
             />
-            <div className="mt-3 rounded-2xl border border-[#a15af0]/50 bg-[linear-gradient(180deg,rgba(78,19,115,0.7),rgba(44,15,74,0.78))] px-3 py-3">
+            <div className="hidden xs:block mt-3 rounded-2xl border border-[#a15af0]/50 bg-[linear-gradient(180deg,rgba(78,19,115,0.7),rgba(44,15,74,0.78))] px-3 py-3">
               <div className="mb-2 text-center text-lg font-black uppercase text-[#ffd34e]">Como jogar</div>
               <div className="grid grid-cols-5 gap-2 text-center text-[10px] font-black uppercase text-white/82">
                 <GuideStep title="1" text="mexa no toque" />
@@ -1120,9 +1120,9 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
           </div>
 
           <div className="grid gap-3 p-3">
-            <div className="rounded-xl border border-[#72d9ff]/35 bg-[#0c1720] p-3">
-              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#72d9ff]">evento</div>
-              <div className="mt-1 text-sm font-black text-white">{toast}</div>
+            <div className="rounded-xl border border-[#72d9ff]/35 bg-[#0c1720] px-2.5 py-2 xs:p-3">
+              <div className="text-[9px] xs:text-[10px] font-black uppercase tracking-[0.18em] text-[#72d9ff] leading-none">evento</div>
+              <div className="mt-1 text-xs xs:text-sm font-black text-white leading-tight">{toast}</div>
             </div>
 
             {snapshot.finished ? (
