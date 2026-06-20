@@ -20,6 +20,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: antiCheat.reason }, { status: 422 });
   }
 
-  const saved = appendMockScore(parsed.data);
+  const saved = await appendMockScore(parsed.data);
   return NextResponse.json({ ok: true, entry: saved });
 }

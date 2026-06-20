@@ -9,5 +9,5 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "slug obrigatorio" }, { status: 400 });
   }
 
-  return NextResponse.json({ ranking: getApiRankingForGame(slug) });
+  return NextResponse.json({ ranking: await getApiRankingForGame(slug) });
 }

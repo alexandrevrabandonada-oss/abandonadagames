@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getGameBySlug, getRankingForGame } from "@/lib/gameRegistry";
+import { getGameBySlug } from "@/lib/gameRegistry";
+import { getApiRankingForGame } from "@/lib/server/mockRankingStore";
+
+export const dynamic = "force-dynamic";
 
 export default async function RankingPage({
   params,
@@ -12,11 +15,11 @@ export default async function RankingPage({
 
   if (!game) notFound();
 
-  const ranking = getRankingForGame(slug);
+  const ranking = await getApiRankingForGame(slug);
   const subtitle =
     slug === "merendeira-no-vermelho"
       ? "Quem segura a cozinha, serve mais pratos e ainda dribla o contrato intermitente?"
-      : "Ranking publico mockado localmente, com a interface pronta para trocar a persistencia por Supabase.";
+      : "Ranking oficial. Dispute os melhores tempos e pontuações da comunidade.";
 
   return (
     <main className="min-h-screen bg-[var(--bg)] px-5 py-6 text-[var(--text)]">
