@@ -377,6 +377,49 @@ async function createResultCardFile(stats: GameSnapshot) {
   // Draw Rank Badge on the right
   drawRankBadge(ctx, 820, 570, 180, stats.rank);
 
+  // Draw Record Seal if personal high score is achieved
+  if (stats.score >= stats.bestScore && stats.score > 0) {
+    ctx.save();
+    ctx.translate(820 + 90, 570 + 205); // position below rank badge
+    ctx.rotate(-0.15); // slant it
+    
+    // Draw record seal circle
+    ctx.fillStyle = "#ffd45c";
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 4;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(0, 0, 68, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Reset shadow
+    ctx.shadowBlur = 0;
+
+    // Inner dashed circle
+    ctx.strokeStyle = "#1e293b";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.arc(0, 0, 60, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]); // reset
+
+    // Text inside seal
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#0f172a";
+    ctx.font = '900 15px "Geist", sans-serif';
+    ctx.fillText("NOVO", 0, -16);
+    ctx.font = '900 20px "Geist", sans-serif';
+    ctx.fillText("RECORDE", 0, 6);
+    ctx.font = '900 11px "Geist", sans-serif';
+    ctx.fillText("★ VR ★", 0, 26);
+
+    ctx.restore();
+  }
+
   // Stats table box
   ctx.fillStyle = "rgba(15, 23, 42, 0.88)";
   ctx.fillRect(560, 680, 440, 360);
@@ -486,8 +529,9 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
   const [toast, setToast] = useState("Pegue ingredientes, sirva merenda e desvie dos boletos.");
   const [copyLabel, setCopyLabel] = useState("Compartilhar");
   const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
+  const [topThree, setTopThree] = useState<Array<{ player: string; score: number }>>([]);
 
-  const playTone = useCallback((tone: AudioTone) => {
+  const playTone = useCallback((tone: AudioTone, pitchLevel?: number) => {
     try {
       const AudioCtx = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (!AudioCtx) return;
@@ -507,18 +551,39 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
         oscillator.stop(ctx.currentTime + 0.35);
       } else {
-        const config =
-          tone === "good"
-            ? { frequency: 760, duration: 0.08, gain: 0.04, type: "triangle" as OscillatorType }
-            : tone === "power"
-              ? { frequency: 980, duration: 0.14, gain: 0.05, type: "square" as OscillatorType }
-              : { frequency: 180, duration: 0.18, gain: 0.05, type: "sawtooth" as OscillatorType };
-        oscillator.type = config.type;
-        oscillator.frequency.value = config.frequency;
-        gain.gain.value = config.gain;
+        let freq = 760;
+        let duration = 0.08;
+        let vol = 0.04;
+        let type: OscillatorType = "triangle";
+
+        if (tone === "good") {
+          if (pitchLevel !== undefined) {
+            // scale: 0: 520, 1: 620, 2: 720, 3: 820
+            freq = 520 + pitchLevel * 100;
+          } else {
+            freq = 760;
+          }
+          duration = 0.08;
+          vol = 0.04;
+          type = "triangle";
+        } else if (tone === "power") {
+          freq = 980;
+          duration = 0.14;
+          vol = 0.05;
+          type = "square";
+        } else {
+          freq = 180;
+          duration = 0.18;
+          vol = 0.05;
+          type = "sawtooth";
+        }
+
+        oscillator.type = type;
+        oscillator.frequency.value = freq;
+        gain.gain.value = vol;
         oscillator.start();
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + config.duration);
-        oscillator.stop(ctx.currentTime + config.duration);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        oscillator.stop(ctx.currentTime + duration);
       }
     } catch {}
   }, []);
@@ -641,6 +706,23 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
     }));
     setToast("O boleto veio, mas a cozinha resistiu.");
 
+    // Fetch Top 3 rankings client-side
+    fetch(`/api/score/ranking?slug=${game.slug}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const list = data.slice(0, 3).map((item) => {
+            const row = item as Record<string, unknown>;
+            return {
+              player: typeof row.player === "string" ? row.player : "Anon",
+              score: typeof row.score === "number" ? row.score : 0,
+            };
+          });
+          setTopThree(list);
+        }
+      })
+      .catch((err) => console.error("Erro ao carregar top 3 do ranking:", err));
+
     if (finalScore >= previousBest && finalScore > 0) {
       playTone("record");
       // Confetti record wave
@@ -664,7 +746,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
     } else {
       playTone("bad");
     }
-  }, [addParticle, mutateState, playTone]);
+  }, [addParticle, mutateState, playTone, game]);
 
   const applyPower = useCallback((item: KitchenItem) => {
     if (item.label.includes("mutirao")) {
@@ -813,7 +895,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
       }
       
       setToast(item.label === "leite" ? "Leite salvo!" : item.label === "fruta" ? "Vitamina garantida!" : "Ingrediente na mão!");
-      playTone("good");
+      playTone("good", stateRef.current.ingredientBag - 1);
       return;
     }
 
@@ -1273,6 +1355,25 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
                   <div className="mt-4 rounded-xl border border-[#a15af0]/45 bg-[#321043] px-3 py-3 text-center text-sm font-black uppercase text-white">
                     O boleto veio, mas a cozinha resistiu.
                   </div>
+                  {topThree.length > 0 ? (
+                    <div className="mt-4 rounded-xl border border-white/10 bg-black/25 p-3">
+                      <div className="text-[10px] font-black uppercase tracking-[0.16em] text-[#ffd34e] text-center mb-2">
+                        🏆 RIVALIDADE GLOBAL (TOP 3)
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        {topThree.map((item, idx) => (
+                          <div key={idx} className="rounded-lg bg-black/20 p-1.5 border border-white/5 truncate">
+                            <div className="text-[9px] font-black text-white/55 uppercase truncate">
+                              {idx + 1}º. {item.player}
+                            </div>
+                            <div className="text-xs font-black text-[#ffd45c] mt-0.5">
+                              {item.score}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
                   <input
                     value={playerName}
                     onChange={(event) => setPlayerName(event.target.value.slice(0, 18))}
@@ -1872,6 +1973,36 @@ function drawPlayer(
   ctx.beginPath();
   ctx.ellipse(0, 92, 54, 14, 0, 0, Math.PI * 2);
   ctx.fill();
+
+  // Combo "On Fire" Aura (dourado/laranja pulsante)
+  if (snapshot.combo >= 4) {
+    ctx.save();
+    const pulse = Math.sin(Date.now() * 0.02) * 8;
+    const radius = 64 + pulse;
+    
+    // Draw fire/sparks aura
+    const auraGrad = ctx.createRadialGradient(0, -10, radius - 20, 0, -10, radius + 20);
+    auraGrad.addColorStop(0, "rgba(251, 146, 60, 0.45)"); // Orange
+    auraGrad.addColorStop(0.5, "rgba(250, 204, 21, 0.28)"); // Yellow
+    auraGrad.addColorStop(1, "rgba(250, 204, 21, 0)");
+    
+    ctx.fillStyle = auraGrad;
+    ctx.beginPath();
+    ctx.arc(0, -10, radius + 20, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Small spark particles orbiting the player
+    ctx.fillStyle = "#facc15";
+    for (let i = 0; i < 4; i++) {
+      const angle = (Date.now() * 0.005 + i * (Math.PI / 2)) % (Math.PI * 2);
+      const sx = Math.cos(angle) * (radius + 4);
+      const sy = -10 + Math.sin(angle) * (radius + 4) * 0.7; // slight ellipse
+      ctx.beginPath();
+      ctx.arc(sx, sy, 3 + Math.sin(Date.now() * 0.03 + i) * 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
 
   // 3. Hair (behind head)
   ctx.fillStyle = "#3a2010"; // brown/black hair
