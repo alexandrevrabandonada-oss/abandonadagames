@@ -911,8 +911,11 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             <button
               key={action.id}
               type="button"
+              disabled={decisionFlash !== null || !snapshot.running || snapshot.finished}
               onClick={() => applySurvivalAction(action)}
-              className={`${action.tone} flex min-h-28 items-center gap-3 rounded-xl border border-[rgba(255,255,255,0.22)] px-3 py-3 text-left shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition active:scale-[0.98] lg:min-h-0 lg:px-4 lg:py-4`}
+              className={`${action.tone} flex min-h-28 items-center gap-3 rounded-xl border border-[rgba(255,255,255,0.22)] px-3 py-3 text-left shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition active:scale-[0.98] lg:min-h-0 lg:px-4 lg:py-4 ${
+                decisionFlash !== null ? "opacity-40 cursor-not-allowed pointer-events-none" : ""
+              }`}
             >
               <span className="flex size-12 items-center justify-center rounded-lg bg-[rgba(255,255,255,0.18)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -961,10 +961,10 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         mutateState((current) => ({
           ...current,
           day: Math.max(current.day, dayByTime),
-          breath: clamp(current.breath - (grace ? 0.34 : 0.62), 0, 100),
-          bills: clamp(current.bills + (freezeBillsRef.current > 0 ? 0.08 : grace ? 0.18 : 0.34), 0, 100),
-          chaos: clamp(current.chaos + (supportShieldRef.current > 0 ? 0.1 : grace ? 0.2 : 0.38), 0, 100),
-          stability: clamp(current.stability - (grace ? 0.14 : 0.22), 0, 100),
+          breath: clamp(current.breath - (grace ? 0.75 : 1.5) * dt, 0, 100),
+          bills: clamp(current.bills + (freezeBillsRef.current > 0 ? 0.18 : grace ? 0.75 : 1.5) * dt, 0, 100),
+          chaos: clamp(current.chaos + (supportShieldRef.current > 0 ? 0.22 : grace ? 0.85 : 1.7) * dt, 0, 100),
+          stability: clamp(current.stability - (grace ? 0.55 : 1.1) * dt, 0, 100),
           bestScore: bestScoreRef.current,
           rank: getRank(current.score).label,
         }));
