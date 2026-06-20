@@ -32,7 +32,7 @@ type Particle = {
   type?: "text" | "circle" | "spark" | "scrap";
 };
 
-type AudioTone = "good" | "bad" | "power";
+type AudioTone = "good" | "bad" | "power" | "record";
 
 type GameSnapshot = {
   score: number;
@@ -245,16 +245,41 @@ async function createResultCardFile(stats: GameSnapshot) {
   ctx.fillStyle = skyGrad;
   ctx.fillRect(94, 104, 192, 252);
   
-  // Building
-  ctx.fillStyle = "#b91c1c";
-  ctx.fillRect(120, 200, 140, 156);
-  ctx.fillStyle = "#facc15";
-  ctx.fillRect(140, 230, 20, 20);
-  ctx.fillRect(180, 230, 20, 20);
-  ctx.fillRect(220, 230, 20, 20);
-  ctx.fillRect(140, 280, 20, 20);
-  ctx.fillRect(180, 280, 20, 20);
-  ctx.fillRect(220, 280, 20, 20);
+  // CSN Steel Mill silhouette in card window (Volta Redonda)
+  ctx.fillStyle = "#1e293b";
+  ctx.fillRect(94, 250, 192, 106); // base block
+  ctx.fillStyle = "#334155";
+  ctx.fillRect(130, 220, 90, 30);
+  ctx.fillRect(100, 235, 40, 15);
+
+  // Chimneys in card window
+  const drawCardChimney = (chX: number, chY: number, chW: number, chH: number) => {
+    const stripeH = chH / 6;
+    for (let i = 0; i < 6; i++) {
+      ctx.fillStyle = i % 2 === 0 ? "#b91c1c" : "#f8fafc";
+      ctx.fillRect(chX, chY + i * stripeH, chW, stripeH);
+    }
+    ctx.strokeStyle = "#0f172a";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(chX, chY, chW, chH);
+
+    // Smoke puffs
+    ctx.fillStyle = "rgba(241, 245, 249, 0.45)";
+    for (let s = 0; s < 3; s++) {
+      const puffY = chY - 10 - s * 22;
+      const puffX = chX + chW / 2 + Math.sin(s) * 6;
+      const size = 8 + s * 8;
+      if (puffY > 104) {
+        ctx.beginPath();
+        ctx.arc(puffX, puffY, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  };
+
+  drawCardChimney(120, 140, 15, 110);
+  drawCardChimney(175, 120, 15, 130);
+  drawCardChimney(230, 135, 15, 115);
   
   // Glass highlight
   ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
@@ -337,7 +362,7 @@ async function createResultCardFile(stats: GameSnapshot) {
   ctx.fillText("MERENDEIRA NO VERMELHO", 90, 462);
   ctx.fillStyle = "#facc15";
   ctx.font = '900 16px "Geist", sans-serif';
-  ctx.fillText("SALÁRIO ATRASADO + CONTRATO INTERMITENTE", 90, 488);
+  ctx.fillText("SALÁRIO ATRASADO + CONTRATO INTERMITENTE | VOLTA REDONDA", 90, 488);
 
   // Stoves at card sides
   drawStove(ctx, 80, 680, 0);
@@ -444,6 +469,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
   const itemSeqRef = useRef(0);
   const itemsRef = useRef<KitchenItem[]>([]);
   const particlesRef = useRef<Particle[]>([]);
+  const shakeDurationRef = useRef(0);
   const audioContextRef = useRef<AudioContext | null>(null);
   const initialBestScore =
     typeof window !== "undefined"
@@ -471,18 +497,29 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
       const gain = ctx.createGain();
       oscillator.connect(gain);
       gain.connect(ctx.destination);
-      const config =
-        tone === "good"
-          ? { frequency: 760, duration: 0.08, gain: 0.04, type: "triangle" as OscillatorType }
-          : tone === "power"
-            ? { frequency: 980, duration: 0.14, gain: 0.05, type: "square" as OscillatorType }
-            : { frequency: 180, duration: 0.18, gain: 0.05, type: "sawtooth" as OscillatorType };
-      oscillator.type = config.type;
-      oscillator.frequency.value = config.frequency;
-      gain.gain.value = config.gain;
-      oscillator.start();
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + config.duration);
-      oscillator.stop(ctx.currentTime + config.duration);
+      
+      if (tone === "record") {
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(520, ctx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(1040, ctx.currentTime + 0.3);
+        gain.gain.value = 0.06;
+        oscillator.start();
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+        oscillator.stop(ctx.currentTime + 0.35);
+      } else {
+        const config =
+          tone === "good"
+            ? { frequency: 760, duration: 0.08, gain: 0.04, type: "triangle" as OscillatorType }
+            : tone === "power"
+              ? { frequency: 980, duration: 0.14, gain: 0.05, type: "square" as OscillatorType }
+              : { frequency: 180, duration: 0.18, gain: 0.05, type: "sawtooth" as OscillatorType };
+        oscillator.type = config.type;
+        oscillator.frequency.value = config.frequency;
+        gain.gain.value = config.gain;
+        oscillator.start();
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + config.duration);
+        oscillator.stop(ctx.currentTime + config.duration);
+      }
     } catch {}
   }, []);
 
@@ -592,6 +629,9 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
 
   const finishRound = useCallback(() => {
     if (stateRef.current.finished) return;
+    const finalScore = stateRef.current.score;
+    const previousBest = bestScoreRef.current;
+
     mutateState((current) => ({
       ...current,
       running: false,
@@ -600,7 +640,31 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
       bestScore: bestScoreRef.current,
     }));
     setToast("O boleto veio, mas a cozinha resistiu.");
-  }, [mutateState]);
+
+    if (finalScore >= previousBest && finalScore > 0) {
+      playTone("record");
+      // Confetti record wave
+      for (let i = 0; i < 45; i++) {
+        const px = CANVAS_WIDTH / 2 + (Math.random() - 0.5) * 180;
+        const py = CANVAS_HEIGHT / 2;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 110 + Math.random() * 210;
+        const colors = ["#ffd45c", "#facc15", "#ef4444", "#38bdf8", "#4ade80"];
+        addParticle(
+          "",
+          px,
+          py,
+          colors[Math.floor(Math.random() * colors.length)],
+          "scrap",
+          Math.cos(angle) * speed,
+          Math.sin(angle) * speed - 50,
+          7 + Math.random() * 7
+        );
+      }
+    } else {
+      playTone("bad");
+    }
+  }, [addParticle, mutateState, playTone]);
 
   const applyPower = useCallback((item: KitchenItem) => {
     if (item.label.includes("mutirao")) {
@@ -763,6 +827,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         stability: clamp(current.stability - 7, 0, 100),
       }));
       addParticle(item.label === "escala" ? "Escala incerta!" : "Boleto vindo!", item.x - 66, item.y, "#ff726a");
+      shakeDurationRef.current = 0.25; // Trigger screen shake
       
       // Spawn threat scraps
       for (let i = 0; i < 12; i++) {
@@ -808,26 +873,55 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
       };
     });
     
-    addParticle(current.combo >= 2 ? "Combo da merenda!" : "Prato servido!", x - 82, y - 70, "#ffd34e");
+    const updated = stateRef.current;
+    let text = `+${140 + updated.combo * 18 + (updated.combo >= 4 ? 120 + updated.combo * 14 : updated.combo >= 2 ? 45 : 0)}`;
+    if (updated.combo >= 2) {
+      text += ` Combo x${updated.combo}!`;
+    } else {
+      text += " Servido!";
+    }
+    
+    addParticle(
+      text,
+      x - 90,
+      y - 75,
+      updated.combo >= 4 ? "#ff5e2f" : updated.combo >= 2 ? "#ffd34e" : "#f2efe3",
+      "text",
+      0,
+      -70,
+      22 + Math.min(6, updated.combo)
+    );
     
     // Shoot confetti fountain from serve counter!
     for (let i = 0; i < 25; i++) {
       const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.2; // Upwards fan
-      const speed = 120 + Math.random() * 160;
+      const speed = 130 + Math.random() * 170;
       const colors = ["#ff5e2f", "#ffd34e", "#72d9ff", "#8eff7a", "#ff9a6e"];
       const randColor = colors[Math.floor(Math.random() * colors.length)];
       const type = Math.random() > 0.5 ? "circle" : "scrap";
       addParticle("", x, y - 40, randColor, type, Math.cos(angle) * speed, Math.sin(angle) * speed, 5 + Math.random() * 8);
     }
     
-    setToast(current.combo >= 2 ? "Combo da merenda!" : "Prato servido!");
+    setToast(updated.combo >= 2 ? `Combo da merenda x${updated.combo}!` : "Prato servido!");
     playTone("good");
   }, [addParticle, mutateState, playTone]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       pressedRef.current[event.key.toLowerCase()] = true;
-      if (event.key === " " || event.key === "Enter") servePlate();
+      if (event.key === " " || event.key === "Enter") {
+        if (stateRef.current.finished) {
+          event.preventDefault();
+          setCopyLabel("Compartilhar");
+          setResultImageUrl((current) => {
+            if (current) URL.revokeObjectURL(current);
+            return null;
+          });
+          resetRound();
+        } else {
+          servePlate();
+        }
+      }
     };
     const handleKeyUp = (event: KeyboardEvent) => {
       pressedRef.current[event.key.toLowerCase()] = false;
@@ -838,7 +932,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [servePlate]);
+  }, [servePlate, resetRound]);
 
   useEffect(() => {
     resetRound();
@@ -882,6 +976,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
             rank: getRank(current.score + event.score).label,
           }));
           setToast(event.label);
+          shakeDurationRef.current = 0.35; // Shake screen on salary delay/intermittent event!
           nextEventAtRef.current = elapsed + 5600 + Math.random() * 1800;
         }
       }
@@ -972,6 +1067,17 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
 
       const isMoving = Math.hypot(nextVx, nextVy) > 10 || playerTargetRef.current !== null;
 
+      let isShaking = false;
+      if (shakeDurationRef.current > 0) {
+        shakeDurationRef.current = Math.max(0, shakeDurationRef.current - dt);
+        isShaking = true;
+        const intensity = 8;
+        const dx = (Math.random() - 0.5) * intensity;
+        const dy = (Math.random() - 0.5) * intensity;
+        ctx.save();
+        ctx.translate(dx, dy);
+      }
+
       drawKitchen(
         ctx,
         stateRef.current,
@@ -984,6 +1090,10 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         isMoving,
         elapsed,
       );
+
+      if (isShaking) {
+        ctx.restore();
+      }
 
       if (
         stateRef.current.running &&
@@ -1022,7 +1132,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
   }, [playerName, snapshot, submitScore, updateBestScore]);
 
   const shareResult = useCallback(async () => {
-    const text = `Joguei Merendeira no Vermelho: servi ${snapshot.platesServed} merendas, sobrevivi ${snapshot.day} dias e terminei com rank ${snapshot.rank}. O boleto veio, mas a cozinha resistiu.`;
+    const text = `Joguei Merendeira no Vermelho (Volta Redonda): servi ${snapshot.platesServed} merendas, sobrevivi ${snapshot.day} dias e terminei com rank ${snapshot.rank}. O boleto veio, mas a cozinha de VR resistiu!`;
     const imageFile = await createResultCardFile(snapshot);
     const payload = imageFile
       ? { title: game.title, text, url: window.location.href, files: [imageFile] }
@@ -1134,7 +1244,13 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
                         {snapshot.rank}
                       </div>
                       <div>
-                        <div className="text-[11px] font-black uppercase tracking-[0.2em] text-white/55">fim do mês</div>
+                        <div className="text-[11px] font-black uppercase tracking-[0.2em] text-white/55 flex items-center gap-1.5">
+                          {snapshot.score >= snapshot.bestScore && snapshot.score > 0 ? (
+                            <span className="animate-pulse bg-[#ffd45c] text-black px-1.5 py-0.5 rounded text-[8px] font-black tracking-normal">★ RECORDE ★</span>
+                          ) : (
+                            "fim do mês"
+                          )}
+                        </div>
                         <div className="mt-1 text-base xs:text-xl font-black uppercase text-[#f3f0dd]">{resultMessage}</div>
                       </div>
                     </div>
@@ -1273,16 +1389,45 @@ function drawKitchen(
   ctx.fillStyle = skyGrad;
   ctx.fillRect(34, 84, 132, 192);
 
-  // Draw school block (rectangles)
-  ctx.fillStyle = "#b91c1c"; // brick red school building
-  ctx.fillRect(50, 160, 100, 116);
-  ctx.fillStyle = "#facc15"; // yellow windows
-  ctx.fillRect(60, 180, 14, 14);
-  ctx.fillRect(90, 180, 14, 14);
-  ctx.fillRect(120, 180, 14, 14);
-  ctx.fillRect(60, 220, 14, 14);
-  ctx.fillRect(90, 220, 14, 14);
-  ctx.fillRect(120, 220, 14, 14);
+  // Draw CSN Steel Mill silhouette (Volta Redonda landscape)
+  ctx.fillStyle = "#1e293b"; // Dark charcoal factory color
+  ctx.fillRect(34, 200, 132, 76); // Factory base block
+  ctx.fillStyle = "#334155"; // Secondary building structure
+  ctx.fillRect(60, 175, 45, 25);
+  ctx.fillRect(40, 188, 25, 12);
+
+  // Draw the 3 iconic CSN chimneys (Volta Redonda)
+  const drawChimney = (chX: number, chY: number, chW: number, chH: number) => {
+    // Body stripes
+    const stripeH = chH / 6;
+    for (let i = 0; i < 6; i++) {
+      ctx.fillStyle = i % 2 === 0 ? "#b91c1c" : "#f8fafc";
+      ctx.fillRect(chX, chY + i * stripeH, chW, stripeH);
+    }
+    // Chimney outline
+    ctx.strokeStyle = "#0f172a";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(chX, chY, chW, chH);
+
+    // Draw animated smoke puffs rising from this chimney (millisecond-based)
+    ctx.fillStyle = "rgba(241, 245, 249, 0.48)";
+    const speed = 0.025; // pixels per millisecond
+    for (let s = 0; s < 3; s++) {
+      const phase = (elapsed * 0.00085 + s * 0.6) % 1.8;
+      const puffY = chY - 6 - phase * (speed * 1000);
+      const puffX = chX + chW / 2 + Math.sin(elapsed * 0.003 + s) * 5;
+      const size = 5 + phase * 6;
+      if (puffY > 84) { // keep inside window frame
+        ctx.beginPath();
+        ctx.arc(puffX, puffY, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  };
+
+  drawChimney(55, 115, 10, 85);
+  drawChimney(90, 100, 10, 100);
+  drawChimney(125, 110, 10, 90);
 
   // Green bushes
   ctx.fillStyle = "#15803d";
@@ -1327,10 +1472,13 @@ function drawKitchen(
   ctx.lineWidth = 3;
   ctx.strokeRect(200, 360, 140, 80);
   ctx.fillStyle = "#1e293b";
-  ctx.font = '900 12px "Geist", sans-serif';
-  ctx.fillText("A MERENDA É", 215, 395);
+  ctx.font = '900 10px "Geist", sans-serif';
+  ctx.fillText("VALORIZAÇÃO JÁ!", 210, 385);
   ctx.fillStyle = "#b91c1c";
-  ctx.fillText("DIREITO!", 240, 420);
+  ctx.font = '900 11px "Geist", sans-serif';
+  ctx.fillText("FEVRE - VR", 232, 405);
+  ctx.fillStyle = "#15803d";
+  ctx.fillText("MERENDEIRA UNIDA", 208, 425);
   // Tape
   ctx.fillStyle = "rgba(251, 191, 36, 0.5)";
   ctx.fillRect(190, 350, 25, 12);
@@ -1343,9 +1491,12 @@ function drawKitchen(
   ctx.lineWidth = 5;
   ctx.strokeRect(380, 360, 160, 80);
   ctx.fillStyle = "#ffffff";
-  ctx.font = '800 12px "Geist", sans-serif';
-  ctx.fillText("COZINHA", 430, 395);
-  ctx.fillText("ESCOLAR", 430, 420);
+  ctx.font = '800 10px "Geist", sans-serif';
+  ctx.fillText("COL. GETÚLIO VARGAS", 392, 388);
+  ctx.fillStyle = "#ffd34e";
+  ctx.fillText("VOLTA REDONDA - VR", 394, 408);
+  ctx.fillStyle = "#cbd5e1";
+  ctx.fillText("CARDÁPIO: MERENDA", 398, 428);
 
   // Top banner
   ctx.fillStyle = "#ffffff";
@@ -1476,8 +1627,12 @@ function drawKitchen(
       ctx.rotate(particle.life * Math.PI * 4); // spin
       ctx.fillRect(-(particle.size ?? 6) * 0.5 * particle.life, -(particle.size ?? 6) * 0.5 * particle.life, (particle.size ?? 6) * particle.life, (particle.size ?? 6) * 1.5 * particle.life);
     } else {
-      // Text
-      ctx.font = '900 24px "Geist", sans-serif';
+      // Sized stroked text
+      const fontSize = particle.size ?? 24;
+      ctx.font = `900 ${fontSize}px "Geist", sans-serif`;
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 4.5;
+      ctx.strokeText(particle.text, particle.x, particle.y);
       ctx.fillText(particle.text, particle.x, particle.y);
     }
     ctx.restore();
@@ -1523,16 +1678,20 @@ function drawKitchen(
     ctx.stroke();
 
     // Section title
-    ctx.font = 'bold 16px "Geist", sans-serif';
+    ctx.font = 'bold 12px "Geist", sans-serif';
     ctx.fillStyle = "#ff723f"; // Orange accent
     ctx.textAlign = "center";
-    ctx.fillText("COMO JOGAR", CANVAS_WIDTH / 2, bannerY + 34);
+    ctx.fillText("FEVRE - VOLTA REDONDA", CANVAS_WIDTH / 2, bannerY + 22);
+
+    ctx.font = '900 22px "Geist", sans-serif';
+    ctx.fillStyle = "#ffd34e"; // Yellow accent
+    ctx.fillText("COMO JOGAR", CANVAS_WIDTH / 2, bannerY + 48);
 
     // Instruction lines
-    ctx.font = '900 21px "Geist", sans-serif';
+    ctx.font = '900 17px "Geist", sans-serif';
     ctx.fillStyle = "#f8f9fa";
-    ctx.fillText("Pegue ingredientes, sirva merenda", CANVAS_WIDTH / 2, bannerY + 68);
-    ctx.fillText("e desvie dos boletos.", CANVAS_WIDTH / 2, bannerY + 98);
+    ctx.fillText("Pegue ingredientes, sirva merenda", CANVAS_WIDTH / 2, bannerY + 78);
+    ctx.fillText("e desvie dos boletos.", CANVAS_WIDTH / 2, bannerY + 104);
 
     ctx.restore();
   }
