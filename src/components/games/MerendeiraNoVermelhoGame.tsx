@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { GameDefinition } from "@/lib/gameRegistry";
 import type { ScoreSubmission } from "@/lib/score";
 
@@ -26,6 +26,10 @@ type Particle = {
   life: number;
   text: string;
   color: string;
+  vx?: number;
+  vy?: number;
+  size?: number;
+  type?: "text" | "circle" | "spark" | "scrap";
 };
 
 type AudioTone = "good" | "bad" | "power";
@@ -171,32 +175,6 @@ function resizeCanvas(canvas: HTMLCanvasElement, containerWidth: number) {
   return ctx;
 }
 
-function wrapCanvasText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number,
-  maxLines: number,
-) {
-  const words = text.split(" ");
-  let line = "";
-  let lineCount = 0;
-  for (const word of words) {
-    const testLine = line ? `${line} ${word}` : word;
-    if (ctx.measureText(testLine).width > maxWidth && line) {
-      ctx.fillText(line, x, y + lineCount * lineHeight);
-      line = word;
-      lineCount += 1;
-      if (lineCount >= maxLines) return;
-    } else {
-      line = testLine;
-    }
-  }
-  if (line && lineCount < maxLines) ctx.fillText(line, x, y + lineCount * lineHeight);
-}
-
 async function createResultCardFile(stats: GameSnapshot) {
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
@@ -204,68 +182,242 @@ async function createResultCardFile(stats: GameSnapshot) {
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
 
+  // Background gradient
   const bg = ctx.createLinearGradient(0, 0, 0, canvas.height);
   bg.addColorStop(0, "#0b2c39");
   bg.addColorStop(0.45, "#151d1c");
   bg.addColorStop(1, "#090f14");
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#f5e4c9";
-  ctx.fillRect(54, 54, 972, 1242);
-  ctx.strokeStyle = "#eb4f2e";
+
+  // Outer border
+  ctx.strokeStyle = "#ef4444";
   ctx.lineWidth = 14;
-  ctx.strokeRect(54, 54, 972, 1242);
+  ctx.strokeRect(20, 20, 1040, 1310);
+  ctx.strokeStyle = "#facc15";
+  ctx.lineWidth = 3;
+  ctx.setLineDash([12, 12]);
+  ctx.strokeRect(34, 34, 1012, 1282);
+  ctx.setLineDash([]); // Reset
 
-  ctx.fillStyle = "#182029";
-  ctx.fillRect(90, 92, 900, 188);
-  ctx.fillStyle = "#f3f0dd";
-  ctx.font = '900 58px "Geist", sans-serif';
-  ctx.fillText("MERENDEIRA", 116, 168);
-  ctx.fillStyle = "#ff5e2f";
-  ctx.fillText("NO VERMELHO", 116, 236);
-  ctx.fillStyle = "#ffd34e";
+  // Wall tiles (top half of card)
+  ctx.fillStyle = "#1e293b";
+  ctx.fillRect(54, 54, 972, 450);
+  ctx.strokeStyle = "#334155";
+  ctx.lineWidth = 2;
+  for (let x = 54; x < 1026; x += 54) {
+    ctx.beginPath();
+    ctx.moveTo(x, 54);
+    ctx.lineTo(x, 504);
+    ctx.stroke();
+  }
+  for (let y = 54; y < 504; y += 54) {
+    ctx.beginPath();
+    ctx.moveTo(54, y);
+    ctx.lineTo(1026, y);
+    ctx.stroke();
+  }
+
+  // Tiled floor (bottom half of card)
+  for (let row = 0; row < 15; row += 1) {
+    const y = 504 + row * 58;
+    for (let col = 0; col < 20; col += 1) {
+      const x = 54 + col * 60 - (row % 2 ? 30 : 0);
+      if (x < 54 || x > 1026) continue;
+      const isRed = (row + col) % 2 === 0;
+      ctx.fillStyle = isRed ? "#8d3a24" : "#722e1b";
+      ctx.fillRect(x, y, 58, 56);
+      
+      ctx.fillStyle = "rgba(255,255,255,0.06)";
+      ctx.fillRect(x, y, 58, 2);
+      ctx.fillRect(x, y, 2, 56);
+    }
+  }
+
+  // Window with school building at top left
+  ctx.fillStyle = "#0f172a";
+  ctx.fillRect(90, 100, 200, 260);
+  
+  // Sky
+  const skyGrad = ctx.createLinearGradient(90, 100, 90, 360);
+  skyGrad.addColorStop(0, "#38bdf8");
+  skyGrad.addColorStop(1, "#bae6fd");
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(94, 104, 192, 252);
+  
+  // Building
+  ctx.fillStyle = "#b91c1c";
+  ctx.fillRect(120, 200, 140, 156);
+  ctx.fillStyle = "#facc15";
+  ctx.fillRect(140, 230, 20, 20);
+  ctx.fillRect(180, 230, 20, 20);
+  ctx.fillRect(220, 230, 20, 20);
+  ctx.fillRect(140, 280, 20, 20);
+  ctx.fillRect(180, 280, 20, 20);
+  ctx.fillRect(220, 280, 20, 20);
+  
+  // Glass highlight
+  ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+  ctx.beginPath();
+  ctx.moveTo(94, 104);
+  ctx.lineTo(220, 104);
+  ctx.lineTo(94, 230);
+  ctx.closePath();
+  ctx.fill();
+
+  // Window frame
+  ctx.strokeStyle = "#475569";
+  ctx.lineWidth = 8;
+  ctx.strokeRect(94, 104, 192, 252);
+  ctx.beginPath();
+  ctx.moveTo(186, 104);
+  ctx.lineTo(186, 356);
+  ctx.moveTo(94, 230);
+  ctx.lineTo(286, 230);
+  ctx.stroke();
+
+  // Serving window with kids (center background of card)
+  ctx.fillStyle = "#0f172a";
+  ctx.fillRect(400, 140, 320, 180);
+  ctx.strokeStyle = "#334155";
+  ctx.lineWidth = 10;
+  ctx.strokeRect(400, 140, 320, 180);
+
+  // 3 kids heads looking out
+  for (let i = 0; i < 3; i++) {
+    const kidX = 450 + i * 110;
+    const kidY = 240 + Math.sin(i * 1.5) * 8;
+    ctx.fillStyle = ["#8d5524", "#ffdbac", "#c68642"][i];
+    ctx.beginPath();
+    ctx.arc(kidX, kidY, 26, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = ["#000000", "#d97706", "#27272a"][i];
+    ctx.beginPath();
+    if (i === 0) {
+      ctx.arc(kidX - 16, kidY - 14, 12, 0, Math.PI * 2);
+      ctx.arc(kidX + 16, kidY - 14, 12, 0, Math.PI * 2);
+      ctx.arc(kidX, kidY - 24, 20, 0, Math.PI * 2);
+    } else if (i === 1) {
+      ctx.ellipse(kidX, kidY - 20, 26, 16, 0, Math.PI, 0, true);
+    } else {
+      ctx.arc(kidX - 18, kidY, 10, 0, Math.PI * 2);
+      ctx.arc(kidX + 18, kidY, 10, 0, Math.PI * 2);
+      ctx.arc(kidX, kidY - 22, 26, 0, Math.PI * 2);
+    }
+    ctx.fill();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(kidX - 8, kidY - 4, 6, 0, Math.PI * 2);
+    ctx.arc(kidX + 8, kidY - 4, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#000000";
+    ctx.beginPath();
+    ctx.arc(kidX - 8, kidY - 4, 3, 0, Math.PI * 2);
+    ctx.arc(kidX + 8, kidY - 4, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(kidX, kidY + 6, 8, 0, Math.PI, false);
+    ctx.stroke();
+  }
+
+  // Title Logo on Card
+  ctx.fillStyle = "#1e293b";
+  ctx.fillRect(54, 400, 972, 100);
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(54, 400, 972, 100);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = '900 38px "Geist", sans-serif';
+  ctx.fillText("MERENDEIRA NO VERMELHO", 90, 462);
+  ctx.fillStyle = "#facc15";
+  ctx.font = '900 16px "Geist", sans-serif';
+  ctx.fillText("SALÁRIO ATRASADO + CONTRATO INTERMITENTE", 90, 488);
+
+  // Stoves at card sides
+  drawStove(ctx, 80, 680, 0);
+
+  // Draw scaled-up Merendeira
+  ctx.save();
+  ctx.translate(340, 850);
+  ctx.scale(2.2, 2.2);
+  drawPlayer(ctx, { x: 0, y: 0 }, stats, 0, false);
+  ctx.restore();
+
+  // Draw Rank Badge on the right
+  drawRankBadge(ctx, 820, 570, 180, stats.rank);
+
+  // Stats table box
+  ctx.fillStyle = "rgba(15, 23, 42, 0.88)";
+  ctx.fillRect(560, 680, 440, 360);
+  ctx.strokeStyle = "#ef4444";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(560, 680, 440, 360);
+
+  ctx.fillStyle = "#ef4444";
+  ctx.fillRect(560, 680, 440, 50);
+  ctx.fillStyle = "#ffffff";
+  ctx.font = '900 18px "Geist", sans-serif';
+  ctx.fillText("ESTATÍSTICAS DA COZINHA", 580, 712);
+
+  const statsList = [
+    { label: "DIAS SOBREVIVIDOS", value: `${stats.day}/30` },
+    { label: "PRATOS SERVIDOS", value: `${stats.platesServed}` },
+    { label: "ESTABILIDADE FINAL", value: `${Math.round(stats.stability)}%` },
+    { label: "CAOS DA COZINHA", value: `${Math.round(stats.chaos)}%` },
+    { label: "FÔLEGO SOBRANTE", value: `${Math.round(stats.breath)}%` },
+    { label: "SCORE CONQUISTADO", value: `${stats.score}` },
+  ];
+
+  ctx.font = '900 14px "Geist", sans-serif';
+  for (let i = 0; i < statsList.length; i++) {
+    const sy = 770 + i * 44;
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText(statsList[i].label, 580, sy);
+    ctx.fillStyle = "#facc15";
+    ctx.font = '900 20px "Geist", sans-serif';
+    ctx.fillText(statsList[i].value, 860, sy);
+    ctx.font = '900 14px "Geist", sans-serif';
+
+    // Divider
+    ctx.strokeStyle = "rgba(255,255,255,0.06)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(580, sy + 14);
+    ctx.lineTo(980, sy + 14);
+    ctx.stroke();
+  }
+
+  // Red slanted ribbon banner
+  ctx.save();
+  ctx.translate(540, 1120);
+  ctx.rotate(-0.03);
+  ctx.fillStyle = "#ef4444";
+  ctx.fillRect(-450, -36, 900, 72);
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(-450, -36, 900, 72);
+  ctx.fillStyle = "#ffffff";
+  ctx.font = '900 30px "Geist", sans-serif';
+  ctx.textAlign = "center";
+  ctx.fillText("O BOLETO VEIO, MAS A COZINHA RESISTIU. ♥", 0, 10);
+  ctx.restore();
+
+  // Bottom CTA Yellow Bar
+  ctx.fillStyle = "#eab308";
+  ctx.fillRect(54, 1200, 972, 70);
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(54, 1200, 972, 70);
+  ctx.fillStyle = "#000000";
   ctx.font = '900 28px "Geist", sans-serif';
-  ctx.fillText("salario atrasado + contrato intermitente", 116, 286);
-
-  ctx.fillStyle = "#eb4f2e";
-  ctx.font = '900 230px "Geist", sans-serif';
-  ctx.fillText(stats.rank, 104, 564);
-  ctx.fillStyle = "#0d1114";
-  ctx.font = '900 56px "Geist", sans-serif';
-  ctx.fillText(`${stats.score}`, 400, 418);
-  ctx.fillStyle = "#ffd34e";
-  ctx.font = '900 26px "Geist", sans-serif';
-  ctx.fillText("score", 404, 458);
-
-  ctx.fillStyle = "#f3f0dd";
-  ctx.font = '900 44px "Geist", sans-serif';
-  wrapCanvasText(ctx, "O boleto veio, mas a cozinha resistiu.", 116, 662, 840, 52, 2);
-
-  ctx.fillStyle = "rgba(10,19,26,0.78)";
-  ctx.fillRect(116, 758, 848, 232);
-  ctx.fillStyle = "#ffd34e";
-  ctx.font = '900 26px "Geist", sans-serif';
-  ctx.fillText("pratos servidos", 148, 824);
-  ctx.fillText("dias sobrevividos", 148, 886);
-  ctx.fillText("estabilidade", 148, 948);
-  ctx.fillText("combo maximo", 522, 824);
-  ctx.fillText("folego final", 522, 886);
-  ctx.fillText("caos final", 522, 948);
-
-  ctx.fillStyle = "#f3f0dd";
-  ctx.font = '900 42px "Geist", sans-serif';
-  ctx.fillText(`${stats.platesServed}`, 148, 864);
-  ctx.fillText(`${stats.day}/30`, 148, 926);
-  ctx.fillText(`${Math.round(stats.stability)}%`, 148, 988);
-  ctx.fillText(`x${stats.maxCombo}`, 522, 864);
-  ctx.fillText(`${Math.round(stats.breath)}%`, 522, 926);
-  ctx.fillText(`${Math.round(stats.chaos)}%`, 522, 988);
-
-  ctx.fillStyle = "#c13d37";
-  ctx.fillRect(116, 1088, 848, 108);
-  ctx.fillStyle = "#f3f0dd";
-  ctx.font = '900 44px "Geist", sans-serif';
-  ctx.fillText("JOGUE TAMBEM!", 350, 1156);
+  ctx.textAlign = "center";
+  ctx.fillText("🥣 JOGUE VOCÊ TAMBÉM NO ABANDONADA GAMES!", 540, 1246);
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
   if (!blob) return null;
@@ -305,11 +457,9 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
 
   const [snapshot, setSnapshot] = useState<GameSnapshot>(() => createInitialSnapshot(initialBestScore));
   const [playerName, setPlayerName] = useState(initialPlayerName);
-  const [toast, setToast] = useState("Salario atrasado. Segura a cozinha.");
+  const [toast, setToast] = useState("Salário atrasado. Segura a cozinha.");
   const [copyLabel, setCopyLabel] = useState("Compartilhar");
   const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
-
-  const rankMeta = useMemo(() => getRank(snapshot.score), [snapshot.score]);
 
   const playTone = useCallback((tone: AudioTone) => {
     try {
@@ -354,8 +504,28 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
     setSnapshot(stateRef.current);
   }, [updateBestScore]);
 
-  const addParticle = useCallback((text: string, x: number, y: number, color: string) => {
-    particlesRef.current.push({ id: Date.now() + Math.random(), x, y, life: 1, text, color });
+  const addParticle = useCallback((
+    text: string,
+    x: number,
+    y: number,
+    color: string,
+    type: "text" | "circle" | "spark" | "scrap" = "text",
+    vx = 0,
+    vy = -42,
+    size = 12
+  ) => {
+    particlesRef.current.push({
+      id: Date.now() + Math.random(),
+      x,
+      y,
+      life: 1,
+      text,
+      color,
+      vx,
+      vy,
+      size,
+      type,
+    });
   }, []);
 
   const spawnItem = useCallback((kind: ItemKind) => {
@@ -415,7 +585,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
     const next = { ...createInitialSnapshot(bestScoreRef.current), running: true };
     stateRef.current = next;
     setSnapshot(next);
-    setToast("Salario atrasado. Segura a cozinha.");
+    setToast("Salário atrasado. Segura a cozinha.");
     startAtRef.current = performance.now();
     lastTickRef.current = performance.now();
   }, []);
@@ -443,8 +613,16 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         stability: clamp(current.stability + 8, 0, 100),
         score: current.score + 120,
       }));
-      addParticle("Mutirao da cozinha!", item.x - 96, item.y, "#ffd34e");
-      setToast("Mutirao da cozinha!");
+      addParticle("Mutirão da cozinha!", item.x - 96, item.y, "#ffd34e");
+      
+      // Golden star sparks explosion
+      for (let i = 0; i < 20; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 100 + Math.random() * 150;
+        addParticle("", item.x, item.y, "#ffd557", "spark", Math.cos(angle) * speed, Math.sin(angle) * speed, 8 + Math.random() * 6);
+      }
+      
+      setToast("Mutirão da cozinha!");
       playTone("power");
       return;
     }
@@ -459,6 +637,14 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         score: current.score + 90,
       }));
       addParticle("Apoio das colegas!", item.x - 92, item.y, "#72d9ff");
+      
+      // Blue star sparks
+      for (let i = 0; i < 15; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 70 + Math.random() * 100;
+        addParticle("", item.x, item.y, "#6edbff", "spark", Math.cos(angle) * speed, Math.sin(angle) * speed, 6 + Math.random() * 6);
+      }
+      
       setToast("Apoio das colegas!");
       playTone("power");
       return;
@@ -471,6 +657,14 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         score: current.score + 80,
       }));
       addParticle("Respira!", item.x - 42, item.y, "#8eff7a");
+      
+      // Green heart/star particles
+      for (let i = 0; i < 12; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 50 + Math.random() * 80;
+        addParticle("", item.x, item.y, "#8eff7a", "circle", Math.cos(angle) * speed, Math.sin(angle) * speed - 30, 5 + Math.random() * 5);
+      }
+      
       setToast("Respira!");
       playTone("good");
       return;
@@ -483,6 +677,14 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         score: current.score + 90,
       }));
       addParticle("Escala garantida!", item.x - 88, item.y, "#ffe369");
+      
+      // Yellow star sparks
+      for (let i = 0; i < 12; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 60 + Math.random() * 90;
+        addParticle("", item.x, item.y, "#ffe369", "spark", Math.cos(angle) * speed, Math.sin(angle) * speed, 6 + Math.random() * 5);
+      }
+      
       setToast("Escala garantida!");
       playTone("power");
       return;
@@ -497,8 +699,16 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         stability: clamp(current.stability + 10, 0, 100),
         score: current.score + 100,
       }));
-      addParticle("Organizacao coletiva!", item.x - 108, item.y, "#8cf4ff");
-      setToast("Organizacao coletiva!");
+      addParticle("Organização coletiva!", item.x - 108, item.y, "#8cf4ff");
+      
+      // Blue icy shards
+      for (let i = 0; i < 14; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 70 + Math.random() * 110;
+        addParticle("", item.x, item.y, "#8cf4ff", "scrap", Math.cos(angle) * speed, Math.sin(angle) * speed, 5 + Math.random() * 6);
+      }
+      
+      setToast("Organização coletiva!");
       playTone("power");
       return;
     }
@@ -510,6 +720,14 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
       score: current.score + 70,
     }));
     addParticle("Feira barata!", item.x - 74, item.y, "#9affbf");
+    
+    // Light green sparks
+    for (let i = 0; i < 10; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 60 + Math.random() * 80;
+      addParticle("", item.x, item.y, "#9affbf", "circle", Math.cos(angle) * speed, Math.sin(angle) * speed - 20, 4 + Math.random() * 4);
+    }
+    
     setToast("Feira barata!");
     playTone("good");
   }, [addParticle, mutateState, playTone]);
@@ -522,7 +740,15 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         score: current.score + 40,
       }));
       addParticle(item.label.toUpperCase(), item.x - 34, item.y, item.tone);
-      setToast(item.label === "leite" ? "Leite salvo!" : item.label === "fruta" ? "Vitamina garantida!" : "Ingrediente na mao!");
+      
+      // Spawn ingredient sparks
+      for (let i = 0; i < 8; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 60 + Math.random() * 80;
+        addParticle("", item.x, item.y, item.tone, "circle", Math.cos(angle) * speed, Math.sin(angle) * speed, 4 + Math.random() * 5);
+      }
+      
+      setToast(item.label === "leite" ? "Leite salvo!" : item.label === "fruta" ? "Vitamina garantida!" : "Ingrediente na mão!");
       playTone("good");
       return;
     }
@@ -537,6 +763,14 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         stability: clamp(current.stability - 7, 0, 100),
       }));
       addParticle(item.label === "escala" ? "Escala incerta!" : "Boleto vindo!", item.x - 66, item.y, "#ff726a");
+      
+      // Spawn threat scraps
+      for (let i = 0; i < 12; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 80 + Math.random() * 120;
+        addParticle("", item.x, item.y, "#ff5c52", "scrap", Math.cos(angle) * speed, Math.sin(angle) * speed - 50, 6 + Math.random() * 8);
+      }
+      
       setToast(item.label === "escala" ? "Escala incerta!" : item.label === "juros" ? "Juros mordeu!" : "Boleto vindo!");
       playTone("bad");
       return;
@@ -573,7 +807,19 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         rank: getRank(state.score + scoreGain).label,
       };
     });
+    
     addParticle(current.combo >= 2 ? "Combo da merenda!" : "Prato servido!", x - 82, y - 70, "#ffd34e");
+    
+    // Shoot confetti fountain from serve counter!
+    for (let i = 0; i < 25; i++) {
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.2; // Upwards fan
+      const speed = 120 + Math.random() * 160;
+      const colors = ["#ff5e2f", "#ffd34e", "#72d9ff", "#8eff7a", "#ff9a6e"];
+      const randColor = colors[Math.floor(Math.random() * colors.length)];
+      const type = Math.random() > 0.5 ? "circle" : "scrap";
+      addParticle("", x, y - 40, randColor, type, Math.cos(angle) * speed, Math.sin(angle) * speed, 5 + Math.random() * 8);
+    }
+    
     setToast(current.combo >= 2 ? "Combo da merenda!" : "Prato servido!");
     playTone("good");
   }, [addParticle, mutateState, playTone]);
@@ -698,11 +944,17 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
       servePlate();
 
       particlesRef.current = particlesRef.current
-        .map((particle) => ({
-          ...particle,
-          y: particle.y - 42 * dt,
-          life: particle.life - dt * 1.25,
-        }))
+        .map((particle) => {
+          const vx = particle.vx ?? 0;
+          const vy = particle.vy ?? -42;
+          const gravity = (particle.type === "scrap" || particle.type === "circle") ? 150 : 0;
+          return {
+            ...particle,
+            x: particle.x + vx * dt,
+            y: particle.y + (vy + gravity * (1 - particle.life)) * dt,
+            life: particle.life - dt * (particle.type === "text" ? 1.25 : 1.6),
+          };
+        })
         .filter((particle) => particle.life > 0);
 
       if (state.running) {
@@ -718,6 +970,8 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         }));
       }
 
+      const isMoving = Math.hypot(nextVx, nextVy) > 10 || playerTargetRef.current !== null;
+
       drawKitchen(
         ctx,
         stateRef.current,
@@ -726,6 +980,8 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         playerPosRef.current,
         supportShieldRef.current,
         kitchenRushRef.current,
+        freezeBillsRef.current,
+        isMoving,
       );
 
       if (
@@ -788,11 +1044,18 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
   }, [game.title, snapshot]);
 
   const resultMessage =
-    snapshot.rank === "S" ? "Mutirao salvou geral." :
-    snapshot.rank === "A" ? "Virou o mes de pe." :
+    snapshot.rank === "S" ? "Mutirão salvou geral." :
+    snapshot.rank === "A" ? "Virou o mês de pé." :
     snapshot.rank === "B" ? "Segurou a cozinha." :
     snapshot.rank === "C" ? "Sobreviveu no sufoco." :
-    "O mes venceu.";
+    "O mês venceu.";
+
+  const rankColors =
+    snapshot.rank === "S" ? { border: "border-[#ffd45c]", text: "text-[#ffd45c]", bg: "from-[#450a0a] to-[#1e293b]", shadow: "shadow-[0_0_20px_rgba(251,191,36,0.45)]" } :
+    snapshot.rank === "A" ? { border: "border-[#facc15]", text: "text-[#facc15]", bg: "from-[#1e1b4b] to-[#111827]", shadow: "shadow-[0_0_15px_rgba(250,204,21,0.35)]" } :
+    snapshot.rank === "B" ? { border: "border-[#38bdf8]", text: "text-[#38bdf8]", bg: "from-[#064e3b] to-[#111827]", shadow: "shadow-[0_0_15px_rgba(56,189,248,0.3)]" } :
+    snapshot.rank === "C" ? { border: "border-[#fb923c]", text: "text-[#fb923c]", bg: "from-[#3c1502] to-[#111827]", shadow: "shadow-[0_0_15px_rgba(251,146,60,0.25)]" } :
+    { border: "border-slate-400", text: "text-slate-200", bg: "from-slate-800 to-slate-950", shadow: "shadow-none" };
 
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-[#071319] px-3 pb-20 pt-3 text-[#f7f3df]">
@@ -801,7 +1064,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         <header className="rounded-[1.6rem] border border-white/10 bg-[rgba(7,14,20,0.72)] px-4 py-4 shadow-[0_16px_50px_rgba(0,0,0,0.36)]">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <div className="text-[11px] font-black uppercase tracking-[0.22em] text-[#ffd45c]">salario atrasado + contrato intermitente</div>
+              <div className="text-[11px] font-black uppercase tracking-[0.22em] text-[#ffd45c]">salário atrasado + contrato intermitente</div>
               <h1 className="mt-2 text-[2.25rem] font-black uppercase leading-[0.88] text-[#f3f0dd]">
                 Merendeira
                 <span className="block text-[#ff5e2f]">no Vermelho</span>
@@ -813,12 +1076,12 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
               <div className="text-[10px] font-black uppercase text-[#ff9a6e]">combo x{Math.max(1, snapshot.combo)}</div>
             </div>
           </div>
-          <div className="mt-4 grid grid-cols-5 gap-2">
-            <MiniHud label="dia" value={`${snapshot.day}/30`} color="#f2efe3" />
-            <MiniHud label="folego" value={`${Math.round(snapshot.breath)}/100`} color="#56d35e" />
-            <MiniHud label="contas" value={`${Math.round(snapshot.bills)}/100`} color="#ff5858" />
-            <MiniHud label="caos" value={`${Math.round(snapshot.chaos)}/100`} color="#be67ff" />
-            <MiniHud label="estab." value={`${Math.round(snapshot.stability)}/100`} color="#ffd34e" />
+          <div className="mt-4 grid grid-cols-5 gap-1.5 xs:gap-2">
+            <MiniHud label="dia" value={`${snapshot.day}/30`} color="#f2efe3" icon="📅" />
+            <MiniHud label="folego" value={`${Math.round(snapshot.breath)}/100`} color="#56d35e" icon="❤️" percentage={snapshot.breath} />
+            <MiniHud label="contas" value={`${Math.round(snapshot.bills)}/100`} color="#ff5858" icon="🧾" percentage={snapshot.bills} />
+            <MiniHud label="caos" value={`${Math.round(snapshot.chaos)}/100`} color="#be67ff" icon="⚠️" percentage={snapshot.chaos} />
+            <MiniHud label="estab." value={`${Math.round(snapshot.stability)}/100`} color="#ffd34e" icon="⭐" percentage={snapshot.stability} />
           </div>
         </header>
 
@@ -847,10 +1110,10 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
               <div className="mb-2 text-center text-lg font-black uppercase text-[#ffd34e]">Como jogar</div>
               <div className="grid grid-cols-5 gap-2 text-center text-[10px] font-black uppercase text-white/82">
                 <GuideStep title="1" text="mexa no toque" />
-                <GuideStep title="2" text="colete os ingredientes" />
-                <GuideStep title="3" text="leve ao balcao" />
-                <GuideStep title="4" text="mantenha combo" />
-                <GuideStep title="5" text="desvie dos boletos" />
+                <GuideStep title="2" text="colete os itens" />
+                <GuideStep title="3" text="sirva no balcão" />
+                <GuideStep title="4" text="mantenha o combo" />
+                <GuideStep title="5" text="desvie das contas" />
               </div>
             </div>
           </div>
@@ -865,15 +1128,19 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
               <div className="grid gap-3">
                 <div className="rounded-[1.4rem] border border-[#ffd45c]/25 bg-[linear-gradient(180deg,rgba(34,19,18,0.96),rgba(14,16,18,0.9))] p-4">
                   <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="text-[11px] font-black uppercase tracking-[0.2em] text-[#ffd45c]">fim do mes</div>
-                      <div className="mt-2 text-7xl font-black text-[#ffd45c]">{rankMeta.label}</div>
-                      <div className="mt-2 text-xl font-black uppercase text-[#f3f0dd]">{resultMessage}</div>
+                    <div className="flex items-center gap-4">
+                      <div className={`flex size-20 xs:size-24 shrink-0 items-center justify-center rounded-full border-4 ${rankColors.border} bg-gradient-to-b ${rankColors.bg} text-4xl xs:text-5xl font-black ${rankColors.text} ${rankColors.shadow}`}>
+                        {snapshot.rank}
+                      </div>
+                      <div>
+                        <div className="text-[11px] font-black uppercase tracking-[0.2em] text-white/55">fim do mês</div>
+                        <div className="mt-1 text-base xs:text-xl font-black uppercase text-[#f3f0dd]">{resultMessage}</div>
+                      </div>
                     </div>
-                    <div className="rounded-xl bg-black/25 px-4 py-3 text-right">
+                    <div className="rounded-xl bg-black/25 px-3 py-2 xs:px-4 xs:py-3 text-right">
                       <div className="text-[10px] font-black uppercase text-white/55">score final</div>
-                      <div className="text-4xl font-black text-[#ffd45c]">{snapshot.score}</div>
-                      <div className="mt-1 text-xs font-black uppercase text-[#ff9a6e]">melhor {snapshot.bestScore}</div>
+                      <div className="text-3xl xs:text-4xl font-black text-[#ffd45c]">{snapshot.score}</div>
+                      <div className="mt-1 text-[10px] xs:text-xs font-black uppercase text-[#ff9a6e]">melhor {snapshot.bestScore}</div>
                     </div>
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-2">
@@ -906,20 +1173,20 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
                         });
                         resetRound();
                       }}
-                      className="flex-1 rounded-xl bg-[#0d73c8] px-4 py-4 text-sm font-black uppercase"
+                      className="flex-1 rounded-xl bg-[#0d73c8] px-4 py-4 text-xs xs:text-sm font-black uppercase text-white"
                     >
                       Jogar de novo
                     </button>
                     <button
                       type="button"
                       onClick={() => void shareResult()}
-                      className="flex-1 rounded-xl bg-[#2d8d20] px-4 py-4 text-sm font-black uppercase"
+                      className="flex-1 rounded-xl bg-[#2d8d20] px-4 py-4 text-xs xs:text-sm font-black uppercase text-white"
                     >
                       {copyLabel}
                     </button>
                     <Link
                       href={`/ranking/${game.slug}`}
-                      className="flex-1 rounded-xl bg-[#be8a16] px-4 py-4 text-center text-sm font-black uppercase text-[#101010]"
+                      className="flex-1 rounded-xl bg-[#be8a16] px-4 py-4 text-center text-xs xs:text-sm font-black uppercase text-[#101010]"
                     >
                       Ver ranking
                     </Link>
@@ -927,7 +1194,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
                 </div>
 
                 <div className="rounded-[1.4rem] border border-[#ffd45c]/20 bg-[rgba(8,19,28,0.94)] p-4">
-                  <div className="text-center text-2xl font-black uppercase text-[#ffd45c]">Compartilhe seu resultado!</div>
+                  <div className="text-center text-xl xs:text-2xl font-black uppercase text-[#ffd45c]">Compartilhe seu resultado!</div>
                   <div className="mt-3 overflow-hidden rounded-[1.1rem] border border-white/10 bg-black/25">
                     {resultImageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -965,100 +1232,401 @@ function drawKitchen(
   player: { x: number; y: number },
   shield: number,
   rush: number,
+  freeze: number,
+  isMoving: boolean,
 ) {
   ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-  const wall = ctx.createLinearGradient(0, 0, 0, 620);
-  wall.addColorStop(0, "#587487");
-  wall.addColorStop(1, "#2c424a");
-  ctx.fillStyle = wall;
+  // 1. Draw tiled wall background (azulejos)
+  const wallGrad = ctx.createLinearGradient(0, 0, 0, 620);
+  wallGrad.addColorStop(0, "#475569"); // Steel slate
+  wallGrad.addColorStop(1, "#1e293b"); // Deep coal slate
+  ctx.fillStyle = wallGrad;
   ctx.fillRect(0, 0, CANVAS_WIDTH, 620);
-  ctx.fillStyle = "#f5e9cb";
-  ctx.fillRect(0, 620, CANVAS_WIDTH, CANVAS_HEIGHT - 620);
 
-  ctx.fillStyle = "#40525b";
-  for (let x = 0; x < CANVAS_WIDTH; x += 72) {
-    ctx.fillRect(x, 0, 3, 620);
+  // Azulejo grids
+  ctx.strokeStyle = "#334155";
+  ctx.lineWidth = 1.5;
+  for (let x = 0; x < CANVAS_WIDTH; x += 48) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, 620);
+    ctx.stroke();
   }
-  ctx.fillStyle = "#495054";
-  for (let row = 0; row < 6; row += 1) {
-    for (let col = 0; col < 10; col += 1) {
-      ctx.fillRect(col * 72 + (row % 2 ? 0 : 4), 628 + row * 72, 66, 66);
+  for (let y = 0; y < 620; y += 48) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(CANVAS_WIDTH, y);
+    ctx.stroke();
+  }
+
+  // 2. Draw window at left with school view
+  ctx.fillStyle = "#0f172a"; // frame back
+  ctx.fillRect(30, 80, 140, 200);
+  
+  // Sky
+  const skyGrad = ctx.createLinearGradient(30, 80, 30, 280);
+  skyGrad.addColorStop(0, "#38bdf8"); // sky blue
+  skyGrad.addColorStop(1, "#bae6fd");
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(34, 84, 132, 192);
+
+  // Draw school block (rectangles)
+  ctx.fillStyle = "#b91c1c"; // brick red school building
+  ctx.fillRect(50, 160, 100, 116);
+  ctx.fillStyle = "#facc15"; // yellow windows
+  ctx.fillRect(60, 180, 14, 14);
+  ctx.fillRect(90, 180, 14, 14);
+  ctx.fillRect(120, 180, 14, 14);
+  ctx.fillRect(60, 220, 14, 14);
+  ctx.fillRect(90, 220, 14, 14);
+  ctx.fillRect(120, 220, 14, 14);
+
+  // Green bushes
+  ctx.fillStyle = "#15803d";
+  ctx.beginPath();
+  ctx.arc(46, 280, 18, 0, Math.PI * 2);
+  ctx.arc(80, 280, 22, 0, Math.PI * 2);
+  ctx.arc(120, 280, 20, 0, Math.PI * 2);
+  ctx.arc(154, 280, 18, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Glass highlight
+  ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+  ctx.beginPath();
+  ctx.moveTo(34, 84);
+  ctx.lineTo(130, 84);
+  ctx.lineTo(34, 180);
+  ctx.closePath();
+  ctx.fill();
+
+  // Window frame
+  ctx.strokeStyle = "#475569";
+  ctx.lineWidth = 8;
+  ctx.strokeRect(34, 84, 132, 192);
+  ctx.beginPath();
+  ctx.moveTo(100, 84);
+  ctx.lineTo(100, 276);
+  ctx.moveTo(34, 180);
+  ctx.lineTo(166, 180);
+  ctx.stroke();
+
+  // 3. Stoves and Pots
+  // Left Stove
+  drawStove(ctx, 30, 470, Date.now());
+  // Right Stove
+  drawStove(ctx, 590, 470, Date.now() + 1000);
+
+  // 4. Posters & Signboards
+  // Left poster
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(200, 360, 140, 80);
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(200, 360, 140, 80);
+  ctx.fillStyle = "#1e293b";
+  ctx.font = '900 12px "Geist", sans-serif';
+  ctx.fillText("A MERENDA É", 215, 395);
+  ctx.fillStyle = "#b91c1c";
+  ctx.fillText("DIREITO!", 240, 420);
+  // Tape
+  ctx.fillStyle = "rgba(251, 191, 36, 0.5)";
+  ctx.fillRect(190, 350, 25, 12);
+  ctx.fillRect(325, 430, 25, 12);
+
+  // Right chalkboard
+  ctx.fillStyle = "#064e3b"; // dark green board
+  ctx.fillRect(380, 360, 160, 80);
+  ctx.strokeStyle = "#78350f"; // wood border
+  ctx.lineWidth = 5;
+  ctx.strokeRect(380, 360, 160, 80);
+  ctx.fillStyle = "#ffffff";
+  ctx.font = '800 12px "Geist", sans-serif';
+  ctx.fillText("COZINHA", 430, 395);
+  ctx.fillText("ESCOLAR", 430, 420);
+
+  // Top banner
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(190, 15, 340, 50);
+  ctx.strokeStyle = "#ef4444";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(190, 15, 340, 50);
+  ctx.fillStyle = "#1e293b";
+  ctx.font = '900 11px "Geist", sans-serif';
+  ctx.fillText("EDUCAÇÃO SE FAZ COM RESPEITO E VALORIZAÇÃO! ♥", 200, 45);
+
+  // 5. Draw Floor Tiles with Bevels
+  for (let row = 0; row < 8; row += 1) {
+    const y = 620 + row * 58;
+    for (let col = 0; col < 13; col += 1) {
+      const x = col * 60 - (row % 2 ? 30 : 0);
+      const isRed = (row + col) % 2 === 0;
+      ctx.fillStyle = isRed ? "#8d3a24" : "#722e1b"; // Quarry tile red
+      ctx.fillRect(x, y, 58, 56);
+      
+      // Bevel borders
+      ctx.fillStyle = "rgba(255,255,255,0.06)";
+      ctx.fillRect(x, y, 58, 2);
+      ctx.fillRect(x, y, 2, 56);
+      ctx.fillStyle = "rgba(0,0,0,0.18)";
+      ctx.fillRect(x + 56, y, 2, 56);
+      ctx.fillRect(x, y + 54, 2, 56);
     }
   }
 
-  ctx.fillStyle = "#1c2228";
-  ctx.fillRect(102, 184, 198, 236);
-  ctx.fillRect(420, 184, 208, 236);
-  ctx.fillStyle = "#dce8ef";
-  ctx.fillRect(118, 200, 166, 200);
-  ctx.fillRect(438, 200, 174, 200);
-  ctx.fillStyle = "#f5cf6f";
-  ctx.fillRect(0, 470, CANVAS_WIDTH, 14);
+  // Draw serving zone wall outline
+  ctx.fillStyle = "#475569";
+  ctx.fillRect(0, 620, CANVAS_WIDTH, 8);
 
-  ctx.fillStyle = "#101416";
-  ctx.fillRect(SERVE_ZONE.x - SERVE_ZONE.w / 2, SERVE_ZONE.y - SERVE_ZONE.h / 2, SERVE_ZONE.w, SERVE_ZONE.h);
-  ctx.fillStyle = "#f3f0dd";
-  ctx.font = '900 26px "Geist", sans-serif';
-  ctx.fillText("BALCAO", SERVE_ZONE.x - 56, SERVE_ZONE.y - 6);
-  ctx.font = '800 18px "Geist", sans-serif';
-  ctx.fillText("sirva rapido", SERVE_ZONE.x - 52, SERVE_ZONE.y + 26);
+  // 6. Draw Serving window & Kids
+  // Background inside window
+  ctx.fillStyle = "#0f172a";
+  ctx.fillRect(SERVE_ZONE.x - SERVE_ZONE.w / 2 - 20, SERVE_ZONE.y - SERVE_ZONE.h / 2 - 40, SERVE_ZONE.w + 40, SERVE_ZONE.h + 20);
 
-  ctx.fillStyle = "#40525b";
-  ctx.fillRect(40, 534, 190, 40);
-  ctx.fillRect(486, 534, 194, 40);
-  ctx.fillStyle = "#13222b";
-  ctx.fillRect(52, 490, 166, 46);
-  ctx.fillRect(498, 490, 166, 46);
+  // Window frame
+  ctx.strokeStyle = "#334155";
+  ctx.lineWidth = 10;
+  ctx.strokeRect(SERVE_ZONE.x - SERVE_ZONE.w / 2 - 20, SERVE_ZONE.y - SERVE_ZONE.h / 2 - 40, SERVE_ZONE.w + 40, SERVE_ZONE.h + 20);
 
-  ctx.fillStyle = "#f3f0dd";
-  ctx.font = '900 34px "Geist", sans-serif';
-  ctx.fillText("A MERENDA", 84, 520);
-  ctx.fillStyle = "#ff5e2f";
-  ctx.fillText("E DIREITO!", 84, 558);
-  ctx.fillStyle = "#f3f0dd";
-  ctx.fillText("EDUCACAO SE FAZ", 362, 520);
-  ctx.fillText("COM RESPEITO!", 380, 556);
+  // Kids waiting in window
+  for (let i = 0; i < 3; i++) {
+    const kidX = SERVE_ZONE.x - 70 + i * 70;
+    const baseKidY = SERVE_ZONE.y - 12;
+    // Bob speed/height increases when combo is active
+    const speed = snapshot.combo >= 4 ? 0.016 : 0.007;
+    const height = snapshot.combo >= 4 ? 14 : 6;
+    const kidBob = Math.sin(Date.now() * speed + i * 1.5) * height;
+    const kidY = baseKidY + kidBob;
 
+    // Skin tones
+    ctx.fillStyle = ["#8d5524", "#ffdbac", "#c68642"][i];
+    
+    // Head
+    ctx.beginPath();
+    ctx.arc(kidX, kidY, 16, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Hair
+    ctx.fillStyle = ["#000000", "#d97706", "#27272a"][i];
+    ctx.beginPath();
+    if (i === 0) {
+      // Curly afro
+      ctx.arc(kidX - 10, kidY - 10, 8, 0, Math.PI * 2);
+      ctx.arc(kidX + 10, kidY - 10, 8, 0, Math.PI * 2);
+      ctx.arc(kidX, kidY - 16, 12, 0, Math.PI * 2);
+    } else if (i === 1) {
+      // Short spikes
+      ctx.ellipse(kidX, kidY - 12, 18, 12, 0, Math.PI, 0, true);
+    } else {
+      // Ponytails/bob
+      ctx.arc(kidX - 12, kidY, 6, 0, Math.PI * 2);
+      ctx.arc(kidX + 12, kidY, 6, 0, Math.PI * 2);
+      ctx.arc(kidX, kidY - 14, 18, 0, Math.PI * 2);
+    }
+    ctx.fill();
+
+    // Eyes
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(kidX - 6, kidY - 2, 4, 0, Math.PI * 2);
+    ctx.arc(kidX + 6, kidY - 2, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#000000";
+    ctx.beginPath();
+    ctx.arc(kidX - 6, kidY - 2, 2, 0, Math.PI * 2);
+    ctx.arc(kidX + 6, kidY - 2, 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Smiles
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(kidX, kidY + 4, 5, 0, Math.PI, false);
+    ctx.stroke();
+  }
+
+  // Draw actual items
   for (const item of items) {
     drawItem(ctx, item);
   }
 
+  // Draw Serve table details
   drawServeCounter(ctx, snapshot, rush);
-  drawPlayer(ctx, player, snapshot, shield);
 
+  // Draw Player
+  drawPlayer(ctx, player, snapshot, shield, isMoving);
+
+  // Render particles
   for (const particle of particles) {
     ctx.save();
     ctx.globalAlpha = particle.life;
     ctx.fillStyle = particle.color;
-    ctx.font = '900 24px "Geist", sans-serif';
-    ctx.fillText(particle.text, particle.x, particle.y);
+    
+    if (particle.type === "circle") {
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, (particle.size ?? 6) * particle.life, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (particle.type === "spark") {
+      drawStar(ctx, particle.x, particle.y, 5, (particle.size ?? 10) * particle.life, (particle.size ?? 10) * 0.4 * particle.life, particle.color);
+    } else if (particle.type === "scrap") {
+      // Confetti scrap
+      ctx.translate(particle.x, particle.y);
+      ctx.rotate(particle.life * Math.PI * 4); // spin
+      ctx.fillRect(-(particle.size ?? 6) * 0.5 * particle.life, -(particle.size ?? 6) * 0.5 * particle.life, (particle.size ?? 6) * particle.life, (particle.size ?? 6) * 1.5 * particle.life);
+    } else {
+      // Text
+      ctx.font = '900 24px "Geist", sans-serif';
+      ctx.fillText(particle.text, particle.x, particle.y);
+    }
+    ctx.restore();
+  }
+
+  // 7. Ice freeze screen overlay
+  if (freeze > 0) {
+    ctx.save();
+    ctx.fillStyle = "rgba(186, 230, 253, 0.12)";
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    // Draw ice frost borders
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.45)";
+    ctx.lineWidth = 16 * (freeze / 7);
+    ctx.strokeRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     ctx.restore();
   }
 }
 
-function drawServeCounter(ctx: CanvasRenderingContext2D, snapshot: GameSnapshot, rush: number) {
-  ctx.fillStyle = "rgba(0,0,0,0.28)";
-  ctx.fillRect(196, 286, 330, 24);
-  for (let index = 0; index < 4; index += 1) {
-    const childX = 238 + index * 72;
-    ctx.fillStyle = ["#d68a40", "#e4a35c", "#9fce6c", "#7fd2ff"][index % 4];
+// Stoves drawer helper
+function drawStove(ctx: CanvasRenderingContext2D, x: number, y: number, time: number) {
+  ctx.fillStyle = "#1e293b"; // Stove body
+  ctx.fillRect(x, y, 100, 110);
+  ctx.fillStyle = "#334155";
+  ctx.fillRect(x + 5, y + 5, 90, 100);
+
+  // Burner grate
+  ctx.fillStyle = "#0f172a";
+  ctx.beginPath();
+  ctx.arc(x + 50, y + 30, 24, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Pot (Silver steel gradient)
+  const potGrad = ctx.createLinearGradient(x + 20, y, x + 80, y);
+  potGrad.addColorStop(0, "#94a3b8");
+  potGrad.addColorStop(0.5, "#cbd5e1");
+  potGrad.addColorStop(1, "#64748b");
+  ctx.fillStyle = potGrad;
+  ctx.beginPath();
+  ctx.roundRect(x + 18, y - 28, 64, 48, 4);
+  ctx.fill();
+
+  // Pot lid
+  ctx.fillStyle = "#cbd5e1";
+  ctx.fillRect(x + 14, y - 32, 72, 4);
+  ctx.fillStyle = "#475569";
+  ctx.fillRect(x + 44, y - 36, 12, 4); // lid handle
+
+  // Pot side handles
+  ctx.fillRect(x + 10, y - 20, 8, 8);
+  ctx.fillRect(x + 82, y - 20, 8, 8);
+
+  // Boiling fire glow
+  const fireGlow = ctx.createRadialGradient(x + 50, y + 30, 4, x + 50, y + 30, 22);
+  fireGlow.addColorStop(0, "rgba(239, 68, 68, 0.72)");
+  fireGlow.addColorStop(0.5, "rgba(249, 115, 22, 0.3)");
+  fireGlow.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = fireGlow;
+  ctx.beginPath();
+  ctx.arc(x + 50, y + 30, 22, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Steam rising lines
+  ctx.save();
+  ctx.strokeStyle = "rgba(255,255,255,0.22)";
+  ctx.lineWidth = 3;
+  ctx.lineCap = "round";
+  for (let i = 0; i < 3; i++) {
+    const sx = x + 34 + i * 16 + Math.sin(time * 0.003 + i * 2) * 5;
+    const sy = y - 40 - (time * 0.04 + i * 20) % 40;
     ctx.beginPath();
-    ctx.arc(childX, 264, 18, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#3f281c";
-    ctx.fillRect(childX - 14, 280, 28, 42);
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(sx + Math.sin(time * 0.004) * 4, sy - 15);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawServeCounter(ctx: CanvasRenderingContext2D, snapshot: GameSnapshot, rush: number) {
+  // Metal delivery counter ledge
+  ctx.fillStyle = "#475569";
+  ctx.fillRect(SERVE_ZONE.x - SERVE_ZONE.w / 2 - 30, SERVE_ZONE.y + SERVE_ZONE.h / 2 - 12, SERVE_ZONE.w + 60, 24);
+  ctx.fillStyle = "#64748b";
+  ctx.fillRect(SERVE_ZONE.x - SERVE_ZONE.w / 2 - 30, SERVE_ZONE.y + SERVE_ZONE.h / 2 - 12, SERVE_ZONE.w + 60, 6);
+
+  // Delivery tray/warmer plates
+  ctx.fillStyle = "#1e293b";
+  ctx.fillRect(SERVE_ZONE.x - 70, SERVE_ZONE.y + 22, 140, 20);
+
+  // Render food warmer trays inside window
+  for (let i = 0; i < 3; i++) {
+    const px = SERVE_ZONE.x - 55 + i * 42;
+    ctx.fillStyle = "#334155";
+    ctx.fillRect(px, SERVE_ZONE.y + 24, 30, 16);
+    // Food in trays
+    ctx.fillStyle = i === 0 ? "#ffffff" : i === 1 ? "#78350f" : "#22c55e"; // rice, beans, salad
+    ctx.fillRect(px + 2, SERVE_ZONE.y + 26, 26, 12);
   }
 
-  ctx.fillStyle = "#282928";
-  ctx.fillRect(262, 820, 196, 90);
-  ctx.fillStyle = "#74674a";
-  ctx.fillRect(278, 836, 160, 58);
-  ctx.fillStyle = "#e7e2cf";
-  ctx.font = '900 24px "Geist", sans-serif';
-  ctx.fillText(`ingredientes ${snapshot.ingredientBag}/4`, 292, 872);
-  ctx.fillStyle = rush > 0 ? "#ffd34e" : "#ff9a6e";
-  ctx.fillText(rush > 0 ? "mutirao ativo" : `combo x${snapshot.combo}`, 304, 898);
+  // Guide arrows pointing to counter when ingredient bag is full
+  if (snapshot.ingredientBag > 0 && snapshot.running) {
+    const arrowY = SERVE_ZONE.y + SERVE_ZONE.h / 2 + 18 + Math.sin(Date.now() * 0.015) * 6;
+    ctx.fillStyle = "#facc15";
+    ctx.beginPath();
+    ctx.moveTo(SERVE_ZONE.x, arrowY);
+    ctx.lineTo(SERVE_ZONE.x - 14, arrowY + 14);
+    ctx.lineTo(SERVE_ZONE.x - 6, arrowY + 14);
+    ctx.lineTo(SERVE_ZONE.x - 6, arrowY + 28);
+    ctx.lineTo(SERVE_ZONE.x + 6, arrowY + 28);
+    ctx.lineTo(SERVE_ZONE.x + 6, arrowY + 14);
+    ctx.lineTo(SERVE_ZONE.x + 14, arrowY + 14);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  // Steel Prep Table (for bag stats) on the floor
+  ctx.fillStyle = "#64748b"; // legs
+  ctx.fillRect(260, 836, 6, 80);
+  ctx.fillRect(454, 836, 6, 80);
+
+  ctx.fillStyle = "#94a3b8"; // Prep table top
+  ctx.fillRect(250, 810, 220, 12);
+  ctx.fillStyle = "#cbd5e1";
+  ctx.fillRect(250, 810, 220, 3);
+
+  // Table shelf body
+  ctx.fillStyle = "#1e293b";
+  ctx.fillRect(256, 822, 208, 64);
+  ctx.strokeStyle = "#475569";
+  ctx.lineWidth = 2.5;
+  ctx.strokeRect(256, 822, 208, 64);
+
+  // Labels
+  ctx.fillStyle = "#ffffff";
+  ctx.font = '900 12px "Geist", sans-serif';
+  ctx.fillText("PANELÃO DE MERENDA", 270, 842);
+
+  // Ingredient bag indicator slots
+  ctx.fillStyle = "#334155";
+  ctx.fillRect(270, 852, 180, 14);
+  // Fills
+  ctx.fillStyle = "#22c55e";
+  for (let i = 0; i < snapshot.ingredientBag; i++) {
+    ctx.fillRect(272 + i * 44, 854, 40, 10);
+  }
+
+  ctx.fillStyle = rush > 0 ? "#facc15" : "#fda4af";
+  ctx.font = '900 12px "Geist", sans-serif';
+  ctx.fillText(rush > 0 ? "MUTIRÃO ATIVO!" : `COMBO ATUAL: X${snapshot.combo}`, 270, 878);
 }
 
 function drawPlayer(
@@ -1066,140 +1634,641 @@ function drawPlayer(
   player: { x: number; y: number },
   snapshot: GameSnapshot,
   shield: number,
+  isMoving: boolean,
 ) {
+  ctx.save();
+  // Translate to player center to support run cycle bobbing and tilting
+  const bob = isMoving ? Math.sin(Date.now() * 0.015) * 6 : 0;
+  const tilt = isMoving ? Math.sin(Date.now() * 0.015) * 0.06 : 0;
+  ctx.translate(player.x, player.y + bob);
+  ctx.rotate(tilt);
+
+  // Expression logic
   const expression =
-    snapshot.breath < 24 ? "tired" :
+    snapshot.breath < 25 ? "tired" :
     snapshot.chaos > 70 ? "alert" :
     snapshot.combo >= 4 ? "happy" :
     "normal";
 
+  // 1. Draw Shield
   if (shield > 0) {
     ctx.save();
-    ctx.globalAlpha = 0.55;
-    ctx.fillStyle = "#72d9ff";
+    ctx.globalAlpha = 0.35 + Math.sin(Date.now() * 0.01) * 0.15;
+    ctx.strokeStyle = "#72d9ff";
+    ctx.lineWidth = 4;
+    ctx.fillStyle = "rgba(114, 217, 255, 0.12)";
     ctx.beginPath();
-    ctx.arc(player.x, player.y - 10, 62, 0, Math.PI * 2);
+    ctx.arc(0, -10, 68, 0, Math.PI * 2);
     ctx.fill();
+    ctx.stroke();
     ctx.restore();
   }
 
-  ctx.fillStyle = "#1b2026";
+  // 2. Shadow on floor (drawn underneath)
+  ctx.fillStyle = "rgba(16, 20, 26, 0.35)";
   ctx.beginPath();
-  ctx.ellipse(player.x, player.y + 92, 56, 16, 0, 0, Math.PI * 2);
+  ctx.ellipse(0, 92, 54, 14, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#7f482a";
+  // 3. Hair (behind head)
+  ctx.fillStyle = "#3a2010"; // brown/black hair
   ctx.beginPath();
-  ctx.arc(player.x, player.y - 98, 34, 0, Math.PI * 2);
+  ctx.arc(0, -96, 36, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#f3f0dd";
+
+  // 4. Face/Head
+  ctx.fillStyle = "#8d5524"; // Warm skin tone
   ctx.beginPath();
-  ctx.ellipse(player.x, player.y - 118, 50, 22, 0, Math.PI, 0, true);
+  ctx.arc(0, -88, 28, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillRect(player.x - 40, player.y - 122, 80, 18);
-  ctx.fillStyle = "#1f355f";
+
+  // Ears
   ctx.beginPath();
-  ctx.moveTo(player.x - 58, player.y - 48);
-  ctx.lineTo(player.x + 58, player.y - 48);
-  ctx.lineTo(player.x + 40, player.y + 70);
-  ctx.lineTo(player.x - 40, player.y + 70);
+  ctx.arc(-28, -88, 7, 0, Math.PI * 2);
+  ctx.arc(28, -88, 7, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 5. Touca (Ruffled Hairnet)
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath();
+  ctx.ellipse(0, -114, 42, 18, 0, Math.PI, 0, true);
+  ctx.fill();
+  for (let a = -Math.PI; a <= 0; a += 0.35) {
+    const rx = Math.cos(a) * 42;
+    const ry = -114 + Math.sin(a) * 18;
+    ctx.beginPath();
+    ctx.arc(rx, ry, 9, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // Ruffled band
+  ctx.fillStyle = "#e2e8f0";
+  ctx.fillRect(-38, -114, 76, 4);
+
+  // 6. Body & Uniform
+  // White Collar shirt
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(-24, -60, 48, 20);
+  ctx.beginPath();
+  ctx.moveTo(-24, -60);
+  ctx.lineTo(-34, -40);
+  ctx.lineTo(-24, -40);
   ctx.closePath();
   ctx.fill();
-  ctx.fillStyle = "#f3f0dd";
-  ctx.fillRect(player.x - 28, player.y - 58, 56, 54);
-  ctx.fillStyle = "#2c3440";
-  ctx.fillRect(player.x - 36, player.y + 70, 24, 74);
-  ctx.fillRect(player.x + 12, player.y + 70, 24, 74);
-  ctx.fillStyle = "#7f482a";
   ctx.beginPath();
-  ctx.arc(player.x - 48, player.y + 2, 16, 0, Math.PI * 2);
-  ctx.arc(player.x + 48, player.y + 2, 16, 0, Math.PI * 2);
+  ctx.moveTo(24, -60);
+  ctx.lineTo(34, -40);
+  ctx.lineTo(24, -40);
+  ctx.closePath();
   ctx.fill();
 
-  ctx.fillStyle = "#1a1616";
-  ctx.beginPath();
-  ctx.arc(player.x - 12, player.y - 103, 4, 0, Math.PI * 2);
-  ctx.arc(player.x + 12, player.y - 103, 4, 0, Math.PI * 2);
-  ctx.fill();
+  // Apron Bib (avental azul)
+  ctx.fillStyle = "#1e40af";
+  ctx.fillRect(-18, -48, 36, 32);
+  // Apron straps
+  ctx.strokeStyle = "#1e3a8a";
   ctx.lineWidth = 4;
-  ctx.strokeStyle = "#1a1616";
   ctx.beginPath();
-  if (expression === "happy") {
-    ctx.arc(player.x, player.y - 88, 12, 0, Math.PI, false);
-  } else if (expression === "alert") {
-    ctx.moveTo(player.x - 12, player.y - 84);
-    ctx.lineTo(player.x + 12, player.y - 94);
-  } else if (expression === "tired") {
-    ctx.arc(player.x, player.y - 78, 12, Math.PI, Math.PI * 2, false);
-  } else {
-    ctx.moveTo(player.x - 10, player.y - 86);
-    ctx.lineTo(player.x + 10, player.y - 86);
-  }
+  ctx.moveTo(-18, -48);
+  ctx.lineTo(-26, -60);
+  ctx.moveTo(18, -48);
+  ctx.lineTo(26, -60);
   ctx.stroke();
 
-  ctx.fillStyle = "#e6dec6";
-  ctx.fillRect(player.x + 18, player.y - 14, 66, 20);
-  ctx.fillStyle = "#64411f";
+  // Apron Skirt
+  ctx.fillRect(-28, -16, 56, 78);
+  // Apron pocket
+  ctx.fillStyle = "#1d4ed8";
+  ctx.fillRect(-14, 10, 28, 20);
+
+  // Arms
+  ctx.fillStyle = "#8d5524";
   ctx.beginPath();
-  ctx.arc(player.x + 34, player.y - 4, 10, 0, Math.PI * 2);
-  ctx.arc(player.x + 58, player.y - 4, 10, 0, Math.PI * 2);
+  ctx.arc(-32, -26, 8, 0, Math.PI * 2);
+  ctx.arc(32, -26, 8, 0, Math.PI * 2);
   ctx.fill();
+  // Forearms moving in front
+  ctx.fillRect(-36, -26, 12, 28);
+  ctx.fillRect(24, -26, 12, 28);
+
+  // 7. Pants & Legs (moving if running)
+  ctx.fillStyle = "#334155"; // Slate pants
+  const legSwing = isMoving ? Math.sin(Date.now() * 0.015) * 16 : 0;
+  ctx.fillRect(-22, 62, 16, 24 + legSwing);
+  ctx.fillRect(6, 62, 16, 24 - legSwing);
+
+  // Black shoes
+  ctx.fillStyle = "#0f172a";
+  ctx.beginPath();
+  ctx.roundRect(-24, 82 + legSwing, 20, 12, 5);
+  ctx.roundRect(4, 82 - legSwing, 20, 12, 5);
+  ctx.fill();
+
+  // 8. Eyes & Mouth (Facial Expressions)
+  ctx.fillStyle = "#0f172a"; // Dark eyes/mouth
+  if (expression === "happy") {
+    // Curved happy eyes
+    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = "#0f172a";
+    ctx.beginPath();
+    ctx.arc(-10, -92, 5, Math.PI, 0, false);
+    ctx.moveTo(15, -92);
+    ctx.arc(15, -92, 5, Math.PI, 0, false);
+    ctx.stroke();
+    // Big open smile
+    ctx.beginPath();
+    ctx.arc(2, -78, 9, 0, Math.PI, false);
+    ctx.closePath();
+    ctx.fillStyle = "#b91c1c"; // red tongue
+    ctx.fill();
+    ctx.fillStyle = "#0f172a";
+    ctx.stroke();
+  } else if (expression === "tired") {
+    // Closed tired eyes: ^ ^
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#0f172a";
+    ctx.beginPath();
+    ctx.moveTo(-16, -88);
+    ctx.lineTo(-10, -94);
+    ctx.lineTo(-4, -88);
+    ctx.moveTo(8, -88);
+    ctx.lineTo(14, -94);
+    ctx.lineTo(20, -88);
+    ctx.stroke();
+    // Downwards mouth
+    ctx.beginPath();
+    ctx.arc(2, -72, 7, Math.PI, 0, false);
+    ctx.stroke();
+
+    // Sweat drops
+    ctx.fillStyle = "#60a5fa";
+    ctx.beginPath();
+    ctx.arc(38, -94, 3, 0, Math.PI);
+    ctx.lineTo(38, -100);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(-38, -86, 3, 0, Math.PI);
+    ctx.lineTo(-38, -92);
+    ctx.closePath();
+    ctx.fill();
+  } else if (expression === "alert") {
+    // Wide circular eyes
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(-11, -90, 7, 0, Math.PI * 2);
+    ctx.arc(13, -90, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#0f172a";
+    ctx.beginPath();
+    ctx.arc(-11, -90, 3, 0, Math.PI * 2);
+    ctx.arc(13, -90, 3, 0, Math.PI * 2);
+    ctx.fill();
+    // Open shocked mouth
+    ctx.beginPath();
+    ctx.arc(2, -76, 6, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    // Normal Expression
+    // Simple eyes
+    ctx.beginPath();
+    ctx.arc(-10, -90, 3.5, 0, Math.PI * 2);
+    ctx.arc(14, -90, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    // Small smile
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#0f172a";
+    ctx.beginPath();
+    ctx.arc(2, -82, 8, 0, Math.PI, false);
+    ctx.stroke();
+  }
+
+  // 9. Food Tray
+  ctx.fillStyle = "#94a3b8"; // Metal tray
+  ctx.beginPath();
+  ctx.roundRect(-42, -14, 84, 8, 3);
+  ctx.fill();
+  ctx.fillStyle = "#cbd5e1"; // Tray inner highlight
+  ctx.fillRect(-38, -14, 76, 2);
+
+  // Render food bowls on tray depending on ingredients carried
+  const count = snapshot.ingredientBag;
+  if (count >= 1) {
+    // Rice bowl
+    ctx.fillStyle = "#3b82f6"; // Blue bowl
+    ctx.beginPath();
+    ctx.arc(-24, -16, 10, 0, Math.PI);
+    ctx.fill();
+    ctx.fillStyle = "#ffffff"; // Rice dome
+    ctx.beginPath();
+    ctx.arc(-24, -18, 8, Math.PI, 0);
+    ctx.fill();
+  }
+  if (count >= 2) {
+    // Beans bowl
+    ctx.fillStyle = "#ea580c"; // Orange bowl
+    ctx.beginPath();
+    ctx.arc(24, -16, 10, 0, Math.PI);
+    ctx.fill();
+    ctx.fillStyle = "#78350f"; // Brown beans dome
+    ctx.beginPath();
+    ctx.arc(24, -18, 8, Math.PI, 0);
+    ctx.fill();
+  }
+  if (count >= 3) {
+    // Vegetables
+    ctx.fillStyle = "#10b981"; // Green veggies
+    ctx.beginPath();
+    ctx.arc(0, -18, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#f97316"; // Carrot bits
+    ctx.beginPath();
+    ctx.arc(4, -18, 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  if (count >= 4) {
+    // Fruit / Banana
+    ctx.strokeStyle = "#eab308"; // Yellow banana
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(-4, -18, 6, 0.2, Math.PI - 0.2);
+    ctx.stroke();
+  }
+
+  ctx.restore();
 }
 
 function drawItem(ctx: CanvasRenderingContext2D, item: KitchenItem) {
-  const glow = ctx.createRadialGradient(item.x, item.y, 2, item.x, item.y, item.size * 1.8);
-  glow.addColorStop(0, item.tone);
+  // Glow background
+  ctx.save();
+  const glow = ctx.createRadialGradient(item.x, item.y, 2, item.x, item.y, item.size * 2.0);
+  glow.addColorStop(0, item.tone + "bb"); // vibrant glow opacity
+  glow.addColorStop(0.5, item.tone + "44");
   glow.addColorStop(1, "rgba(0,0,0,0)");
   ctx.fillStyle = glow;
   ctx.beginPath();
-  ctx.arc(item.x, item.y, item.size * 1.8, 0, Math.PI * 2);
+  ctx.arc(item.x, item.y, item.size * 2.0, 0, Math.PI * 2);
   ctx.fill();
+  ctx.restore();
 
   ctx.save();
+  ctx.translate(item.x, item.y);
+  
   if (item.kind === "threat") {
-    ctx.translate(item.x, item.y);
-    ctx.rotate(0.16);
-    ctx.translate(-item.x, -item.y);
+    // Tilted red bills
+    ctx.rotate(0.12);
+    // Draw document sheet
+    ctx.fillStyle = "#ffebe7";
+    ctx.strokeStyle = "#ef4444";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.roundRect(-item.size, -item.size * 1.3, item.size * 2, item.size * 2.6, 6);
+    ctx.fill();
+    ctx.stroke();
+
+    // Red header line
+    ctx.fillStyle = "#ef4444";
+    ctx.fillRect(-item.size + 2, -item.size * 1.3 + 2, item.size * 2 - 4, 10);
+
+    // Write name
+    ctx.fillStyle = "#ffffff";
+    ctx.font = '900 9px "Geist", sans-serif';
+    ctx.textAlign = "center";
+    ctx.fillText(item.label.toUpperCase(), 0, -item.size * 1.3 + 10);
+
+    // Barcode lines
+    ctx.fillStyle = "#334155";
+    ctx.fillRect(-item.size + 4, item.size * 0.7, 3, 10);
+    ctx.fillRect(-item.size + 9, item.size * 0.7, 1, 10);
+    ctx.fillRect(-item.size + 12, item.size * 0.7, 4, 10);
+    ctx.fillRect(-item.size + 18, item.size * 0.7, 2, 10);
+    ctx.fillRect(-item.size + 22, item.size * 0.7, 1, 10);
+
+    // Value text
+    ctx.fillStyle = "#b91c1c";
+    ctx.font = '900 11px "Geist", sans-serif';
+    ctx.fillText("R$ $$$", 0, item.size * 0.4);
+
+    // Warning exclamation mark
+    ctx.fillStyle = "#ef4444";
+    ctx.font = '900 16px "Geist", sans-serif';
+    ctx.fillText("!", 0, -item.size * 0.1);
+
+  } else if (item.kind === "ingredient") {
+    // Detailed ingredient graphics
+    if (item.label.includes("arroz")) {
+      // White bowl of rice
+      ctx.fillStyle = "#e2e8f0";
+      ctx.beginPath();
+      ctx.arc(0, 4, item.size * 0.7, 0, Math.PI);
+      ctx.fill();
+      // White fluffy rice mounds
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(-8, -2, 9, 0, Math.PI * 2);
+      ctx.arc(8, -2, 9, 0, Math.PI * 2);
+      ctx.arc(0, -6, 11, 0, Math.PI * 2);
+      ctx.fill();
+      // Detail lines
+      ctx.strokeStyle = "#cbd5e1";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    } else if (item.label.includes("feijao")) {
+      // Brown bowl of beans
+      ctx.fillStyle = "#d97706";
+      ctx.beginPath();
+      ctx.arc(0, 4, item.size * 0.7, 0, Math.PI);
+      ctx.fill();
+      // Bean textures
+      ctx.fillStyle = "#451a03";
+      ctx.beginPath();
+      ctx.arc(-6, -1, 7, 0, Math.PI * 2);
+      ctx.arc(6, -1, 7, 0, Math.PI * 2);
+      ctx.arc(0, -4, 9, 0, Math.PI * 2);
+      ctx.fill();
+      // Little beans
+      ctx.fillStyle = "#78350f";
+      ctx.beginPath();
+      ctx.arc(-3, -2, 3, 0, Math.PI * 2);
+      ctx.arc(4, -4, 3, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (item.label.includes("legume")) {
+      // Carrot shape
+      ctx.rotate(-0.4);
+      // Carrot body
+      ctx.fillStyle = "#f97316";
+      ctx.beginPath();
+      ctx.moveTo(-6, -12);
+      ctx.lineTo(6, -12);
+      ctx.lineTo(0, 16);
+      ctx.closePath();
+      ctx.fill();
+      // Carrot leaves
+      ctx.fillStyle = "#22c55e";
+      ctx.beginPath();
+      ctx.arc(-3, -16, 5, 0, Math.PI * 2);
+      ctx.arc(3, -16, 5, 0, Math.PI * 2);
+      ctx.arc(0, -21, 6, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (item.label.includes("fruta")) {
+      // Yellow banana
+      ctx.strokeStyle = "#facc15";
+      ctx.lineWidth = 7;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.arc(-2, -2, item.size * 0.7, 0.3, Math.PI - 0.3);
+      ctx.stroke();
+      // Tips
+      ctx.fillStyle = "#78350f";
+      ctx.beginPath();
+      ctx.arc(-11, 4, 3, 0, Math.PI * 2);
+      ctx.arc(8, 4, 3, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (item.label.includes("leite")) {
+      // Blue milk carton
+      ctx.fillStyle = "#3b82f6";
+      ctx.beginPath();
+      ctx.roundRect(-item.size * 0.6, -item.size * 0.8, item.size * 1.2, item.size * 1.6, 3);
+      ctx.fill();
+      // White stripe
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(-item.size * 0.6, -item.size * 0.2, item.size * 1.2, item.size * 0.4);
+      // Top fold
+      ctx.beginPath();
+      ctx.moveTo(-item.size * 0.6, -item.size * 0.8);
+      ctx.lineTo(0, -item.size * 1.2);
+      ctx.lineTo(item.size * 0.6, -item.size * 0.8);
+      ctx.closePath();
+      ctx.fill();
+      // Small blue drop icon
+      ctx.fillStyle = "#1d4ed8";
+      ctx.font = '8px "Geist", sans-serif';
+      ctx.fillText("🥛", -4, 2);
+    } else if (item.label.includes("pao")) {
+      // Pão francês
+      ctx.fillStyle = "#f59e0b";
+      ctx.beginPath();
+      ctx.ellipse(0, 0, item.size * 0.9, item.size * 0.6, 0.4, 0, Math.PI * 2);
+      ctx.fill();
+      // Diagonal slash
+      ctx.strokeStyle = "#d97706";
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(-item.size * 0.5, -item.size * 0.1);
+      ctx.lineTo(item.size * 0.5, item.size * 0.1);
+      ctx.stroke();
+    } else {
+      // Fallback ingredient box
+      ctx.fillStyle = "#f8f4e6";
+      ctx.beginPath();
+      ctx.roundRect(-item.size, -item.size, item.size * 2, item.size * 2, 8);
+      ctx.fill();
+      ctx.fillStyle = "#1e293b";
+      ctx.font = '900 12px "Geist", sans-serif';
+      ctx.textAlign = "center";
+      ctx.fillText(item.label.substring(0, 5).toUpperCase(), 0, 4);
+    }
+
+  } else if (item.kind === "power") {
+    // Glowing golden or cyan capsules
+    const isGold = item.label.includes("mutirao") || item.label.includes("escala");
+    ctx.fillStyle = isGold ? "#fef08a" : "#e0f2fe";
+    ctx.strokeStyle = isGold ? "#eab308" : "#0284c7";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(0, 0, item.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Inner icon
+    ctx.fillStyle = isGold ? "#854d0e" : "#0369a1";
+    ctx.font = '900 14px "Geist", sans-serif';
+    ctx.textAlign = "center";
+    if (item.label.includes("mutirao")) {
+      ctx.fillText("✊", 0, 5);
+    } else if (item.label.includes("apoio")) {
+      ctx.fillText("🤝", 0, 5);
+    } else if (item.label.includes("marmita")) {
+      ctx.fillText("🍲", 0, 5);
+    } else if (item.label.includes("escala")) {
+      ctx.fillText("📅", 0, 5);
+    } else if (item.label.includes("organizacao")) {
+      ctx.fillText("📢", 0, 5);
+    } else {
+      ctx.fillText("🧺", 0, 5);
+    }
   }
-  ctx.fillStyle = item.kind === "threat" ? "#ffebe7" : item.kind === "power" ? "#101c22" : "#f8f4e6";
-  ctx.beginPath();
-  ctx.roundRect(item.x - item.size, item.y - item.size, item.size * 2, item.size * 2, 10);
-  ctx.fill();
-  ctx.fillStyle = item.kind === "threat" ? "#d9444e" : item.kind === "power" ? "#ffd34e" : "#213129";
-  ctx.textAlign = "center";
-  ctx.font = `900 ${item.kind === "power" ? 14 : 13}px "Geist", sans-serif`;
-  ctx.fillText(item.label.toUpperCase(), item.x, item.y + 5);
   ctx.restore();
-  ctx.textAlign = "start";
+  ctx.textAlign = "start"; // Reset
 }
 
-function MiniHud({ label, value, color }: { label: string; value: string; color: string }) {
+function drawStar(ctx: CanvasRenderingContext2D, cx: number, cy: number, spikes: number, outerRadius: number, innerRadius: number, color: string) {
+  let rot = Math.PI / 2 * 3;
+  let x = cx;
+  let y = cy;
+  const step = Math.PI / spikes;
+
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - outerRadius);
+  for (let i = 0; i < spikes; i++) {
+    x = cx + Math.cos(rot) * outerRadius;
+    y = cy + Math.sin(rot) * outerRadius;
+    ctx.lineTo(x, y);
+    rot += step;
+
+    x = cx + Math.cos(rot) * innerRadius;
+    y = cy + Math.sin(rot) * innerRadius;
+    ctx.lineTo(x, y);
+    rot += step;
+  }
+  ctx.lineTo(cx, cy - outerRadius);
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+function drawRankBadge(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, rank: string) {
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  // Colors based on rank
+  let bg = "#1e293b";
+  let border1 = "#cbd5e1";
+  let border2 = "#94a3b8";
+  let text = "#ffffff";
+  let glow = "rgba(255,255,255,0.2)";
+
+  if (rank === "S") {
+    bg = "#450a0a";
+    border1 = "#fbbf24";
+    border2 = "#f59e0b";
+    text = "#fbbf24";
+    glow = "rgba(251, 191, 36, 0.45)";
+  } else if (rank === "A") {
+    bg = "#1e1b4b";
+    border1 = "#facc15";
+    border2 = "#eab308";
+    text = "#facc15";
+    glow = "rgba(250, 204, 21, 0.35)";
+  } else if (rank === "B") {
+    bg = "#064e3b";
+    border1 = "#38bdf8";
+    border2 = "#0284c7";
+    text = "#38bdf8";
+    glow = "rgba(56, 189, 248, 0.3)";
+  } else if (rank === "C") {
+    bg = "#3c1502";
+    border1 = "#fb923c";
+    border2 = "#f97316";
+    text = "#fb923c";
+    glow = "rgba(251, 146, 60, 0.25)";
+  }
+
+  // Draw Badge Outer Glow
+  const bGlow = ctx.createRadialGradient(0, 0, size * 0.1, 0, 0, size * 0.8);
+  bGlow.addColorStop(0, glow);
+  bGlow.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = bGlow;
+  ctx.beginPath();
+  ctx.arc(0, 0, size * 0.8, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Draw Shield Outline
+  ctx.beginPath();
+  ctx.moveTo(0, -size * 0.5);
+  ctx.lineTo(size * 0.45, -size * 0.25);
+  ctx.lineTo(size * 0.45, size * 0.2);
+  ctx.lineTo(0, size * 0.55);
+  ctx.lineTo(-size * 0.45, size * 0.2);
+  ctx.lineTo(-size * 0.45, -size * 0.25);
+  ctx.closePath();
+  
+  const shieldGrad = ctx.createLinearGradient(0, -size * 0.5, 0, size * 0.55);
+  shieldGrad.addColorStop(0, border1);
+  shieldGrad.addColorStop(1, border2);
+  ctx.strokeStyle = shieldGrad;
+  ctx.lineWidth = size * 0.08;
+  ctx.fillStyle = bg;
+  ctx.fill();
+  ctx.stroke();
+
+  // Inner lines
+  ctx.strokeStyle = "rgba(255,255,255,0.08)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, -size * 0.42);
+  ctx.lineTo(size * 0.38, -size * 0.2);
+  ctx.lineTo(size * 0.38, size * 0.16);
+  ctx.lineTo(0, size * 0.46);
+  ctx.lineTo(-size * 0.38, size * 0.16);
+  ctx.lineTo(-size * 0.38, -size * 0.2);
+  ctx.closePath();
+  ctx.stroke();
+
+  // Draw Rank text
+  ctx.fillStyle = text;
+  ctx.textAlign = "center";
+  ctx.font = `900 ${size * 0.52}px "Geist", sans-serif`;
+  ctx.fillText(rank, 0, size * 0.16);
+  
+  ctx.restore();
+}
+
+function MiniHud({
+  label,
+  value,
+  color,
+  icon,
+  percentage,
+}: {
+  label: string;
+  value: string;
+  color: string;
+  icon: string;
+  percentage?: number;
+}) {
   return (
-    <div className="rounded-xl border border-white/10 bg-black/25 px-2 py-2 text-center">
-      <div className="text-[9px] font-black uppercase tracking-[0.08em] text-white/55">{label}</div>
-      <div className="mt-1 text-sm font-black" style={{ color }}>{value}</div>
+    <div className="flex flex-col justify-between rounded-xl border border-white/10 bg-black/45 p-1.5 xs:p-2 text-center shadow-inner">
+      <div className="flex items-center justify-center gap-1 text-[9px] font-black uppercase tracking-[0.08em] text-white/50">
+        <span>{icon}</span>
+        <span className="hidden xs:inline">{label}</span>
+      </div>
+      <div className="mt-1 text-[11px] xs:text-[13px] font-black tracking-tight" style={{ color }}>
+        {value}
+      </div>
+      {percentage !== undefined && (
+        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full rounded-full transition-all duration-300"
+            style={{
+              backgroundColor: color,
+              width: `${Math.max(0, Math.min(100, percentage))}%`,
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
 function GuideStep({ title, text }: { title: string; text: string }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-black/20 px-2 py-2">
-      <div className="text-lg font-black text-[#ffd34e]">{title}</div>
-      <div className="mt-1 leading-tight">{text}</div>
+    <div className="rounded-xl border border-white/10 bg-black/20 p-1.5 xs:p-2">
+      <div className="text-base xs:text-lg font-black text-[#ffd34e]">{title}</div>
+      <div className="mt-0.5 leading-tight text-[9px] xs:text-[10px] text-white/70">{text}</div>
     </div>
   );
 }
 
 function ResultChip({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-black/25 px-3 py-3">
-      <div className="text-[10px] font-black uppercase tracking-[0.14em] text-white/55">{label}</div>
-      <div className="mt-1 text-xl font-black text-[#f3f0dd]">{value}</div>
+    <div className="rounded-xl bg-black/25 p-2 xs:p-3">
+      <div className="text-[9px] xs:text-[10px] font-black uppercase tracking-[0.14em] text-white/55">{label}</div>
+      <div className="mt-0.5 text-base xs:text-xl font-black text-[#f3f0dd]">{value}</div>
     </div>
   );
 }
 
 function Badge({ value }: { value: string }) {
-  return <div className="rounded-lg bg-black/20 px-2 py-2 text-center text-[#ffd45c]">{value}</div>;
+  return <div className="rounded-lg bg-black/20 p-1.5 xs:p-2 text-center text-[#ffd45c] text-[10px] xs:text-xs">{value}</div>;
 }
+
