@@ -2,7 +2,11 @@ import Link from "next/link";
 import { getAllGames } from "@/lib/gameRegistry";
 
 export default function Home() {
-  const games = getAllGames();
+  const allGames = getAllGames();
+  const games = [
+    ...allGames.filter((g) => g.slug === "merendeira-no-vermelho"),
+    ...allGames.filter((g) => g.slug !== "merendeira-no-vermelho"),
+  ];
   const featuredGame = games[0];
   const featuredMeta =
     featuredGame.slug === "onibus-zero"
@@ -36,10 +40,10 @@ export default function Home() {
         <div className="mb-6 rounded-[2rem] border border-[var(--border-strong)] bg-[var(--surface)] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
           <div className="mb-4 flex items-center justify-between">
             <span className="inline-flex items-center rounded-full bg-[var(--accent)] px-3 py-1 text-[11px] font-black uppercase tracking-[0.22em] text-[var(--bg)]">
-              Em destaque
+              Destaque
             </span>
             <span className="text-xs font-medium text-[var(--text-muted)]">
-              rodada 30-90s
+              1 min
             </span>
           </div>
 

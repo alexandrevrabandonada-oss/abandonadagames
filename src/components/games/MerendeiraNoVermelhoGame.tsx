@@ -457,7 +457,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
 
   const [snapshot, setSnapshot] = useState<GameSnapshot>(() => createInitialSnapshot(initialBestScore));
   const [playerName, setPlayerName] = useState(initialPlayerName);
-  const [toast, setToast] = useState("Salário atrasado. Segura a cozinha.");
+  const [toast, setToast] = useState("Pegue ingredientes, sirva merenda e desvie dos boletos.");
   const [copyLabel, setCopyLabel] = useState("Compartilhar");
   const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
 
@@ -585,7 +585,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
     const next = { ...createInitialSnapshot(bestScoreRef.current), running: true };
     stateRef.current = next;
     setSnapshot(next);
-    setToast("Salário atrasado. Segura a cozinha.");
+    setToast("Pegue ingredientes, sirva merenda e desvie dos boletos.");
     startAtRef.current = performance.now();
     lastTickRef.current = performance.now();
   }, []);
@@ -982,6 +982,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         kitchenRushRef.current,
         freezeBillsRef.current,
         isMoving,
+        elapsed,
       );
 
       if (
@@ -1021,7 +1022,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
   }, [playerName, snapshot, submitScore, updateBestScore]);
 
   const shareResult = useCallback(async () => {
-    const text = `Joguei Merendeira no Vermelho: servi ${snapshot.platesServed} merendas, sobrevivi ${snapshot.day} dias, segurei a estabilidade em ${Math.round(snapshot.stability)}% e terminei com rank ${snapshot.rank}. O boleto veio, mas a cozinha resistiu.`;
+    const text = `Joguei Merendeira no Vermelho: servi ${snapshot.platesServed} merendas, sobrevivi ${snapshot.day} dias e terminei com rank ${snapshot.rank}. O boleto veio, mas a cozinha resistiu.`;
     const imageFile = await createResultCardFile(snapshot);
     const payload = imageFile
       ? { title: game.title, text, url: window.location.href, files: [imageFile] }
@@ -1234,6 +1235,7 @@ function drawKitchen(
   rush: number,
   freeze: number,
   isMoving: boolean,
+  elapsed: number,
 ) {
   ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -1490,6 +1492,48 @@ function drawKitchen(
     ctx.strokeStyle = "rgba(56, 189, 248, 0.45)";
     ctx.lineWidth = 16 * (freeze / 7);
     ctx.strokeRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.restore();
+  }
+
+  // 8. Onboarding Instruction overlay (first 4.5 seconds of the game)
+  if (snapshot.running && elapsed < 4500) {
+    ctx.save();
+    const opacity = elapsed < 3500 ? 1 : Math.max(0, Math.min(1, (4500 - elapsed) / 1000));
+    ctx.globalAlpha = opacity;
+
+    const bannerW = 600;
+    const bannerH = 130;
+    const bannerX = (CANVAS_WIDTH - bannerW) / 2;
+    const bannerY = 460;
+
+    // Outer shadow/glow
+    ctx.shadowColor = "rgba(161, 90, 240, 0.4)";
+    ctx.shadowBlur = 15;
+    
+    // Background card (dark, modern translucent)
+    ctx.fillStyle = "rgba(7, 14, 20, 0.92)";
+    ctx.strokeStyle = "rgba(161, 90, 240, 0.75)";
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+    ctx.roundRect(bannerX, bannerY, bannerW, bannerH, 20);
+    ctx.fill();
+    
+    ctx.shadowBlur = 0; // Reset shadow
+    ctx.stroke();
+
+    // Section title
+    ctx.font = 'bold 16px "Geist", sans-serif';
+    ctx.fillStyle = "#ff723f"; // Orange accent
+    ctx.textAlign = "center";
+    ctx.fillText("COMO JOGAR", CANVAS_WIDTH / 2, bannerY + 34);
+
+    // Instruction lines
+    ctx.font = '900 21px "Geist", sans-serif';
+    ctx.fillStyle = "#f8f9fa";
+    ctx.fillText("Pegue ingredientes, sirva merenda", CANVAS_WIDTH / 2, bannerY + 68);
+    ctx.fillText("e desvie dos boletos.", CANVAS_WIDTH / 2, bannerY + 98);
+
     ctx.restore();
   }
 }
