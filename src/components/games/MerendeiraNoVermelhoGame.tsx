@@ -1620,63 +1620,219 @@ function drawKitchen(
   ctx.lineWidth = 3;
   ctx.strokeRect(vrX, vrY, vrW, vrH);
 
-  // Draw the flag of Volta Redonda inside
-  const flagX = vrX + 10;
-  const flagY = vrY + 25;
-  const flagW = vrW - 20;
-  const flagH = 60;
-
-  // Top stripe: Yellow/Gold
-  ctx.fillStyle = "#eab308";
-  ctx.fillRect(flagX, flagY, flagW, flagH / 3);
-
-  // Middle stripe: White
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(flagX, flagY + flagH / 3, flagW, flagH / 3);
-
-  // Bottom stripe: Steel Grey
-  ctx.fillStyle = "#64748b";
-  ctx.fillRect(flagX, flagY + (flagH * 2) / 3, flagW, flagH / 3);
-
-  // Flag outline
-  ctx.strokeStyle = "#000000";
-  ctx.lineWidth = 1;
-  ctx.strokeRect(flagX, flagY, flagW, flagH);
-
-  // Draw the central black shield / furnace silhouette inside the flag
-  const shieldX = flagX + flagW / 2;
-  const shieldY = flagY + flagH / 2;
-  ctx.fillStyle = "#000000";
-  ctx.beginPath();
-  ctx.arc(shieldX, shieldY, 6, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Text below the flag: "VOLTA REDONDA"
+  // Title: "VOLTA REDONDA"
   ctx.fillStyle = "#1e293b";
   ctx.font = '900 10px "Geist", sans-serif';
   ctx.textAlign = "center";
-  ctx.fillText("VOLTA REDONDA", vrX + vrW / 2, vrY + 110);
+  ctx.fillText("VOLTA REDONDA", vrX + vrW / 2, vrY + 16);
 
-  // Text: "CIDADE DO AÇO"
-  ctx.fillStyle = "#ef4444";
-  ctx.font = '900 9px "Geist", sans-serif';
-  ctx.fillText("CIDADE DO AÇO", vrX + vrW / 2, vrY + 128);
+  // Draw the flag of Volta Redonda inside
+  const flagX = vrX + 10;
+  const flagY = vrY + 22;
+  const flagW = vrW - 20; // 90
+  const flagH = 50;
 
-  // Draw a small steel gear / industry symbol at the bottom
-  const gearX = vrX + vrW / 2;
-  const gearY = vrY + 150;
-  ctx.strokeStyle = "#64748b";
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  ctx.arc(gearX, gearY, 8, 0, Math.PI * 2);
-  ctx.stroke();
+  // 14 stripes alternating Yellow and White (starting with White)
+  const stripeH = flagH / 14;
+  for (let i = 0; i < 14; i++) {
+    ctx.fillStyle = i % 2 === 0 ? "#ffffff" : "#ffd45c"; // Using a bright yellow
+    ctx.fillRect(flagX, flagY + i * stripeH, flagW, stripeH);
+  }
+
+  // Black canton (top-left) - covers 6 stripes vertically, 40% width
+  const cantonW = flagW * 0.4;
+  const cantonH = stripeH * 6;
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(flagX, flagY, cantonW, cantonH);
+
+  // Yellow lightning bolt star in canton
+  const starX = flagX + cantonW / 2;
+  const starY = flagY + cantonH / 2;
+  ctx.strokeStyle = "#ffd45c";
+  ctx.lineWidth = 1.5;
   for (let a = 0; a < 8; a++) {
     const angle = (a * Math.PI) / 4;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    
+    // Draw a simplified zig-zag lightning ray
     ctx.beginPath();
-    ctx.moveTo(gearX + Math.cos(angle) * 8, gearY + Math.sin(angle) * 8);
-    ctx.lineTo(gearX + Math.cos(angle) * 11, gearY + Math.sin(angle) * 11);
+    ctx.moveTo(starX, starY);
+    ctx.lineTo(starX + cos * 4, starY + sin * 4);
+    // zig-zag bend
+    const perpCos = -sin;
+    const perpSin = cos;
+    ctx.lineTo(starX + cos * 6 + perpCos * 1.5, starY + sin * 6 + perpSin * 1.5);
+    ctx.lineTo(starX + cos * 10, starY + sin * 10);
     ctx.stroke();
   }
+  // center dot
+  ctx.fillStyle = "#ffd45c";
+  ctx.beginPath();
+  ctx.arc(starX, starY, 1.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Flag outline
+  ctx.strokeStyle = "#1e293b";
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(flagX, flagY, flagW, flagH);
+
+  // Draw the official Coat of Arms (Brasão) of Volta Redonda
+  const armsX = vrX + 30;
+  const armsY = vrY + 78;
+  const armsSize = 50;
+
+  // Background split diagonally
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(armsX, armsY, armsSize, armsSize);
+  ctx.clip();
+
+  // Draw top-left half yellow
+  ctx.fillStyle = "#ffd45c";
+  ctx.beginPath();
+  ctx.moveTo(armsX, armsY);
+  ctx.lineTo(armsX + armsSize, armsY);
+  ctx.lineTo(armsX, armsY + armsSize);
+  ctx.closePath();
+  ctx.fill();
+
+  // Draw bottom-right half black
+  ctx.fillStyle = "#000000";
+  ctx.beginPath();
+  ctx.moveTo(armsX + armsSize, armsY + armsSize);
+  ctx.lineTo(armsX + armsSize, armsY);
+  ctx.lineTo(armsX, armsY + armsSize);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  // Outline of arms square
+  ctx.strokeStyle = "#1e293b";
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(armsX, armsY, armsSize, armsSize);
+
+  // Large white circle in center
+  const centerX = armsX + armsSize / 2;
+  const centerY = armsY + armsSize / 2;
+  const circleRadius = 18;
+  ctx.fillStyle = "#ffffff";
+  ctx.strokeStyle = "#1e293b";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, circleRadius, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+
+  // Golden mural crown
+  ctx.fillStyle = "#eab308";
+  ctx.beginPath();
+  ctx.moveTo(centerX - 6, centerY - 10);
+  ctx.lineTo(centerX - 6, centerY - 13);
+  ctx.lineTo(centerX - 3, centerY - 11);
+  ctx.lineTo(centerX, centerY - 14);
+  ctx.lineTo(centerX + 3, centerY - 11);
+  ctx.lineTo(centerX + 6, centerY - 13);
+  ctx.lineTo(centerX + 6, centerY - 10);
+  ctx.closePath();
+  ctx.fill();
+
+  // Black shield
+  const shieldW = 10;
+  const shieldH = 11;
+  const shX = centerX - shieldW / 2;
+  const shY = centerY - 7;
+  ctx.fillStyle = "#000000";
+  ctx.beginPath();
+  ctx.roundRect(shX, shY, shieldW, shieldH, [0, 0, 5, 5]);
+  ctx.fill();
+
+  // White U-shaped border on shield
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(shX + 1.5, shY + 1, shieldW - 3, shieldH - 2.5, [0, 0, 3, 3]);
+  ctx.stroke();
+
+  // Yellow central monogram/lightning star inside shield
+  ctx.fillStyle = "#ffd45c";
+  ctx.beginPath();
+  ctx.arc(centerX, centerY - 1.5, 1.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Grey anvil at bottom
+  ctx.fillStyle = "#64748b";
+  ctx.beginPath();
+  ctx.moveTo(centerX - 8, centerY + 8);
+  ctx.lineTo(centerX + 8, centerY + 8);
+  ctx.lineTo(centerX + 6, centerY + 11);
+  ctx.lineTo(centerX - 6, centerY + 11);
+  ctx.closePath();
+  ctx.fill();
+
+  // Left worker
+  ctx.fillStyle = "#ffdbac";
+  ctx.beginPath();
+  ctx.arc(centerX - 9, centerY - 4, 1.8, 0, Math.PI * 2); // head
+  ctx.fill();
+  ctx.strokeStyle = "#ffdbac";
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.moveTo(centerX - 9, centerY - 2.2);
+  ctx.lineTo(centerX - 9, centerY + 4); // torso
+  ctx.moveTo(centerX - 9, centerY + 1);
+  ctx.lineTo(centerX - 12, centerY + 6); // arm holding hammer
+  ctx.stroke();
+
+  // Hammer
+  ctx.strokeStyle = "#64748b";
+  ctx.lineWidth = 0.6;
+  ctx.beginPath();
+  ctx.moveTo(centerX - 12, centerY + 4);
+  ctx.lineTo(centerX - 12, centerY + 10);
+  ctx.stroke();
+  ctx.fillStyle = "#475569";
+  ctx.fillRect(centerX - 13, centerY + 9, 2.5, 1.2);
+
+  // Right worker
+  ctx.fillStyle = "#ffdbac";
+  ctx.beginPath();
+  ctx.arc(centerX + 9, centerY - 4, 1.8, 0, Math.PI * 2); // head
+  ctx.fill();
+  ctx.strokeStyle = "#ffdbac";
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.moveTo(centerX + 9, centerY - 2.2);
+  ctx.lineTo(centerX + 9, centerY + 4); // torso
+  ctx.moveTo(centerX + 9, centerY + 1);
+  ctx.lineTo(centerX + 12, centerY + 6); // arm holding hammer
+  ctx.stroke();
+
+  // Hammer
+  ctx.strokeStyle = "#64748b";
+  ctx.lineWidth = 0.6;
+  ctx.beginPath();
+  ctx.moveTo(centerX + 12, centerY + 4);
+  ctx.lineTo(centerX + 12, centerY + 10);
+  ctx.stroke();
+  ctx.fillStyle = "#475569";
+  ctx.fillRect(centerX + 10.5, centerY + 9, 2.5, 1.2);
+
+  // Green ribbon at bottom of circle
+  ctx.fillStyle = "#15803d";
+  ctx.beginPath();
+  ctx.ellipse(centerX, centerY + 13, 11, 2.2, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Subtitles
+  ctx.fillStyle = "#ef4444";
+  ctx.font = '900 10px "Geist", sans-serif';
+  ctx.textAlign = "center";
+  ctx.fillText("CIDADE DO AÇO", vrX + vrW / 2, vrY + 146);
+
+  ctx.fillStyle = "#64748b";
+  ctx.font = '800 8px "Geist", sans-serif';
+  ctx.fillText("VR - BRASIL", vrX + vrW / 2, vrY + 160);
 
   // Tape on Volta Redonda poster
   ctx.fillStyle = "rgba(251, 191, 36, 0.5)";
