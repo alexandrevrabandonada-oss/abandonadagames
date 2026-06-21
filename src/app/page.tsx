@@ -41,6 +41,44 @@ export default function Home() {
           </p>
         </header>
 
+        {/* Candidate Hero Card */}
+        <div className="mb-8 card-brutal relative overflow-hidden p-0">
+          <div className="absolute top-0 left-0 w-full h-1 bg-[var(--accent)] z-10" />
+          <div className="relative aspect-[4/5] w-full overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src="/alexandre-vr.jpg" 
+              alt="Alexandre VR Abandonada" 
+              className="h-full w-full object-cover grayscale contrast-125 brightness-95" 
+            />
+            {/* Dark industrial gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A] via-transparent to-transparent" />
+            <div className="absolute bottom-4 left-4 right-4 z-10">
+              <span className="stamp-badge border-[var(--accent)] text-[var(--accent)] bg-black/70 rotate-[-1.5deg]">
+                Pré-Candidato
+              </span>
+              <h2 className="mt-2 text-3xl font-black uppercase leading-none text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                Alexandre VR <br />
+                <span className="text-[var(--accent)]">Abandonada</span>
+              </h2>
+            </div>
+          </div>
+          <div className="bg-[#1C1C1A] p-5 border-t border-white/5">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-soft)] leading-relaxed">
+              "Volta Redonda e o estado do Rio de Janeiro precisam de dignidade: merenda escolar de qualidade, valorização profissional, saúde eficiente e transporte público que realmente funcione. Vamos juntos mudar essa realidade!"
+            </p>
+            <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3">
+              <span className="text-[10px] font-black uppercase tracking-wider text-[var(--text-muted)]">
+                Deputado Estadual • RJ
+              </span>
+              <div className="flex gap-2">
+                <span className="h-2 w-2 rounded-full bg-[var(--accent)] animate-pulse" />
+                <span className="text-[8px] font-black uppercase tracking-widest text-[var(--accent)]">DIGNIDADE JÁ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Featured Game Card */}
         <div className="mb-8 card-brutal relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-[var(--accent)]" />
