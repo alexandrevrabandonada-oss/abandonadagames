@@ -45,7 +45,7 @@ type AudioTone = "pickup" | "hit" | "fare" | "horn";
 
 const CANVAS_WIDTH = 720;
 const CANVAS_HEIGHT = 1180;
-const ROUND_DURATION_MS = 45000;
+const ROUND_DURATION_MS = 60000;
 const LANES = [180, 360, 540];
 const BEST_SCORE_KEY = "abandonada:onibus-zero:best-score";
 const PLAYER_NAME_KEY = "abandonada:onibus-zero:player-name";

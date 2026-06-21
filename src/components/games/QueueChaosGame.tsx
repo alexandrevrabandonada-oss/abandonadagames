@@ -76,7 +76,7 @@ type SpawnDirector = {
 
 const CANVAS_WIDTH = 720;
 const CANVAS_HEIGHT = 1180;
-const ROUND_DURATION_MS = 45000;
+const ROUND_DURATION_MS = 60000;
 const MAX_CITIZENS = 9;
 const INITIAL_CHAOS = 10;
 const BEST_SCORE_KEY = "abandonada:fila-invisivel:best-score";

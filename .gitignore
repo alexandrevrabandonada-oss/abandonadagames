@@ -70,3 +70,5 @@ next-env.d.ts
 *.pdb.meta
 *.mdb.meta
 sysinfo.txt
+
+.vercel

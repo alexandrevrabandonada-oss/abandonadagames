@@ -64,7 +64,7 @@ type SurpriseEvent = {
 
 const CANVAS_WIDTH = 720;
 const CANVAS_HEIGHT = 1080;
-const ROUND_DURATION_MS = 45000;
+const ROUND_DURATION_MS = 60000;
 const PLAYER_SPEED = 280;
 const PLAYER_RADIUS = 44;
 const BEST_SCORE_KEY = "abandonada:merendeira-no-vermelho:best-score";
@@ -117,21 +117,7 @@ const surpriseEvents: SurpriseEvent[] = [
   { label: "Rede de apoio!", breath: 6, bills: -2, chaos: -6, stability: 11, score: 40 },
 ];
 
-const benchmark = {
-  replayDesireScore: 9.1,
-  roundsPerSession: 4.2,
-  replayButtonClarity: 9.4,
-  scoreImprovementPotential: 9.0,
-  comboAddiction: 9.3,
-  runDurationComfort: 9.0,
-  visualJuiceScore: 9.0,
-  feedbackFrequency: 9.2,
-  firstRewardTime: 3.8,
-  actionDensity: 9.1,
-  soundFeedback: 8.7,
-  animationEnergy: 9.0,
-  powerupExcitement: 9.1,
-};
+
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
@@ -1273,7 +1259,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
         <header className="relative overflow-hidden rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] px-3 py-3 xs:px-4 xs:py-4 shadow-[4px_4px_0px_#000000] backdrop-blur">
           <div className="flex items-start justify-between gap-2.5 min-w-0">
             <div className="min-w-0 flex-1">
-              <div className="text-[9px] xs:text-[11px] font-black uppercase tracking-[0.12em] xs:tracking-[0.22em] text-[#ffd45c] leading-tight">salário atrasado + contrato intermitente</div>
+              <div className="text-[9px] xs:text-[11px] font-black uppercase tracking-[0.12em] xs:tracking-[0.22em] text-[#ffd45c] leading-tight">Escola Municipal • Volta Redonda (Cidade do Aço)</div>
               <h1 className="mt-1.5 text-[1.65rem] xs:text-[2.25rem] font-black uppercase leading-[0.9] text-[#f3f0dd] break-words">
                 Merendeira
                 <span className="block text-[#ff5e2f]">no Vermelho</span>
@@ -1366,7 +1352,6 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
                     <ResultChip label="estabilidade" value={`${Math.round(snapshot.stability)}%`} />
                     <ResultChip label="caos final" value={`${Math.round(snapshot.chaos)}%`} />
                     <ResultChip label="folego final" value={`${Math.round(snapshot.breath)}%`} />
-                    <ResultChip label="benchmark" value="9/10" />
                   </div>
                   <div className="mt-4 rounded-xl border border-[#a15af0]/45 bg-[#321043] px-3 py-3 text-center text-sm font-black uppercase text-white">
                     O boleto veio, mas a cozinha resistiu.
@@ -1454,15 +1439,6 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
                         gerando card
                       </div>
                     )}
-                  </div>
-                  <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3">
-                    <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#ffd45c]">benchmark alvo</div>
-                    <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] font-black uppercase">
-                      <Badge value={`replay ${benchmark.replayDesireScore}`} />
-                      <Badge value={`vitalidade ${benchmark.visualJuiceScore}`} />
-                      <Badge value={`1a recompensa ${benchmark.firstRewardTime}s`} />
-                      <Badge value={`densidade ${benchmark.actionDensity}`} />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -1625,11 +1601,87 @@ function drawKitchen(
   ctx.strokeRect(380, 360, 160, 80);
   ctx.fillStyle = "#ffffff";
   ctx.font = '800 10px "Geist", sans-serif';
-  ctx.fillText("COL. GETÚLIO VARGAS", 392, 388);
+  ctx.fillText("ESC. MUN. VOLTA REDONDA", 392, 388);
   ctx.fillStyle = "#ffd34e";
-  ctx.fillText("VOLTA REDONDA - VR", 394, 408);
+  ctx.fillText("VOLTA REDONDA - RJ", 394, 408);
   ctx.fillStyle = "#cbd5e1";
   ctx.fillText("CARDÁPIO: MERENDA", 398, 428);
+
+  // Right poster (Volta Redonda Flag & Symbol)
+  const vrX = 570;
+  const vrY = 100;
+  const vrW = 110;
+  const vrH = 170;
+
+  // Draw poster paper/frame background
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(vrX, vrY, vrW, vrH);
+  ctx.strokeStyle = "#1e293b";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(vrX, vrY, vrW, vrH);
+
+  // Draw the flag of Volta Redonda inside
+  const flagX = vrX + 10;
+  const flagY = vrY + 25;
+  const flagW = vrW - 20;
+  const flagH = 60;
+
+  // Top stripe: Yellow/Gold
+  ctx.fillStyle = "#eab308";
+  ctx.fillRect(flagX, flagY, flagW, flagH / 3);
+
+  // Middle stripe: White
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(flagX, flagY + flagH / 3, flagW, flagH / 3);
+
+  // Bottom stripe: Steel Grey
+  ctx.fillStyle = "#64748b";
+  ctx.fillRect(flagX, flagY + (flagH * 2) / 3, flagW, flagH / 3);
+
+  // Flag outline
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(flagX, flagY, flagW, flagH);
+
+  // Draw the central black shield / furnace silhouette inside the flag
+  const shieldX = flagX + flagW / 2;
+  const shieldY = flagY + flagH / 2;
+  ctx.fillStyle = "#000000";
+  ctx.beginPath();
+  ctx.arc(shieldX, shieldY, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Text below the flag: "VOLTA REDONDA"
+  ctx.fillStyle = "#1e293b";
+  ctx.font = '900 10px "Geist", sans-serif';
+  ctx.textAlign = "center";
+  ctx.fillText("VOLTA REDONDA", vrX + vrW / 2, vrY + 110);
+
+  // Text: "CIDADE DO AÇO"
+  ctx.fillStyle = "#ef4444";
+  ctx.font = '900 9px "Geist", sans-serif';
+  ctx.fillText("CIDADE DO AÇO", vrX + vrW / 2, vrY + 128);
+
+  // Draw a small steel gear / industry symbol at the bottom
+  const gearX = vrX + vrW / 2;
+  const gearY = vrY + 150;
+  ctx.strokeStyle = "#64748b";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.arc(gearX, gearY, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  for (let a = 0; a < 8; a++) {
+    const angle = (a * Math.PI) / 4;
+    ctx.beginPath();
+    ctx.moveTo(gearX + Math.cos(angle) * 8, gearY + Math.sin(angle) * 8);
+    ctx.lineTo(gearX + Math.cos(angle) * 11, gearY + Math.sin(angle) * 11);
+    ctx.stroke();
+  }
+
+  // Tape on Volta Redonda poster
+  ctx.fillStyle = "rgba(251, 191, 36, 0.5)";
+  ctx.fillRect(vrX - 10, vrY - 5, 25, 12);
+  ctx.fillRect(vrX + vrW - 15, vrY + vrH - 7, 25, 12);
 
   // Top banner
   ctx.fillStyle = "#ffffff";

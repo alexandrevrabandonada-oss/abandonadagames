@@ -56,7 +56,7 @@ type GameSprites = {
 
 const CANVAS_WIDTH = 720;
 const CANVAS_HEIGHT = 1080;
-const ROUND_DURATION_MS = 45000;
+const ROUND_DURATION_MS = 60000;
 const PLAYER_Y = 850;
 const BEST_SCORE_KEY = "abandonada:plantaono-vermelho:best-score";
 const PLAYER_NAME_KEY = "abandonada:plantaono-vermelho:player-name";
