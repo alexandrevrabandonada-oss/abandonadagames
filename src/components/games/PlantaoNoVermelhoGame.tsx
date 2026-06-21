@@ -807,16 +807,6 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       {snapshot.breath < 36 ? (
         <div className="pointer-events-none absolute inset-0 animate-pulse bg-[radial-gradient(circle_at_50%_50%,transparent_42%,rgba(0,0,0,0.42)_100%)]" />
       ) : null}
-      <div className="pointer-events-none absolute left-[38%] top-[41%] hidden -translate-x-1/2 lg:block">
-        <div className="absolute left-1/2 top-[92%] h-10 w-56 -translate-x-1/2 rounded-full bg-black/55 blur-md" />
-        <div className="absolute left-1/2 top-[84%] h-28 w-40 -translate-x-1/2 rounded-full bg-[#62d6ff]/10 blur-2xl" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/games/plantaono-vermelho/nurse-back.png"
-          alt=""
-          className="h-[51vh] min-h-[470px] max-h-[660px] drop-shadow-[0_24px_30px_rgba(0,0,0,0.7)]"
-        />
-      </div>
 
       <div className="relative z-10 mx-auto grid max-w-[1520px] gap-3 lg:h-full lg:grid-cols-[280px_minmax(430px,1fr)_292px] lg:grid-rows-[auto_1fr_auto] lg:items-start">
         <section className="relative overflow-hidden order-2 rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] p-3 shadow-[4px_4px_0px_#000000] backdrop-blur lg:order-none lg:row-span-2">
@@ -861,19 +851,20 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             <img
               src="/games/plantaono-vermelho/logo-salario-atrasado.png"
               alt="Como sobreviver com salario atrasado"
-              className="mx-auto w-[min(92vw,760px)] rotate-[-2deg] drop-shadow-[4px_4px_0px_#000000]"
+              className="mx-auto w-full max-w-[340px] xs:max-w-[420px] rotate-[-2deg] drop-shadow-[4px_4px_0px_#000000]"
             />
             <div className="mx-auto mt-1 w-fit rounded-lg bg-[#1C1C1A] border border-[var(--accent)] px-5 py-2 text-sm font-black uppercase tracking-[0.08em] shadow-[4px_4px_0px_#000000] text-[var(--accent)]">
               Missao: chegar ao fim do mes!
             </div>
           </div>
-          <div className="pointer-events-none absolute bottom-12 left-1/2 z-10 -translate-x-1/2 lg:hidden">
-            <div className="absolute left-1/2 top-[90%] h-8 w-44 -translate-x-1/2 rounded-full bg-black/60 blur-md" />
+          <div className="pointer-events-none absolute bottom-12 left-1/2 z-10 -translate-x-1/2 block">
+            <div className="absolute left-1/2 top-[90%] h-8 w-44 lg:h-10 lg:w-56 -translate-x-1/2 rounded-full bg-black/60 blur-md" />
+            <div className="absolute left-1/2 top-[84%] hidden lg:block h-28 w-40 -translate-x-1/2 rounded-full bg-[#62d6ff]/10 blur-2xl" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/games/plantaono-vermelho/nurse-back.png"
               alt=""
-              className="h-[48vh] max-h-[430px] min-h-[310px] drop-shadow-[0_22px_28px_rgba(0,0,0,0.72)]"
+              className="h-[48vh] max-h-[430px] min-h-[310px] lg:h-[51vh] lg:min-h-[470px] lg:max-h-[660px] drop-shadow-[0_22px_28px_rgba(0,0,0,0.72)] lg:drop-shadow-[0_24px_30px_rgba(0,0,0,0.7)]"
             />
           </div>
           <div className="pointer-events-none absolute inset-x-3 bottom-3 z-20 grid grid-cols-3 gap-2 lg:hidden">
@@ -883,7 +874,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           </div>
           <canvas
             ref={canvasRef}
-            className="mx-auto block w-full max-w-[420px] touch-none rounded-lg opacity-0 mix-blend-screen lg:absolute lg:bottom-[4vh] lg:left-1/2 lg:max-w-[390px] lg:-translate-x-1/2"
+            className="mx-auto block w-full max-w-[420px] touch-none rounded-lg opacity-100 mix-blend-screen lg:absolute lg:bottom-[4vh] lg:left-1/2 lg:max-w-[390px] lg:-translate-x-1/2"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
           />
