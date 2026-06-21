@@ -45,7 +45,7 @@ type AudioTone = "pickup" | "hit" | "fare" | "horn";
 
 const CANVAS_WIDTH = 720;
 const CANVAS_HEIGHT = 1180;
-const ROUND_DURATION_MS = 60000;
+const ROUND_DURATION_MS = 45000;
 const LANES = [180, 360, 540];
 const BEST_SCORE_KEY = "abandonada:onibus-zero:best-score";
 const PLAYER_NAME_KEY = "abandonada:onibus-zero:player-name";
@@ -152,8 +152,11 @@ async function createResultCardFile(stats: GameSnapshot) {
   ctx.fillText("combo", 710, 1034);
 
   ctx.fillStyle = "#ffd15c";
-  ctx.font = '900 54px "Geist", sans-serif';
-  ctx.fillText("Jogue tambem", 112, 1200);
+  ctx.font = '900 42px "Geist", sans-serif';
+  ctx.fillText("JOGUE TAMBÉM: ABANDONADA GAMES", 112, 1160);
+  ctx.fillStyle = "#ff5e2f";
+  ctx.font = '900 24px "Geist", sans-serif';
+  ctx.fillText("PRÉ-CAMPANHA ALEXANDRE VR ABANDONADA - DEPUTADO ESTADUAL", 112, 1215);
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
   if (!blob) return null;
@@ -542,6 +545,20 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
   }, [playerName]);
 
   useEffect(() => {
+    if (snapshot.finished) {
+      const timer = setTimeout(() => {
+        const resultsEl = document.getElementById("game-results-panel");
+        if (resultsEl) {
+          resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [snapshot.finished]);
+
+  useEffect(() => {
     if (!snapshot.finished) return;
     let cancelled = false;
     void createResultCardFile(snapshot).then((file) => {
@@ -586,19 +603,20 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
   }
 
   return (
-    <main className="min-h-screen bg-[#101413] px-3 py-3 text-[#f7f1df] sm:px-5 sm:py-5">
-      <div className="mx-auto max-w-md">
-        <section className="rounded-[1.25rem] border border-[rgba(255,209,92,0.22)] bg-[#17352e] p-4 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
+    <main className="relative min-h-screen overflow-x-hidden bg-concrete px-3 py-3 text-[var(--text)] sm:px-5 sm:py-5">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(242,169,0,0.05),transparent_24%),radial-gradient(circle_at_80%_20%,rgba(74,73,67,0.12),transparent_18%)]" />
+      <div className="relative z-10 mx-auto max-w-md">
+        <section className="relative overflow-hidden rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] p-4 shadow-[4px_4px_0px_#000000] backdrop-blur">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#87c8a2]">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[var(--accent)]">
                 arcade bus runner
               </p>
               <h1 className="mt-2 text-3xl font-black uppercase leading-none">{game.title}</h1>
             </div>
             <Link
               href="/"
-              className="rounded-lg border border-[rgba(255,255,255,0.14)] px-3 py-2 text-[11px] font-bold uppercase text-[#d4e8d8]"
+              className="rounded-lg border border-[var(--accent)] px-3 py-2 text-[11px] font-black uppercase text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black transition-colors"
             >
               Inicio
             </Link>
@@ -611,22 +629,22 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
             <HudBox label="bairros" value={`${snapshot.districts}`} />
             <HudBox label="score" value={`${snapshot.score}`} />
           </div>
-          <div className="mt-3 h-3 overflow-hidden rounded-full bg-[rgba(255,255,255,0.08)]">
+          <div className="mt-3 h-3 overflow-hidden rounded-full bg-black/40">
             <div
-              className="h-full rounded-full bg-[linear-gradient(90deg,#41d99a,#ffd15c,#ff684f)] transition-[width] duration-150"
+              className="h-full rounded-full bg-[linear-gradient(90deg,var(--accent),#ffd15c,var(--rust))] transition-[width] duration-150"
               style={{ width: `${snapshot.delay}%` }}
             />
           </div>
         </section>
 
-        <section className="relative mt-4 rounded-[1.25rem] border border-[rgba(255,255,255,0.1)] bg-[#0f1d1a] p-2">
+        <section className="relative mt-4 rounded-xl border border-white/10 bg-[rgba(10,10,9,0.94)] p-2 shadow-[6px_6px_0px_#000000]">
           <canvas
             ref={canvasRef}
             className="block w-full touch-manipulation rounded-lg"
             onPointerDown={handlePointerDown}
           />
           {!snapshot.finished ? (
-            <div className="pointer-events-none absolute inset-x-5 bottom-5 flex items-center justify-between rounded-lg bg-[rgba(16,20,19,0.76)] px-4 py-3 text-xs font-black uppercase text-[#d4e8d8] backdrop-blur-sm">
+            <div className="pointer-events-none absolute inset-x-5 bottom-5 flex items-center justify-between rounded-xl border border-white/5 bg-[rgba(28,28,26,0.9)] px-4 py-3 text-xs font-black uppercase text-[var(--text)] backdrop-blur-sm">
               <span>toque lados</span>
               <span>{toast}</span>
             </div>
@@ -637,37 +655,37 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
           <button
             type="button"
             onClick={() => changeLane(-1)}
-            className="rounded-lg border border-[rgba(255,255,255,0.12)] bg-[#17352e] px-4 py-4 text-xl font-black"
+            className="btn-secondary !py-4 text-xl font-black"
           >
             &lt;
           </button>
           <button
             type="button"
             onClick={triggerHorn}
-            className="rounded-lg bg-[#ffd15c] px-4 py-4 text-sm font-black uppercase text-[#101413]"
+            className="btn-primary !py-4 text-sm font-black uppercase"
           >
             buzina
           </button>
           <button
             type="button"
             onClick={() => changeLane(1)}
-            className="rounded-lg border border-[rgba(255,255,255,0.12)] bg-[#17352e] px-4 py-4 text-xl font-black"
+            className="btn-secondary !py-4 text-xl font-black"
           >
             &gt;
           </button>
         </div>
 
         {snapshot.finished ? (
-          <section className="mt-4 rounded-[1.25rem] border border-[rgba(255,209,92,0.24)] bg-[#17352e] p-5">
+          <section id="game-results-panel" className="relative overflow-hidden mt-4 rounded-xl border border-white/10 bg-[rgba(28,28,26,0.95)] p-5 scroll-mt-6 shadow-[6px_6px_0px_#000000] backdrop-blur">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#87c8a2]">resultado</p>
-                <h2 className="mt-1 text-7xl font-black leading-none text-[#ffd15c]">{rankMeta.label}</h2>
-                <p className="mt-2 text-sm font-bold uppercase text-[#d4e8d8]">{rankMeta.message}</p>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--text-soft)]">resultado</p>
+                <h2 className="mt-1 text-7xl font-black leading-none text-[var(--accent)]">{rankMeta.label}</h2>
+                <p className="mt-2 text-sm font-bold uppercase text-[var(--text)]">{rankMeta.message}</p>
               </div>
-              <div className="rounded-lg bg-[rgba(255,255,255,0.08)] px-4 py-3 text-right">
-                <div className="text-[10px] font-bold uppercase text-[#87c8a2]">score</div>
-                <div className="mt-1 text-4xl font-black text-[#ffd15c]">{snapshot.score}</div>
+              <div className="rounded-xl border border-white/5 bg-black/45 px-4 py-3 text-right">
+                <div className="text-[10px] font-bold uppercase text-[var(--text-soft)]">score</div>
+                <div className="mt-1 text-4xl font-black text-[var(--accent)]">{snapshot.score}</div>
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3">
@@ -678,23 +696,40 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
               <ResultMetric label="melhor score" value={`${snapshot.bestScore}`} />
               <ResultMetric label="atraso" value={`${Math.round(snapshot.delay)}%`} />
             </div>
-            <div className="mt-4 overflow-hidden rounded-lg border border-[rgba(255,209,92,0.24)] bg-[#101413]">
+            <div className="mt-4 overflow-hidden rounded-xl border border-white/10 bg-black/45">
               {resultImageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={resultImageUrl} alt="Card de resultado" className="block w-full" />
               ) : (
-                <div className="flex aspect-[4/5] items-center justify-center text-xs font-black uppercase text-[#87c8a2]">
+                <div className="flex aspect-[4/5] items-center justify-center text-xs font-black uppercase text-[var(--text-soft)]">
                   gerando card
                 </div>
               )}
             </div>
+
+            {/* Card de Pré-campanha de Alexandre VR Abandonada */}
+            <div className="relative overflow-hidden rounded-[1.25rem] border border-[#f15a24]/30 bg-gradient-to-br from-[#1e3c34]/95 to-[rgba(28,28,26,0.98)] p-5 shadow-[0_12px_40px_rgba(241,90,36,0.15)] text-center mt-4">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#f15a24] via-[#ffd45c] to-[#f15a24]" />
+              <div className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ffd554]">Pré-campanha</div>
+              <h3 className="mt-1 text-lg font-black uppercase text-white tracking-wide">Alexandre VR Abandonada</h3>
+              <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.15em] text-[#ff7c52]">Candidato a Deputado Estadual</p>
+              <p className="mt-3 text-xs font-semibold leading-relaxed text-[#d4e8d8]/90">
+                "Volta Redonda e o estado do Rio de Janeiro precisam de dignidade: merenda escolar de qualidade, valorização profissional, saúde eficiente e transporte público que realmente funcione. Vamos juntos mudar essa realidade!"
+              </p>
+              <div className="mt-3.5 flex items-center justify-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
+                <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#9ee8c1]">Pelo resgate da nossa dignidade</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
+              </div>
+            </div>
+
             <input
               value={playerName}
               onChange={(event) => setPlayerName(event.target.value.slice(0, 18))}
-              className="mt-4 w-full rounded-lg border border-[rgba(255,255,255,0.12)] bg-[#10231f] px-4 py-3 text-sm text-[#f7f1df] outline-none"
+              className="mt-4 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/50"
               placeholder="nome no ranking"
             />
-            <div className="mt-4 flex gap-3">
+            <div className="mt-4 flex gap-3 flex-wrap xs:flex-nowrap">
               <button
                 type="button"
                 onClick={() => {
@@ -705,21 +740,21 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
                   });
                   resetRound();
                 }}
-                className="flex-[1.2] rounded-lg bg-[#ffd15c] px-4 py-4 text-sm font-black uppercase text-[#101413]"
+                className="flex-[1.2] btn-primary !p-3 text-[10px] xs:text-xs"
               >
                 Jogar de novo
               </button>
               <button
                 type="button"
                 onClick={() => void shareResult()}
-                className="flex-1 rounded-lg border border-[rgba(255,255,255,0.16)] px-4 py-4 text-sm font-black uppercase"
+                className="flex-1 btn-secondary !p-3 text-[10px] xs:text-xs"
               >
                 {copyLabel}
               </button>
             </div>
             <Link
               href={`/ranking/${game.slug}`}
-              className="mt-3 block rounded-lg bg-[#10231f] px-4 py-3 text-center text-sm font-black uppercase text-[#d4e8d8]"
+              className="mt-3 block btn-secondary !p-3 text-center text-[10px] xs:text-xs"
             >
               Ver ranking
             </Link>
@@ -732,18 +767,18 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
 
 function HudBox({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-[rgba(16,20,19,0.52)] px-3 py-3">
-      <div className="text-[10px] font-bold uppercase text-[#87c8a2]">{label}</div>
-      <div className="mt-1 text-lg font-black text-[#f7f1df]">{value}</div>
+    <div className="rounded-xl border border-white/5 bg-[rgba(10,10,9,0.94)] px-3 py-3">
+      <div className="text-[10px] font-black uppercase text-[var(--text-soft)]">{label}</div>
+      <div className="mt-1 text-lg font-black text-[var(--accent)]">{value}</div>
     </div>
   );
 }
 
 function ResultMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-[rgba(16,20,19,0.5)] px-4 py-3">
-      <div className="text-[10px] font-bold uppercase text-[#87c8a2]">{label}</div>
-      <div className="mt-1 text-xl font-black text-[#f7f1df]">{value}</div>
+    <div className="rounded-xl border border-white/5 bg-[rgba(10,10,9,0.94)] px-4 py-3">
+      <div className="text-[10px] font-black uppercase text-[var(--text-soft)]">{label}</div>
+      <div className="mt-1 text-xl font-black text-[var(--accent)]">{value}</div>
     </div>
   );
 }

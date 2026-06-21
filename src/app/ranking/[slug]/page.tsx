@@ -22,33 +22,34 @@ export default async function RankingPage({
       : "Ranking oficial. Dispute os melhores tempos e pontuações da comunidade.";
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] px-5 py-6 text-[var(--text)]">
-      <div className="mx-auto max-w-md">
+    <main className="min-h-screen bg-concrete px-5 py-6 text-[var(--text)]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(242,169,0,0.04),_transparent_35%)]" />
+      <div className="relative z-10 mx-auto max-w-md">
         <Link
           href={`/jogar/${slug}`}
-          className="mb-6 inline-flex rounded-full border border-[var(--border)] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[var(--text-soft)]"
+          className="mb-6 btn-secondary !py-2 !px-4 text-[10px]"
         >
           Voltar ao jogo
         </Link>
-        <h1 className="text-4xl font-black uppercase">{game.title}</h1>
-        <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
+        <h1 className="text-4xl font-black uppercase leading-none mt-2">{game.title}</h1>
+        <p className="mt-3 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
           {subtitle}
         </p>
 
-        <div className="mt-6 space-y-3">
+        <div className="mt-8 space-y-4">
           {ranking.map((entry, index) => (
             <article
               key={`${entry.player}-${entry.score}-${index}`}
-              className="flex items-center justify-between rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface)] p-4"
+              className="flex items-center justify-between card-brutal"
             >
               <div>
-                <div className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">
-                  #{index + 1}
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--accent)]">
+                  #{index + 1} LUGAR
                 </div>
-                <h2 className="mt-1 text-lg font-black uppercase">
+                <h2 className="mt-1.5 text-lg font-black uppercase text-white">
                   {entry.player}
                 </h2>
-                <p className="mt-1 text-xs text-[var(--text-muted)]">
+                <p className="mt-1 text-[10px] font-medium text-[var(--text-muted)]">
                   {entry.createdAt}
                 </p>
               </div>
@@ -56,7 +57,7 @@ export default async function RankingPage({
                 <div className="text-2xl font-black text-[var(--accent)]">
                   {entry.score}
                 </div>
-                <div className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">
+                <div className="text-[9px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)]">
                   pontos
                 </div>
               </div>

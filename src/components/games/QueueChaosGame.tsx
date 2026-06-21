@@ -76,7 +76,7 @@ type SpawnDirector = {
 
 const CANVAS_WIDTH = 720;
 const CANVAS_HEIGHT = 1180;
-const ROUND_DURATION_MS = 50000;
+const ROUND_DURATION_MS = 45000;
 const MAX_CITIZENS = 9;
 const INITIAL_CHAOS = 10;
 const BEST_SCORE_KEY = "abandonada:fila-invisivel:best-score";
@@ -196,12 +196,14 @@ async function createResultCardFile(stats: GameSnapshot, phrase: string) {
   ctx.fillText("recorde", 710, 1036);
 
   ctx.fillStyle = "#ffca74";
-  ctx.font = '900 54px "Geist", sans-serif';
-  ctx.fillText("A fila nao venceu hoje.", 104, 1165);
-
+  ctx.font = '900 48px "Geist", sans-serif';
+  ctx.fillText("A fila nao venceu hoje.", 104, 1130);
   ctx.fillStyle = "#f7f1df";
-  ctx.font = '900 38px "Geist", sans-serif';
-  ctx.fillText("Jogue tambem", 104, 1228);
+  ctx.font = '900 30px "Geist", sans-serif';
+  ctx.fillText("JOGUE TAMBÉM: ABANDONADA GAMES", 104, 1190);
+  ctx.fillStyle = "#ff6d2b";
+  ctx.font = '900 24px "Geist", sans-serif';
+  ctx.fillText("PRÉ-CAMPANHA ALEXANDRE VR ABANDONADA - DEPUTADO ESTADUAL", 104, 1235);
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
   if (!blob) return null;
@@ -523,6 +525,20 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
   }, [playerName]);
 
   useEffect(() => {
+    if (snapshot.finished) {
+      const timer = setTimeout(() => {
+        const resultsEl = document.getElementById("game-results-panel");
+        if (resultsEl) {
+          resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [snapshot.finished]);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -722,12 +738,13 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
   }, [game.title, rankMeta.message, snapshot]);
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] px-3 py-3 text-[var(--text)] sm:px-5 sm:py-5">
-      <div className="mx-auto max-w-md">
-        <div className="rounded-[1.8rem] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
+    <main className="relative min-h-screen overflow-x-hidden bg-concrete px-3 py-3 text-[var(--text)] sm:px-5 sm:py-5">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(242,169,0,0.05),transparent_24%),radial-gradient(circle_at_80%_20%,rgba(74,73,67,0.12),transparent_18%)]" />
+      <div className="relative z-10 mx-auto max-w-md">
+        <div className="relative overflow-hidden rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] p-4 shadow-[4px_4px_0px_#000000] backdrop-blur">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[10px] uppercase tracking-[0.32em] text-[var(--text-muted)]">
+              <p className="text-[10px] uppercase tracking-[0.32em] text-[var(--accent)]">
                 arcade queue chaos
               </p>
               <h1 className="mt-2 text-3xl font-black uppercase leading-none">
@@ -736,7 +753,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
             </div>
             <Link
               href="/"
-              className="rounded-full border border-[var(--border)] px-3 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--text-soft)]"
+              className="rounded-lg border border-[var(--accent)] px-3 py-2 text-[11px] font-black uppercase text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black transition-colors"
             >
               Inicio
             </Link>
@@ -749,48 +766,48 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
             <HudBox label="recorde" value={`${snapshot.bestScore}`} />
           </div>
 
-          <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-[rgba(255,202,116,0.18)] bg-[rgba(255,202,116,0.07)] px-4 py-3">
+          <div className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-black/45 px-4 py-3">
             <div>
               <div className="text-[10px] uppercase tracking-[0.28em] text-[var(--text-muted)]">
                 objetivo
               </div>
-              <div className="mt-1 text-sm font-bold uppercase text-[var(--sand)]">
+              <div className="mt-1 text-sm font-black uppercase text-[var(--sand)]">
                 Toque nas pessoas antes de desistirem
               </div>
             </div>
-            <div className="rounded-full bg-[var(--accent)] px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-[var(--bg)]">
+            <div className="rounded-xl border border-black bg-[var(--accent)] px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-black shadow-[2px_2px_0px_#000000]">
               x{snapshot.multiplier}
             </div>
           </div>
         </div>
 
-        <section className="relative mt-4 rounded-[2rem] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.08))] p-3 shadow-[0_24px_70px_rgba(0,0,0,0.4)]">
+        <section className="relative mt-4 rounded-xl border border-white/10 bg-[rgba(10,10,9,0.94)] p-3 shadow-[6px_6px_0px_#000000]">
           <div className="mb-3 flex items-center justify-between gap-3 px-1">
             <div className="min-w-0">
               <div className="text-[10px] uppercase tracking-[0.3em] text-[var(--text-muted)]">
                 pressao da fila
               </div>
-              <div className="mt-1 h-3 overflow-hidden rounded-full bg-[rgba(255,255,255,0.06)]">
+              <div className="mt-1 h-3 overflow-hidden rounded-full bg-black/40">
                 <div
-                  className="h-full rounded-full bg-[linear-gradient(90deg,#ffca74,#ff6d2b,#d6451b)] transition-[width] duration-150"
+                  className="h-full rounded-full bg-[linear-gradient(90deg,var(--accent),var(--rust),#d6451b)] transition-[width] duration-150"
                   style={{ width: `${snapshot.chaos}%` }}
                 />
               </div>
             </div>
-            <div className="shrink-0 rounded-full border border-[rgba(255,202,116,0.18)] px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--sand)]">
+            <div className="shrink-0 rounded-xl border border-white/5 bg-black/45 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--sand)]">
               caos {Math.round(snapshot.chaos)}%
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-[1.6rem] border border-[rgba(255,255,255,0.08)] bg-[#131513] p-2">
+          <div className="relative overflow-hidden rounded-xl border border-white/5 bg-black/45 p-2">
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,202,116,0.05),transparent_20%,transparent_80%,rgba(0,0,0,0.36))]" />
             <canvas
               ref={canvasRef}
-              className="block w-full touch-manipulation rounded-[1.2rem]"
+              className="block w-full touch-manipulation rounded-lg"
               onPointerDown={(event) => handleCanvasPress(event.clientX, event.clientY)}
             />
             {!snapshot.finished ? (
-              <div className="pointer-events-none absolute inset-x-6 bottom-6 flex items-center justify-between rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(17,19,17,0.75)] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--text-soft)] backdrop-blur-sm">
+              <div className="pointer-events-none absolute inset-x-6 bottom-6 flex items-center justify-between rounded-xl border border-white/5 bg-[rgba(28,28,26,0.9)] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--text-soft)] backdrop-blur-sm">
                 <span>toque nas pessoas</span>
                 <span>{snapshot.served} atendidos</span>
               </div>
@@ -822,23 +839,22 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
           <InfoList title="obstaculos" items={game.obstacles} tone="danger" />
           <InfoList title="forcas" items={game.powerUps} tone="boost" />
         </div>
-
         {snapshot.finished ? (
-          <section className="mt-4 rounded-[2rem] border border-[var(--border-strong)] bg-[var(--surface)] p-5 shadow-[0_20px_50px_rgba(0,0,0,0.28)]">
+          <section id="game-results-panel" className="relative overflow-hidden mt-4 rounded-xl border border-white/10 bg-[rgba(28,28,26,0.95)] p-5 scroll-mt-6 shadow-[6px_6px_0px_#000000] backdrop-blur">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-[var(--text-muted)]">
+                <p className="text-xs uppercase tracking-[0.28em] text-[var(--text-soft)]">
                   resultado
                 </p>
                 <h2 className="mt-1 text-7xl font-black uppercase leading-none text-[var(--sand)]">
                   {rankMeta.label}
                 </h2>
-                <p className="mt-2 text-sm font-bold uppercase text-[var(--text-soft)]">
+                <p className="mt-2 text-sm font-bold uppercase text-[var(--text)]">
                   {rankMeta.message}
                 </p>
               </div>
-              <div className="rounded-2xl bg-[rgba(255,202,116,0.12)] px-4 py-3 text-right">
-                <div className="text-[10px] uppercase tracking-[0.24em] text-[var(--text-muted)]">
+              <div className="rounded-xl border border-white/5 bg-black/45 px-4 py-3 text-right">
+                <div className="text-[10px] uppercase tracking-[0.24em] text-[var(--text-soft)]">
                   score final
                 </div>
                 <div className="mt-1 text-4xl font-black text-[var(--sand)]">
@@ -854,7 +870,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
               <ResultMetric label="caos final" value={`${Math.round(snapshot.chaos)}%`} />
             </div>
 
-            <div className="mt-4 overflow-hidden rounded-[1.6rem] border border-[rgba(255,202,116,0.18)] bg-[#111311]">
+            <div className="mt-4 overflow-hidden rounded-xl border border-white/10 bg-black/45">
               {resultImageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -863,20 +879,36 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
                   className="block w-full"
                 />
               ) : (
-                <div className="flex aspect-[4/5] items-center justify-center text-sm font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                <div className="flex aspect-[4/5] items-center justify-center text-sm font-bold uppercase tracking-[0.16em] text-[var(--text-soft)]">
                   gerando card
                 </div>
               )}
             </div>
 
+            {/* Card de Pré-campanha de Alexandre VR Abandonada */}
+            <div className="relative overflow-hidden rounded-[1.25rem] border border-[#f15a24]/30 bg-gradient-to-br from-[#1e3c34]/95 to-[rgba(28,28,26,0.98)] p-5 shadow-[0_12px_40px_rgba(241,90,36,0.15)] text-center mt-4">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#f15a24] via-[#ffd45c] to-[#f15a24]" />
+              <div className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ffd554]">Pré-campanha</div>
+              <h3 className="mt-1 text-lg font-black uppercase text-white tracking-wide">Alexandre VR Abandonada</h3>
+              <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.15em] text-[#ff7c52]">Candidato a Deputado Estadual</p>
+              <p className="mt-3 text-xs font-semibold leading-relaxed text-[#d4e8d8]/90">
+                "Volta Redonda e o estado do Rio de Janeiro precisam de dignidade: merenda escolar de qualidade, valorização profissional, saúde eficiente e transporte público que realmente funcione. Vamos juntos mudar essa realidade!"
+              </p>
+              <div className="mt-3.5 flex items-center justify-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
+                <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#9ee8c1]">Pelo resgate da nossa dignidade</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
+              </div>
+            </div>
+
             <input
               value={playerName}
               onChange={(event) => setPlayerName(event.target.value.slice(0, 18))}
-              className="mt-4 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-sm text-[var(--text)] outline-none"
+              className="mt-4 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/50"
               placeholder="nome no ranking"
             />
 
-            <div className="mt-4 flex gap-3">
+            <div className="mt-4 flex gap-3 flex-wrap xs:flex-nowrap">
               <button
                 type="button"
                 onClick={() => {
@@ -888,14 +920,14 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
                   resetRound();
                   for (let index = 0; index < 4; index += 1) spawnCitizen();
                 }}
-                className="flex-[1.2] rounded-2xl bg-[var(--sand)] px-4 py-4 text-sm font-black uppercase tracking-[0.14em] text-[var(--bg)] shadow-[0_12px_30px_rgba(255,202,116,0.18)]"
+                className="flex-[1.2] btn-primary !p-3 text-[10px] xs:text-xs"
               >
                 Jogar de novo
               </button>
               <button
                 type="button"
                 onClick={() => void shareResult()}
-                className="flex-1 rounded-2xl border border-[var(--border-strong)] px-4 py-4 text-sm font-black uppercase tracking-[0.14em] text-[var(--text)]"
+                className="flex-1 btn-secondary !p-3 text-[10px] xs:text-xs"
               >
                 {copyLabel}
               </button>
@@ -903,7 +935,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
 
             <Link
               href={`/ranking/${game.slug}`}
-              className="mt-3 block rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[var(--surface-soft)] px-4 py-3 text-center text-sm font-bold uppercase tracking-[0.14em] text-[var(--text-soft)]"
+              className="mt-3 block btn-secondary !p-3 text-center text-[10px] xs:text-xs"
             >
               Ver ranking
             </Link>
@@ -916,18 +948,18 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
 
 function HudBox({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-[var(--surface-soft)] px-2 py-3">
+    <div className="rounded-xl border border-white/5 bg-[rgba(10,10,9,0.94)] px-2 py-3">
       <div className="text-[10px] uppercase tracking-[0.22em] text-[var(--text-muted)]">
         {label}
       </div>
-      <div className="mt-1 text-center text-lg font-black uppercase sm:text-xl">{value}</div>
+      <div className="mt-1 text-center text-lg font-black uppercase text-[var(--accent)] sm:text-xl">{value}</div>
     </div>
   );
 }
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-[1.4rem] border border-[var(--border)] bg-[var(--surface)] px-3 py-4 text-center">
+    <div className="rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] px-3 py-4 text-center shadow-[4px_4px_0px_#000000]">
       <div className="text-[10px] uppercase tracking-[0.24em] text-[var(--text-muted)]">{label}</div>
       <div className="mt-1 text-2xl font-black text-[var(--sand)]">{value}</div>
     </div>
@@ -936,9 +968,9 @@ function StatCard({ label, value }: { label: string; value: number }) {
 
 function ResultMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.4rem] bg-[var(--surface-soft)] px-4 py-3">
-      <div className="text-[10px] uppercase tracking-[0.24em] text-[var(--text-muted)]">{label}</div>
-      <div className="mt-1 text-xl font-black uppercase">{value}</div>
+    <div className="rounded-xl border border-white/5 bg-black/45 px-4 py-3">
+      <div className="text-[10px] uppercase tracking-[0.24em] text-[var(--text-soft)]">{label}</div>
+      <div className="mt-1 text-xl font-black uppercase text-[var(--accent)]">{value}</div>
     </div>
   );
 }
@@ -953,7 +985,7 @@ function InfoList({
   tone: "danger" | "boost";
 }) {
   return (
-    <section className="rounded-[1.6rem] border border-[var(--border)] bg-[var(--surface)] p-4">
+    <section className="rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] p-4 shadow-[4px_4px_0px_#000000]">
       <h3 className="text-xs font-black uppercase tracking-[0.22em] text-[var(--text-muted)]">
         {title}
       </h3>

@@ -1,23 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #111311;
-  --surface: #1a1d1a;
-  --surface-soft: #242824;
-  --border: rgba(255, 245, 220, 0.1);
-  --border-strong: rgba(255, 245, 220, 0.18);
-  --text: #f7f1df;
-  --text-soft: #d4c7aa;
-  --text-muted: #9d927d;
-  --accent: #ff6d2b;
-  --accent-2: #d6451b;
-  --sand: #ffca74;
+  --bg: #0B0B0B;
+  --surface: #1C1C1A;
+  --surface-soft: #4A4943;
+  --border: rgba(231, 224, 210, 0.1);
+  --border-strong: rgba(231, 224, 210, 0.22);
+  --text: #E7E0D2;
+  --text-soft: #c4bbb0;
+  --text-muted: #8e877c;
+  --accent: #F2A900;
+  --accent-2: #D99600;
+  --sand: #F2A900;
+  --rust: #9B3F1F;
+  --moss: #52614A;
+  --slate: #1F3340;
 }
 
 @theme inline {
   --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
   --breakpoint-xs: 400px;
+  
+  --color-brand-bg: #0B0B0B;
+  --color-brand-concrete: #1C1C1A;
+  --color-brand-cement: #4A4943;
+  --color-brand-offwhite: #E7E0D2;
+  --color-brand-yellow: #F2A900;
+  --color-brand-yellow-dark: #D99600;
+  --color-brand-rust: #9B3F1F;
+  --color-brand-moss: #52614A;
+  --color-brand-slate: #1F3340;
 }
 
 * {
@@ -31,15 +44,139 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.25), transparent 24%),
-    linear-gradient(135deg, rgba(255, 109, 43, 0.06), transparent 40%),
-    var(--bg);
+  background-color: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
+  overflow-x: hidden;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* --- CONCRETO ZEN STYLING SYSTEM --- */
+
+/* Concrete textured background with dynamic SVG noise */
+.bg-concrete {
+  position: relative;
+  background-color: var(--bg);
+  background-image: 
+    radial-gradient(circle at 50% 15%, rgba(74, 73, 67, 0.15) 0%, transparent 60%),
+    radial-gradient(circle at 20% 70%, rgba(74, 73, 67, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 85%, rgba(155, 63, 31, 0.04) 0%, transparent 40%),
+    linear-gradient(180deg, rgba(11, 11, 11, 0.85) 0%, rgba(28, 28, 26, 0.95) 100%);
+}
+
+.bg-concrete::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Brutalist main button - yellow, strong, flat black shadow */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent);
+  color: #000000;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.9rem 1.5rem;
+  border: 3px solid #000000;
+  border-radius: 8px;
+  box-shadow: 4px 4px 0px #000000;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  outline: none;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #000000;
+  background-color: var(--accent-2);
+}
+
+.btn-primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #000000;
+}
+
+/* Secondary Button - dark theme with yellow border and shadow */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #121211;
+  color: var(--text);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.9rem 1.5rem;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.4);
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  outline: none;
+}
+
+.btn-secondary:hover, .btn-secondary:focus {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.55);
+  border-color: var(--accent-2);
+  color: var(--accent);
+}
+
+.btn-secondary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+}
+
+/* Brutalist Card - dark base, solid shadow */
+.card-brutal {
+  background-color: var(--surface);
+  border: 2px solid var(--border-strong);
+  border-radius: 12px;
+  box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.6);
+  padding: 1.25rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Stamp Badge style lambe-lambe */
+.stamp-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  padding: 0.25rem 0.65rem;
+  border: 2px solid currentColor;
+  transform: rotate(-1.5deg);
+  border-radius: 3px;
+}
+
+/* Zen circle - breathing imperfect shape */
+.zen-circle {
+  border-radius: 48% 52% 51% 49% / 49% 51% 52% 48%;
+  border: 3px solid var(--accent);
+  display: inline-block;
+  animation: breathe-circle 8s ease-in-out infinite alternate;
+}
+
+@keyframes breathe-circle {
+  0% {
+    border-radius: 48% 52% 51% 49% / 49% 51% 52% 48%;
+  }
+  100% {
+    border-radius: 52% 48% 49% 51% / 51% 49% 48% 52%;
+  }
 }

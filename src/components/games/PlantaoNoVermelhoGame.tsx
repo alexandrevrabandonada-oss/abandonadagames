@@ -56,7 +56,7 @@ type GameSprites = {
 
 const CANVAS_WIDTH = 720;
 const CANVAS_HEIGHT = 1080;
-const ROUND_DURATION_MS = 60000;
+const ROUND_DURATION_MS = 45000;
 const PLAYER_Y = 850;
 const BEST_SCORE_KEY = "abandonada:plantaono-vermelho:best-score";
 const PLAYER_NAME_KEY = "abandonada:plantaono-vermelho:player-name";
@@ -273,10 +273,13 @@ async function createResultCardFile(stats: GameSnapshot) {
 
   ctx.fillStyle = "#ffd554";
   ctx.font = '900 48px "Geist", sans-serif';
-  ctx.fillText("O boleto veio, mas a gente resistiu.", 112, 1160);
+  ctx.fillText("O boleto veio, mas a gente resistiu.", 112, 1140);
   ctx.fillStyle = "#f7f1df";
-  ctx.font = '900 38px "Geist", sans-serif';
-  ctx.fillText("Jogue tambem", 112, 1225);
+  ctx.font = '900 30px "Geist", sans-serif';
+  ctx.fillText("JOGUE TAMBÉM: ABANDONADA GAMES", 112, 1200);
+  ctx.fillStyle = "#ef4444";
+  ctx.font = '900 24px "Geist", sans-serif';
+  ctx.fillText("PRÉ-CAMPANHA ALEXANDRE VR ABANDONADA - DEPUTADO ESTADUAL", 112, 1245);
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
   if (!blob) return null;
@@ -674,6 +677,20 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   }, [playerName]);
 
   useEffect(() => {
+    if (snapshot.finished) {
+      const timer = setTimeout(() => {
+        const resultsEl = document.getElementById("game-results-panel");
+        if (resultsEl) {
+          resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [snapshot.finished]);
+
+  useEffect(() => {
     if (!snapshot.finished) return;
     let cancelled = false;
     void createResultCardFile(snapshot).then((file) => {
@@ -771,15 +788,15 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
 
   return (
     <main
-      className="relative min-h-screen overflow-x-hidden bg-[#071018] px-3 py-3 text-[#f7f1df] sm:px-5 sm:py-5 lg:h-screen lg:overflow-hidden lg:px-4 lg:py-4"
+      className="relative min-h-screen overflow-x-hidden bg-concrete px-3 py-3 text-[var(--text)] sm:px-5 sm:py-5 lg:h-screen lg:overflow-hidden lg:px-4 lg:py-4"
       style={{
         backgroundImage:
-          "linear-gradient(180deg, rgba(8,18,27,0.08), rgba(6,8,10,0.58)), url('/games/plantaono-vermelho/hospital-facade.png')",
+          "linear-gradient(180deg, rgba(11,11,11,0.2), rgba(28,28,26,0.85)), url('/games/plantaono-vermelho/hospital-facade.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.05),rgba(0,0,0,0.46)_72%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(242,169,0,0.05),transparent_24%),radial-gradient(circle_at_80%_20%,rgba(74,73,67,0.12),transparent_18%)]" />
       <div
         className="pointer-events-none absolute inset-0 transition-opacity duration-500"
         style={{
@@ -802,14 +819,14 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       </div>
 
       <div className="relative z-10 mx-auto grid max-w-[1520px] gap-3 lg:h-full lg:grid-cols-[280px_minmax(430px,1fr)_292px] lg:grid-rows-[auto_1fr_auto] lg:items-start">
-        <section className="order-2 rounded-[1.25rem] border border-[#0b2e4b] bg-[linear-gradient(180deg,rgba(8,44,70,0.96),rgba(3,15,25,0.94))] p-3 shadow-[0_10px_0_rgba(0,0,0,0.35),0_18px_60px_rgba(0,0,0,0.42)] lg:order-none lg:row-span-2">
+        <section className="relative overflow-hidden order-2 rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] p-3 shadow-[4px_4px_0px_#000000] backdrop-blur lg:order-none lg:row-span-2">
           <div className="flex items-start justify-between gap-3">
-            <div className="flex size-20 shrink-0 items-center justify-center rounded-full border-[5px] border-[#43b5ff] bg-[#1f3448] text-4xl font-black shadow-[0_0_0_4px_rgba(0,0,0,0.45)]">
+            <div className="flex size-20 shrink-0 items-center justify-center rounded-full border-[5px] border-[var(--accent)] bg-[var(--surface-soft)] text-4xl font-black shadow-md">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/games/plantaono-vermelho/portrait-nurse.png" alt="" className="size-full rounded-full object-cover" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#9ee8c1]">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--accent)]">
                 Enfermeiro
               </p>
               <h1 className="mt-1 text-xl font-black uppercase leading-none">Nivel {Math.max(1, Math.floor(snapshot.score / 1600) + 1)}</h1>
@@ -817,7 +834,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
                 <MeterBar label="xp" value={clamp((snapshot.score % 1600) / 16, 0, 100)} color="#29d443" />
               </div>
             </div>
-            <Link href="/" className="rounded-lg border border-[rgba(255,255,255,0.14)] px-2 py-2 text-[10px] font-bold uppercase">
+            <Link href="/" className="rounded-lg border border-[var(--accent)] px-2.5 py-1.5 text-[10px] font-black uppercase text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black transition-colors">
               Inicio
             </Link>
           </div>
@@ -834,8 +851,8 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           <BillPanel paidRatio={paidRatio} total={debtTotal} />
         </section>
 
-        <section className="pointer-events-auto relative order-1 min-h-[72vh] overflow-hidden rounded-[1.25rem] border border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.12)] p-2 lg:order-none lg:col-start-2 lg:row-span-2 lg:min-h-0 lg:h-full lg:border-0 lg:bg-transparent lg:p-0">
-          <div className="pointer-events-none absolute bottom-[22vh] left-1/2 hidden w-[min(58vw,560px)] -translate-x-1/2 rounded-xl border border-white/10 bg-[rgba(3,14,22,0.52)] px-4 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-[2px] lg:block">
+        <section className="pointer-events-auto relative order-1 min-h-[72vh] overflow-hidden rounded-xl border border-white/10 bg-[rgba(10,10,9,0.94)] p-2 shadow-[6px_6px_0px_#000000] lg:order-none lg:col-start-2 lg:row-span-2 lg:min-h-0 lg:h-full lg:border-0 lg:bg-transparent lg:p-0">
+          <div className="pointer-events-none absolute bottom-[22vh] left-1/2 hidden w-[min(58vw,560px)] -translate-x-1/2 rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] px-4 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-white/80 shadow-[4px_4px_0px_#000000] backdrop-blur-[2px] lg:block">
             Entrada do hospital: escolha como atravessar mais um dia sem salario
           </div>
           <LivingQueue chaos={snapshot.chaos} day={snapshot.day} />
@@ -844,9 +861,9 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             <img
               src="/games/plantaono-vermelho/logo-salario-atrasado.png"
               alt="Como sobreviver com salario atrasado"
-              className="mx-auto w-[min(92vw,760px)] rotate-[-2deg] drop-shadow-[0_8px_0_#041b40]"
+              className="mx-auto w-[min(92vw,760px)] rotate-[-2deg] drop-shadow-[4px_4px_0px_#000000]"
             />
-            <div className="mx-auto mt-1 w-fit rounded-lg bg-[#062d70] px-5 py-2 text-sm font-black uppercase tracking-[0.08em] shadow-[0_5px_0_#041b40]">
+            <div className="mx-auto mt-1 w-fit rounded-lg bg-[#1C1C1A] border border-[var(--accent)] px-5 py-2 text-sm font-black uppercase tracking-[0.08em] shadow-[4px_4px_0px_#000000] text-[var(--accent)]">
               Missao: chegar ao fim do mes!
             </div>
           </div>
@@ -871,15 +888,15 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             onPointerMove={handlePointerMove}
           />
           {!snapshot.finished ? (
-            <div className="pointer-events-none absolute inset-x-5 bottom-5 flex items-center justify-between rounded-lg bg-[rgba(19,13,16,0.78)] px-4 py-3 text-xs font-black uppercase backdrop-blur-sm">
+            <div className="pointer-events-none absolute inset-x-5 bottom-5 flex items-center justify-between rounded-xl border border-white/5 bg-[rgba(28,28,26,0.9)] px-4 py-3 text-xs font-black uppercase backdrop-blur-sm">
               <span>arraste</span>
               <span>{toast}</span>
             </div>
           ) : null}
           {decisionFlash ? (
-            <div className="pointer-events-none absolute left-1/2 top-[34%] z-30 w-[min(86vw,420px)] -translate-x-1/2 rounded-2xl border border-white/25 bg-[rgba(3,14,22,0.9)] p-4 text-center shadow-[0_12px_0_rgba(0,0,0,0.28),0_24px_60px_rgba(0,0,0,0.45)]">
+            <div className="pointer-events-none absolute left-1/2 top-[34%] z-30 w-[min(86vw,420px)] -translate-x-1/2 rounded-xl border border-white/20 bg-[rgba(28,28,26,0.95)] p-4 text-center shadow-[6px_6px_0px_#000000]">
               <div className={`mx-auto mb-2 h-2 w-28 rounded-full ${decisionFlash.tone}`} />
-              <div className="text-3xl font-black uppercase text-[#ffd554]">{decisionFlash.title}</div>
+              <div className="text-3xl font-black uppercase text-[var(--accent)]">{decisionFlash.title}</div>
               <div className="mt-1 text-sm font-black uppercase text-white">{decisionFlash.subtitle}</div>
             </div>
           ) : null}
@@ -890,17 +907,17 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             <CircleMenu label="opcoes" icon="/games/plantaono-vermelho/icon-options.png" />
             <CircleMenu label={`${unlockedAchievements.length}/4`} icon="/games/plantaono-vermelho/icon-trophy.png" />
           </div>
-          <div className="col-span-2 rounded-xl border-[3px] border-[#30343c] bg-[#f7f1df] px-4 py-3 text-center text-[#130d10] shadow-[0_5px_0_rgba(0,0,0,0.45)] lg:col-span-1">
-            <div className="rounded-t-lg bg-[#b9231d] py-1 text-xs font-black uppercase text-white">Dia</div>
+          <div className="col-span-2 rounded-xl border border-white/10 bg-[#E7E0D2] px-4 py-3 text-center text-[#0B0B0B] shadow-[4px_4px_0px_#000000] lg:col-span-1">
+            <div className="rounded-t-md bg-[#9B3F1F] py-1 text-xs font-black uppercase text-[#E7E0D2]">Dia</div>
             <div className="text-4xl font-black">{snapshot.day} / 30</div>
             <div className="text-[10px] font-black uppercase">sobreviver ate o dia 30</div>
           </div>
-          <div className="col-span-2 rounded-xl border border-[#ffd554]/30 bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
-            <div className="text-xs font-black uppercase text-[#ffd554]">evento do dia</div>
+          <div className="col-span-2 rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] px-4 py-3 shadow-[4px_4px_0px_#000000] lg:col-span-1">
+            <div className="text-xs font-black uppercase text-[var(--accent)]">evento do dia</div>
             <div className="mt-1 text-sm font-black uppercase text-white">{dayEvent}</div>
           </div>
-          <div className="col-span-2 rounded-xl border border-[rgba(255,255,255,0.18)] bg-[rgba(3,14,22,0.82)] px-4 py-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
-            <div className="text-xs font-black uppercase text-[#9ee8c1]">decisoes tomadas</div>
+          <div className="col-span-2 rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] px-4 py-3 shadow-[4px_4px_0px_#000000] lg:col-span-1">
+            <div className="text-xs font-black uppercase text-[var(--accent)]">decisoes tomadas</div>
             <div className="mt-1 text-3xl font-black text-[#ffd554]">{snapshot.actionCount}</div>
             <div className="mt-1 text-[10px] font-black uppercase text-white/70">
               cada escolha cobra do corpo ou das contas
@@ -913,7 +930,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               type="button"
               disabled={decisionFlash !== null || !snapshot.running || snapshot.finished}
               onClick={() => applySurvivalAction(action)}
-              className={`${action.tone} flex min-h-28 items-center gap-3 rounded-xl border border-[rgba(255,255,255,0.22)] px-3 py-3 text-left shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition active:scale-[0.98] lg:min-h-0 lg:px-4 lg:py-4 ${
+              className={`${action.tone} flex min-h-28 items-center gap-3 rounded-xl border-2 border-black px-3 py-3 text-left shadow-[4px_4px_0px_#000000] transition active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_#000000] lg:min-h-0 lg:px-4 lg:py-4 ${
                 decisionFlash !== null ? "opacity-40 cursor-not-allowed pointer-events-none" : ""
               }`}
             >
@@ -940,30 +957,30 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           <button
             type="button"
             onClick={() => movePlayer(-1)}
-            className="rounded-lg border border-[rgba(255,255,255,0.14)] bg-[#241015] px-4 py-4 text-xl font-black"
+            className="btn-secondary !py-4 text-xl font-black"
           >
             &lt;
           </button>
           <button
             type="button"
             onClick={() => movePlayer(1)}
-            className="rounded-lg border border-[rgba(255,255,255,0.14)] bg-[#241015] px-4 py-4 text-xl font-black"
+            className="btn-secondary !py-4 text-xl font-black"
           >
             &gt;
           </button>
         </div>
 
         {snapshot.finished ? (
-          <section className="rounded-[1.25rem] border border-[rgba(255,213,84,0.24)] bg-[#241015] p-5 lg:col-start-2">
+          <section id="game-results-panel" className="relative overflow-hidden rounded-xl border border-white/10 bg-[rgba(28,28,26,0.95)] p-5 lg:col-start-2 scroll-mt-6 shadow-[6px_6px_0px_#000000] backdrop-blur">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9ee8c1]">resultado</p>
-                <h2 className="mt-1 text-7xl font-black leading-none text-[#ff3b30]">{rankMeta.label}</h2>
-                <p className="mt-2 text-sm font-bold uppercase text-[#f7f1df]">{rankMeta.message}</p>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--text-soft)]">resultado</p>
+                <h2 className="mt-1 text-7xl font-black leading-none text-[var(--accent)]">{rankMeta.label}</h2>
+                <p className="mt-2 text-sm font-bold uppercase text-[var(--text)]">{rankMeta.message}</p>
               </div>
-              <div className="rounded-lg bg-[rgba(255,255,255,0.08)] px-4 py-3 text-right">
-                <div className="text-[10px] font-bold uppercase text-[#9ee8c1]">score</div>
-                <div className="mt-1 text-4xl font-black text-[#ffd554]">{snapshot.score}</div>
+              <div className="rounded-xl border border-white/5 bg-black/45 px-4 py-3 text-right">
+                <div className="text-[10px] font-bold uppercase text-[var(--text-soft)]">score</div>
+                <div className="mt-1 text-4xl font-black text-[var(--accent)]">{snapshot.score}</div>
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3">
@@ -976,23 +993,40 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               <ResultMetric label="melhor score" value={`${snapshot.bestScore}`} />
               <ResultMetric label="contas" value={`${Math.round(snapshot.bills)}%`} />
             </div>
-            <div className="mt-4 overflow-hidden rounded-lg border border-[rgba(255,213,84,0.22)] bg-[#130d10]">
+            <div className="mt-4 overflow-hidden rounded-xl border border-white/10 bg-black/45">
               {resultImageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={resultImageUrl} alt="Card de resultado" className="block w-full" />
               ) : (
-                <div className="flex aspect-[4/5] items-center justify-center text-xs font-black uppercase text-[#9ee8c1]">
+                <div className="flex aspect-[4/5] items-center justify-center text-xs font-black uppercase text-[var(--text-soft)]">
                   gerando card
                 </div>
               )}
             </div>
+
+            {/* Card de Pré-campanha de Alexandre VR Abandonada */}
+            <div className="relative overflow-hidden rounded-[1.25rem] border border-[#f15a24]/30 bg-gradient-to-br from-[#1e3c34]/95 to-[rgba(28,28,26,0.98)] p-5 shadow-[0_12px_40px_rgba(241,90,36,0.15)] text-center mt-4">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#f15a24] via-[#ffd554] to-[#f15a24]" />
+              <div className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ffd554]">Pré-campanha</div>
+              <h3 className="mt-1 text-lg font-black uppercase text-white tracking-wide">Alexandre VR Abandonada</h3>
+              <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.15em] text-[#ff7c52]">Candidato a Deputado Estadual</p>
+              <p className="mt-3 text-xs font-semibold leading-relaxed text-[#d4e8d8]/90">
+                "Volta Redonda e o estado do Rio de Janeiro precisam de dignidade: merenda escolar de qualidade, valorização profissional, saúde eficiente e transporte público que realmente funcione. Vamos juntos mudar essa realidade!"
+              </p>
+              <div className="mt-3.5 flex items-center justify-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
+                <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#9ee8c1]">Pelo resgate da nossa dignidade</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
+              </div>
+            </div>
+
             <input
               value={playerName}
               onChange={(event) => setPlayerName(event.target.value.slice(0, 18))}
-              className="mt-4 w-full rounded-lg border border-[rgba(255,255,255,0.12)] bg-[#130d10] px-4 py-3 text-sm text-[#f7f1df] outline-none"
+              className="mt-4 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/50"
               placeholder="nome no ranking"
             />
-            <div className="mt-4 flex gap-3">
+            <div className="mt-4 flex gap-3 flex-wrap xs:flex-nowrap">
               <button
                 type="button"
                 onClick={() => {
@@ -1003,19 +1037,19 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
                   });
                   resetRound();
                 }}
-                className="flex-[1.2] rounded-lg bg-[#ffd554] px-4 py-4 text-sm font-black uppercase text-[#130d10]"
+                className="flex-[1.2] btn-primary !p-3 text-[10px] xs:text-xs"
               >
                 Jogar de novo
               </button>
               <button
                 type="button"
                 onClick={() => void shareResult()}
-                className="flex-1 rounded-lg border border-[rgba(255,255,255,0.16)] px-4 py-4 text-sm font-black uppercase"
+                className="flex-1 btn-secondary !p-3 text-[10px] xs:text-xs"
               >
                 {copyLabel}
               </button>
             </div>
-            <Link href={`/ranking/${game.slug}`} className="mt-3 block rounded-lg bg-[#130d10] px-4 py-3 text-center text-sm font-black uppercase">
+            <Link href={`/ranking/${game.slug}`} className="mt-3 block btn-secondary !p-3 text-center text-[10px] xs:text-xs">
               Ver ranking
             </Link>
           </section>
@@ -1027,13 +1061,13 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
 
 function StatusStrip({ label, value, color, icon }: { label: string; value: string; color: string; icon: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg bg-[rgba(3,14,22,0.78)] px-3 py-3 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]">
+    <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-[rgba(10,10,9,0.94)] px-3 py-3 shadow-sm">
       <span className="flex size-11 shrink-0 items-center justify-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={icon} alt="" className="size-11 object-contain drop-shadow-[0_2px_0_rgba(0,0,0,0.45)]" />
+        <img src={icon} alt="" className="size-11 object-contain drop-shadow-[0_2px_0_#000000]" />
       </span>
       <div className="min-w-0 flex-1">
-        <div className="mb-1 flex items-center justify-between text-sm font-black uppercase">
+        <div className="mb-1 flex items-center justify-between text-sm font-black uppercase text-[var(--text)]">
           <span>{label}</span>
           <span>{value}</span>
         </div>
@@ -1047,12 +1081,12 @@ function StatusStrip({ label, value, color, icon }: { label: string; value: stri
 
 function MoneyStrip({ value }: { value: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg bg-[rgba(3,14,22,0.78)] px-3 py-3 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]">
+    <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-[rgba(10,10,9,0.94)] px-3 py-3 shadow-sm">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/games/plantaono-vermelho/icon-money.png" alt="" className="size-11 object-contain" />
+      <img src="/games/plantaono-vermelho/icon-money.png" alt="" className="size-11 object-contain drop-shadow-[0_2px_0_#000000]" />
       <div className="min-w-0 flex-1">
-        <div className="text-sm font-black uppercase">saldo</div>
-        <div className="text-2xl font-black text-white">{value}</div>
+        <div className="text-sm font-black uppercase text-[var(--text-soft)]">saldo</div>
+        <div className="text-2xl font-black text-[var(--accent)]">{value}</div>
       </div>
     </div>
   );
@@ -1060,9 +1094,9 @@ function MoneyStrip({ value }: { value: string }) {
 
 function MiniStatus({ label, value, danger = false }: { label: string; value: string; danger?: boolean }) {
   return (
-    <div className={`rounded-xl border px-2 py-2 text-center shadow-[0_5px_0_rgba(0,0,0,0.35)] backdrop-blur-sm ${danger ? "border-[#ff3b30] bg-[rgba(80,0,0,0.72)]" : "border-white/15 bg-[rgba(3,14,22,0.78)]"}`}>
-      <div className="text-[9px] font-black uppercase tracking-[0.12em] text-[#9ee8c1]">{label}</div>
-      <div className="mt-1 text-sm font-black text-white">{value}</div>
+    <div className={`rounded-xl border px-2 py-2 text-center shadow-[4px_4px_0px_#000000] backdrop-blur-sm ${danger ? "border-[var(--rust)] bg-[rgba(80,20,10,0.72)]" : "border-white/10 bg-[rgba(28,28,26,0.9)]"}`}>
+      <div className="text-[9px] font-black uppercase tracking-[0.12em] text-[var(--accent)]">{label}</div>
+      <div className="mt-1 text-sm font-black text-[var(--text)]">{value}</div>
     </div>
   );
 }
@@ -1110,11 +1144,11 @@ function LivingQueue({ chaos, day }: { chaos: number; day: number }) {
 function CircleMenu({ label, icon }: { label: string; icon: string }) {
   return (
     <div className="text-center">
-      <div className="mx-auto flex size-16 items-center justify-center rounded-full border-[3px] border-[#2a3b47] bg-[linear-gradient(180deg,#3b4b54,#111820)] shadow-[0_5px_0_rgba(0,0,0,0.55)]">
+      <div className="mx-auto flex size-16 items-center justify-center rounded-full border-2 border-white/10 bg-[rgba(28,28,26,0.9)] shadow-[4px_4px_0px_#000000]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={icon} alt="" className="size-12 object-contain" />
       </div>
-      <div className="mt-1 rounded-full bg-[#071724] px-3 py-1 text-[10px] font-black uppercase shadow-[0_3px_0_rgba(0,0,0,0.45)]">
+      <div className="mt-2 rounded-full border border-white/5 bg-[rgba(10,10,9,0.94)] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[var(--text)]">
         {label}
       </div>
     </div>
@@ -1123,10 +1157,10 @@ function CircleMenu({ label, icon }: { label: string; icon: string }) {
 
 function AchievementPanel({ snapshot }: { snapshot: GameSnapshot }) {
   return (
-    <div className="col-span-2 rounded-xl border border-[rgba(255,255,255,0.18)] bg-[rgba(3,14,22,0.82)] p-3 shadow-[0_5px_0_rgba(0,0,0,0.35)] lg:col-span-1">
+    <div className="col-span-2 rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] p-3 shadow-[4px_4px_0px_#000000] lg:col-span-1">
       <div className="mb-2 flex items-center justify-between">
-        <div className="text-xs font-black uppercase text-[#ffd554]">Conquistas</div>
-        <div className="text-[10px] font-black uppercase text-white/70">
+        <div className="text-xs font-black uppercase text-[var(--accent)]">Conquistas</div>
+        <div className="text-[10px] font-black uppercase text-[var(--text-soft)]">
           {achievementDefs.filter((achievement) => achievement.unlocked(snapshot)).length}/{achievementDefs.length}
         </div>
       </div>
@@ -1136,13 +1170,13 @@ function AchievementPanel({ snapshot }: { snapshot: GameSnapshot }) {
           return (
             <div
               key={achievement.id}
-              className={`rounded-lg border px-3 py-2 ${unlocked ? "border-[#ffd554]/50 bg-[#ffd554]/12" : "border-white/10 bg-black/20 opacity-70"}`}
+              className={`rounded-xl border px-3 py-2 ${unlocked ? "border-[var(--accent)]/30 bg-[rgba(242,169,0,0.06)]" : "border-white/5 bg-black/25 opacity-60"}`}
             >
-              <div className={unlocked ? "text-xs font-black uppercase text-[#ffd554]" : "text-xs font-black uppercase text-white/55"}>
+              <div className={unlocked ? "text-xs font-black uppercase text-[var(--accent)]" : "text-xs font-black uppercase text-[var(--text-muted)]"}>
                 {unlocked ? "✓ " : "□ "}
                 {achievement.title}
               </div>
-              <div className="mt-1 text-[10px] font-bold uppercase text-white/55">{achievement.description}</div>
+              <div className="mt-1 text-[10px] font-bold uppercase text-[var(--text-muted)]">{achievement.description}</div>
             </div>
           );
         })}
@@ -1153,9 +1187,9 @@ function AchievementPanel({ snapshot }: { snapshot: GameSnapshot }) {
 
 function ResultMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-[rgba(19,13,16,0.64)] px-4 py-3">
-      <div className="text-[10px] font-bold uppercase text-[#9ee8c1]">{label}</div>
-      <div className="mt-1 text-xl font-black text-[#f7f1df]">{value}</div>
+    <div className="rounded-xl border border-white/5 bg-black/45 px-4 py-3">
+      <div className="text-[10px] font-bold uppercase text-[var(--text-soft)]">{label}</div>
+      <div className="mt-1 text-xl font-black text-[var(--accent)]">{value}</div>
     </div>
   );
 }
@@ -1164,12 +1198,12 @@ function MeterBar({ label, value, color, danger = false }: { label: string; valu
   const width = clamp(value, 0, 100);
   const alert = danger ? value >= 72 : value <= 28;
   return (
-    <div className="rounded-lg bg-[#130d10] px-3 py-2">
+    <div className="rounded-xl border border-white/5 bg-black/45 px-3 py-2">
       <div className="mb-1 flex items-center justify-between text-[10px] font-black uppercase tracking-[0.14em]">
-        <span className={alert ? "text-[#ff6b5f]" : "text-[#9ee8c1]"}>{label}</span>
-        <span className="text-[#f7f1df]">{Math.round(value)}%</span>
+        <span className={alert ? "text-[var(--rust)]" : "text-[var(--text-soft)]"}>{label}</span>
+        <span className="text-[var(--text)]">{Math.round(value)}%</span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-[rgba(255,255,255,0.1)]">
+      <div className="h-2 overflow-hidden rounded-full bg-white/10">
         <div className="h-full rounded-full" style={{ width: `${width}%`, backgroundColor: color }} />
       </div>
     </div>
@@ -1185,15 +1219,15 @@ function SurvivalChecklist({ snapshot }: { snapshot: GameSnapshot }) {
   ];
 
   return (
-    <div className="mt-4 rounded-xl border border-[rgba(255,255,255,0.16)] bg-[rgba(3,14,22,0.72)] p-3">
-      <div className="text-xs font-black uppercase text-[#f7f1df]">Objetivos do dia</div>
+    <div className="mt-4 rounded-xl border border-white/10 bg-[rgba(10,10,9,0.94)] p-3">
+      <div className="text-xs font-black uppercase text-[var(--text)]">Objetivos do dia</div>
       <div className="mt-3 grid gap-2">
         {goals.map((goal) => (
           <div key={goal.label} className="flex items-center gap-2 text-sm font-bold uppercase">
-            <span className={`flex size-5 items-center justify-center rounded border ${goal.done ? "border-[#29d443] bg-[#29d443] text-[#061a27]" : "border-white/50"}`}>
+            <span className={`flex size-5 items-center justify-center rounded border ${goal.done ? "border-[var(--accent)] bg-[var(--accent)] text-black" : "border-white/30"}`}>
               {goal.done ? "✓" : ""}
             </span>
-            <span className={goal.done ? "text-[#9ee8c1]" : "text-[#f7f1df]"}>{goal.label}</span>
+            <span className={goal.done ? "text-[var(--accent)]" : "text-[var(--text-soft)]"}>{goal.label}</span>
           </div>
         ))}
       </div>
@@ -1203,22 +1237,22 @@ function SurvivalChecklist({ snapshot }: { snapshot: GameSnapshot }) {
 
 function BillPanel({ paidRatio, total }: { paidRatio: number; total: number }) {
   return (
-    <div className="mt-3 rounded-xl border border-[rgba(255,255,255,0.16)] bg-[rgba(3,14,22,0.72)] p-3">
-      <div className="text-xs font-black uppercase text-[#f7f1df]">Contas a pagar</div>
+    <div className="mt-3 rounded-xl border border-white/10 bg-[rgba(10,10,9,0.94)] p-3">
+      <div className="text-xs font-black uppercase text-[var(--text)]">Contas a pagar</div>
       <div className="mt-2 grid gap-1">
         {dueBills.map(([label, value]) => {
           const openValue = value * (1 - paidRatio);
           return (
             <div key={label} className="flex justify-between text-xs font-black uppercase">
               <span>{label}</span>
-              <span className={openValue > value * 0.55 ? "text-[#ff3b30]" : "text-[#ffd554]"}>
+              <span className={openValue > value * 0.55 ? "text-[var(--rust)]" : "text-[var(--accent)]"}>
                 - R$ {openValue.toFixed(2).replace(".", ",")}
               </span>
             </div>
           );
         })}
       </div>
-      <div className="mt-3 rounded-lg bg-[#b9231d] px-3 py-2 text-center text-sm font-black uppercase">
+      <div className="mt-3 rounded-lg bg-[var(--rust)] px-3 py-2 text-center text-sm font-black uppercase text-[var(--text)]">
         Total: -R$ {(total * (1 - paidRatio)).toFixed(2).replace(".", ",")}
       </div>
     </div>
@@ -1227,19 +1261,19 @@ function BillPanel({ paidRatio, total }: { paidRatio: number; total: number }) {
 
 function NeedsPanel({ snapshot }: { snapshot: GameSnapshot }) {
   return (
-    <section className="rounded-[1.25rem] border border-[rgba(98,214,255,0.26)] bg-[rgba(6,26,39,0.9)] p-3 shadow-[0_14px_50px_rgba(0,0,0,0.35)]">
-      <div className="text-center text-xs font-black uppercase tracking-[0.18em] text-[#f7f1df]">Suas necessidades</div>
+    <section className="relative overflow-hidden rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] p-3 shadow-[4px_4px_0px_#000000] backdrop-blur">
+      <div className="text-center text-xs font-black uppercase tracking-[0.18em] text-[var(--text)]">Suas necessidades</div>
       <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
         {needBars.map((need) => {
           const value = need.getValue(snapshot);
           return (
-            <div key={need.label} className="rounded-lg bg-[rgba(19,13,16,0.62)] px-3 py-2">
-              <div className="mb-2 flex items-center justify-between text-[10px] font-black uppercase">
+            <div key={need.label} className="rounded-xl border border-white/5 bg-[rgba(10,10,9,0.94)] px-3 py-2">
+              <div className="mb-2 flex items-center justify-between text-[10px] font-black uppercase text-[var(--text-soft)]">
                 <span>{need.label}</span>
-                <span className="text-[#ffd554]">{Math.round(value)}%</span>
+                <span className="text-[var(--accent)]">{Math.round(value)}%</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="flex size-8 items-center justify-center rounded bg-[rgba(255,255,255,0.12)] text-[10px] font-black">
+                <span className="flex size-8 items-center justify-center rounded bg-white/5 text-[10px] font-black">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={need.icon} alt="" className="size-7 object-contain" />
                 </span>

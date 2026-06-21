@@ -64,7 +64,7 @@ type SurpriseEvent = {
 
 const CANVAS_WIDTH = 720;
 const CANVAS_HEIGHT = 1080;
-const ROUND_DURATION_MS = 60000;
+const ROUND_DURATION_MS = 45000;
 const PLAYER_SPEED = 280;
 const PLAYER_RADIUS = 44;
 const BEST_SCORE_KEY = "abandonada:merendeira-no-vermelho:best-score";
@@ -478,14 +478,16 @@ async function createResultCardFile(stats: GameSnapshot) {
 
   // Bottom CTA Yellow Bar
   ctx.fillStyle = "#eab308";
-  ctx.fillRect(54, 1200, 972, 70);
+  ctx.fillRect(54, 1180, 972, 90);
   ctx.strokeStyle = "#000000";
   ctx.lineWidth = 4;
-  ctx.strokeRect(54, 1200, 972, 70);
+  ctx.strokeRect(54, 1180, 972, 90);
   ctx.fillStyle = "#000000";
-  ctx.font = '900 28px "Geist", sans-serif';
   ctx.textAlign = "center";
-  ctx.fillText("🥣 JOGUE VOCÊ TAMBÉM NO ABANDONADA GAMES!", 540, 1246);
+  ctx.font = '900 24px "Geist", sans-serif';
+  ctx.fillText("🥣 JOGUE VOCÊ TAMBÉM NO ABANDONADA GAMES!", 540, 1215);
+  ctx.font = '900 18px "Geist", sans-serif';
+  ctx.fillText("PRÉ-CAMPANHA ALEXANDRE VR ABANDONADA - DEPUTADO ESTADUAL", 540, 1248);
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
   if (!blob) return null;
@@ -1199,6 +1201,20 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
   }, [playerName]);
 
   useEffect(() => {
+    if (snapshot.finished) {
+      const timer = setTimeout(() => {
+        const resultsEl = document.getElementById("game-results-panel");
+        if (resultsEl) {
+          resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [snapshot.finished]);
+
+  useEffect(() => {
     if (!snapshot.finished || submittedRef.current) return;
     submittedRef.current = true;
     updateBestScore(snapshot.score);
@@ -1251,10 +1267,10 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
     { border: "border-slate-400", text: "text-slate-200", bg: "from-slate-800 to-slate-950", shadow: "shadow-none" };
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-[#071319] px-3 pb-6 xs:pb-12 pt-3 text-[#f7f3df]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,114,51,0.22),transparent_24%),radial-gradient(circle_at_80%_20%,rgba(114,214,255,0.12),transparent_18%),linear-gradient(180deg,#08202b,#0d1113_70%)]" />
+    <main className="relative min-h-screen overflow-x-hidden bg-concrete px-3 pb-6 xs:pb-12 pt-3 text-[var(--text)]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(242,169,0,0.05),transparent_24%),radial-gradient(circle_at_80%_20%,rgba(74,73,67,0.12),transparent_18%)]" />
       <div className="relative z-10 mx-auto max-w-md">
-        <header className="rounded-[1.6rem] border border-white/10 bg-[rgba(7,14,20,0.72)] px-3 py-3 xs:px-4 xs:py-4 shadow-[0_16px_50px_rgba(0,0,0,0.36)]">
+        <header className="relative overflow-hidden rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] px-3 py-3 xs:px-4 xs:py-4 shadow-[4px_4px_0px_#000000] backdrop-blur">
           <div className="flex items-start justify-between gap-2.5 min-w-0">
             <div className="min-w-0 flex-1">
               <div className="text-[9px] xs:text-[11px] font-black uppercase tracking-[0.12em] xs:tracking-[0.22em] text-[#ffd45c] leading-tight">salário atrasado + contrato intermitente</div>
@@ -1278,7 +1294,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
           </div>
         </header>
 
-        <section className="mt-2.5 xs:mt-3 overflow-hidden rounded-[1.7rem] border border-white/10 bg-[rgba(10,19,26,0.88)] shadow-[0_18px_56px_rgba(0,0,0,0.42)]">
+        <section className="mt-2.5 xs:mt-3 overflow-hidden rounded-xl border border-white/10 bg-[rgba(10,10,9,0.94)] shadow-[6px_6px_0px_#000000]">
           <div className="border-b border-white/10 p-2.5 xs:p-3">
             <canvas
               ref={canvasRef}
@@ -1318,7 +1334,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
             </div>
 
             {snapshot.finished ? (
-              <div className="grid gap-3">
+              <div id="game-results-panel" className="grid gap-3 scroll-mt-6">
                 <div className="rounded-[1.4rem] border border-[#ffd45c]/25 bg-[linear-gradient(180deg,rgba(34,19,18,0.96),rgba(14,16,18,0.9))] p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-4">
@@ -1380,7 +1396,7 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
                     className="mt-4 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none"
                     placeholder="nome no ranking"
                   />
-                  <div className="mt-4 flex gap-2">
+                  <div className="mt-4 flex gap-2 flex-wrap xs:flex-nowrap">
                     <button
                       type="button"
                       onClick={() => {
@@ -1391,23 +1407,39 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
                         });
                         resetRound();
                       }}
-                      className="flex-1 rounded-xl bg-[#0d73c8] px-4 py-4 text-xs xs:text-sm font-black uppercase text-white"
+                      className="flex-1 btn-primary !p-3 text-[10px] xs:text-xs"
                     >
                       Jogar de novo
                     </button>
                     <button
                       type="button"
                       onClick={() => void shareResult()}
-                      className="flex-1 rounded-xl bg-[#2d8d20] px-4 py-4 text-xs xs:text-sm font-black uppercase text-white"
+                      className="flex-1 btn-secondary !p-3 text-[10px] xs:text-xs"
                     >
                       {copyLabel}
                     </button>
                     <Link
                       href={`/ranking/${game.slug}`}
-                      className="flex-1 rounded-xl bg-[#be8a16] px-4 py-4 text-center text-xs xs:text-sm font-black uppercase text-[#101010]"
+                      className="flex-1 btn-secondary !p-3 text-center text-[10px] xs:text-xs"
                     >
-                      Ver ranking
+                      Ranking
                     </Link>
+                  </div>
+                </div>
+
+                {/* Card de Pré-campanha de Alexandre VR Abandonada */}
+                <div className="relative overflow-hidden rounded-[1.4rem] border border-[#f15a24]/30 bg-gradient-to-br from-[#1e3c34]/95 to-[#0f1f1a]/98 p-5 shadow-[0_12px_40px_rgba(241,90,36,0.15)] text-center">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#f15a24] via-[#ffd45c] to-[#f15a24]" />
+                  <div className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ffd45c]">Pré-campanha</div>
+                  <h3 className="mt-1 text-lg font-black uppercase text-white tracking-wide">Alexandre VR Abandonada</h3>
+                  <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.15em] text-[#ff7c52]">Candidato a Deputado Estadual</p>
+                  <p className="mt-3 text-xs font-semibold leading-relaxed text-[#d4e8d8]/90">
+                    "Volta Redonda e o estado do Rio de Janeiro precisam de dignidade: merenda escolar de qualidade, valorização profissional, saúde eficiente e transporte público que realmente funcione. Vamos juntos mudar essa realidade!"
+                  </p>
+                  <div className="mt-3.5 flex items-center justify-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
+                    <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#9ee8c1]">Pelo resgate da nossa dignidade</span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
                   </div>
                 </div>
 
