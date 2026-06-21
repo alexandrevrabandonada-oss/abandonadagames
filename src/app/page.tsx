@@ -64,13 +64,23 @@ export default function Home() {
             </div>
           </div>
           <div className="bg-[#1C1C1A] p-5 border-t border-white/5">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-soft)] leading-relaxed">
-              "Volta Redonda e o estado do Rio de Janeiro precisam de dignidade: merenda escolar de qualidade, valorização profissional, saúde eficiente e transporte público que realmente funcione. Vamos juntos mudar essa realidade!"
-            </p>
-            <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3">
-              <span className="text-[10px] font-black uppercase tracking-wider text-[var(--text-muted)]">
-                Deputado Estadual • RJ
-              </span>
+            <div className="text-xs font-bold tracking-[0.08em] text-[var(--text-soft)] leading-relaxed space-y-3">
+              <p>
+                "Meu nome é Alexandre, sou pré-candidato a deputado estadual porque acredito que o Sul Fluminense precisa de uma voz firme, popular e independente.
+              </p>
+              <p>
+                Minha caminhada nasce das ruas, das denúncias, da escuta dos trabalhadores, das comunidades esquecidas e de todos que sentem na pele o abandono do poder público.
+              </p>
+              <p>
+                Quero construir uma pré-campanha coletiva, feita com coragem, verdade e organização popular. Não para representar os de cima, mas para fortalecer quem luta todos os dias por saúde, educação, transporte, trabalho digno, moradia e meio ambiente.
+              </p>
+              <p>
+                Essa caminhada não é só minha. É nossa.
+                <br />
+                Vamos organizar a esperança."
+              </p>
+            </div>
+            <div className="mt-4 flex items-center justify-end border-t border-white/5 pt-3">
               <div className="flex gap-2">
                 <span className="h-2 w-2 rounded-full bg-[var(--accent)] animate-pulse" />
                 <span className="text-[8px] font-black uppercase tracking-widest text-[var(--accent)]">DIGNIDADE JÁ</span>
