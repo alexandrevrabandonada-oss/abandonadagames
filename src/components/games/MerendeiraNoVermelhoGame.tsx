@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { CampaignCard, GameHomeLink, ResultActions } from "@/components/games/GameChrome";
 import type { GameDefinition } from "@/lib/gameRegistry";
 import type { ScoreSubmission } from "@/lib/score";
 
@@ -1265,10 +1265,13 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
                 <span className="block text-[#ff5e2f]">no Vermelho</span>
               </h1>
             </div>
-            <div className="shrink-0 rounded-xl border border-white/10 bg-black/25 px-2.5 py-1.5 xs:px-3 xs:py-2 text-right">
-              <div className="text-[9px] xs:text-[10px] font-black uppercase text-white/55 leading-none">score</div>
-              <div className="text-2xl xs:text-3xl font-black text-[#ffd45c] leading-none mt-0.5">{snapshot.score}</div>
-              <div className="text-[9px] xs:text-[10px] font-black uppercase text-[#ff9a6e] leading-none mt-1">combo x{Math.max(1, snapshot.combo)}</div>
+            <div className="shrink-0 flex flex-col items-end gap-2">
+              <GameHomeLink />
+              <div className="rounded-xl border border-white/10 bg-black/25 px-2.5 py-1.5 xs:px-3 xs:py-2 text-right">
+                <div className="text-[9px] xs:text-[10px] font-black uppercase text-white/55 leading-none">score</div>
+                <div className="text-2xl xs:text-3xl font-black text-[#ffd45c] leading-none mt-0.5">{snapshot.score}</div>
+                <div className="text-[9px] xs:text-[10px] font-black uppercase text-[#ff9a6e] leading-none mt-1">combo x{Math.max(1, snapshot.combo)}</div>
+              </div>
             </div>
           </div>
           <div className="mt-4 grid grid-cols-5 gap-1.5 xs:gap-2">
@@ -1345,9 +1348,9 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
                     </div>
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-2">
-                    <ResultChip label="dias sobrevividos" value={`${snapshot.day}/30`} />
+                    <ResultChip label="dia final" value={`${snapshot.day}/30`} />
                     <ResultChip label="pratos servidos" value={`${snapshot.platesServed}`} />
-                    <ResultChip label="combo maximo" value={`x${snapshot.maxCombo}`} />
+                    <ResultChip label="combo max" value={`x${snapshot.maxCombo}`} />
                     <ResultChip label="apoios coletados" value={`${snapshot.supports}`} />
                     <ResultChip label="estabilidade" value={`${Math.round(snapshot.stability)}%`} />
                     <ResultChip label="caos final" value={`${Math.round(snapshot.chaos)}%`} />
@@ -1381,52 +1384,23 @@ export function MerendeiraNoVermelhoGame({ game }: { game: GameDefinition }) {
                     className="mt-4 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none"
                     placeholder="nome no ranking"
                   />
-                  <div className="mt-4 flex gap-2 flex-wrap xs:flex-nowrap">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCopyLabel("Compartilhar");
-                        setResultImageUrl((current) => {
-                          if (current) URL.revokeObjectURL(current);
-                          return null;
-                        });
-                        resetRound();
-                      }}
-                      className="flex-1 btn-primary !p-3 text-[10px] xs:text-xs"
-                    >
-                      Jogar de novo
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => void shareResult()}
-                      className="flex-1 btn-secondary !p-3 text-[10px] xs:text-xs"
-                    >
-                      {copyLabel}
-                    </button>
-                    <Link
-                      href={`/ranking/${game.slug}`}
-                      className="flex-1 btn-secondary !p-3 text-center text-[10px] xs:text-xs"
-                    >
-                      Ranking
-                    </Link>
-                  </div>
+                  <ResultActions
+                    copyLabel={copyLabel}
+                    rankingHref={`/ranking/${game.slug}`}
+                    rankingLabel="Ranking"
+                    onReplay={() => {
+                      setCopyLabel("Compartilhar");
+                      setResultImageUrl((current) => {
+                        if (current) URL.revokeObjectURL(current);
+                        return null;
+                      });
+                      resetRound();
+                    }}
+                    onShare={() => void shareResult()}
+                  />
                 </div>
 
-                {/* Card de Pré-campanha de Alexandre VR Abandonada */}
-                <div className="relative overflow-hidden rounded-[1.4rem] border border-[#f15a24]/30 bg-gradient-to-br from-[#1e3c34]/95 to-[#0f1f1a]/98 p-5 shadow-[0_12px_40px_rgba(241,90,36,0.15)] text-center">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#f15a24] via-[#ffd45c] to-[#f15a24]" />
-                  <div className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ffd45c]">Pré-campanha</div>
-                  <h3 className="mt-1 text-lg font-black uppercase text-white tracking-wide">Alexandre VR Abandonada</h3>
-                  <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.15em] text-[#ff7c52]">Candidato a Deputado Estadual</p>
-                  <p className="mt-3 text-xs font-semibold leading-relaxed text-[#d4e8d8]/90">
-                    "Volta Redonda e o estado do Rio de Janeiro precisam de dignidade: merenda escolar de qualidade, valorização profissional, saúde eficiente e transporte público que realmente funcione. Vamos juntos mudar essa realidade!"
-                  </p>
-                  <div className="mt-3.5 flex items-center justify-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
-                    <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#9ee8c1]">Pelo resgate da nossa dignidade</span>
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
-                  </div>
-                </div>
+                <CampaignCard />
 
                 <div className="rounded-[1.4rem] border border-[#ffd45c]/20 bg-[rgba(8,19,28,0.94)] p-4">
                   <div className="text-center text-xl xs:text-2xl font-black uppercase text-[#ffd45c]">Compartilhe seu resultado!</div>
@@ -2841,8 +2815,3 @@ function ResultChip({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-
-function Badge({ value }: { value: string }) {
-  return <div className="rounded-lg bg-black/20 p-1.5 xs:p-2 text-center text-[#ffd45c] text-[10px] xs:text-xs">{value}</div>;
-}
-

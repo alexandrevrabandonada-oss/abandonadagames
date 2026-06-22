@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CampaignCard, GameObjectivePanel, GamePageHeader, PlayfieldStatusBar, ResultActions } from "@/components/games/GameChrome";
 import type { GameDefinition } from "@/lib/gameRegistry";
 import type { ScoreSubmission } from "@/lib/score";
 
@@ -607,20 +607,7 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(242,169,0,0.05),transparent_24%),radial-gradient(circle_at_80%_20%,rgba(74,73,67,0.12),transparent_18%)]" />
       <div className="relative z-10 mx-auto max-w-md">
         <section className="relative overflow-hidden rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] p-4 shadow-[4px_4px_0px_#000000] backdrop-blur">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[var(--accent)]">
-                arcade bus runner
-              </p>
-              <h1 className="mt-2 text-3xl font-black uppercase leading-none">{game.title}</h1>
-            </div>
-            <Link
-              href="/"
-              className="rounded-lg border border-[var(--accent)] px-3 py-2 text-[11px] font-black uppercase text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black transition-colors"
-            >
-              Inicio
-            </Link>
-          </div>
+          <GamePageHeader eyebrow="arcade bus runner" title={game.title} />
           <div className="mt-4 grid grid-cols-3 gap-2">
             <HudBox label="tempo" value={`${Math.ceil(snapshot.timeLeft)}s`} />
             <HudBox label="tarifa" value={`R$${formatFare(snapshot.fare)}`} />
@@ -629,6 +616,7 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
             <HudBox label="bairros" value={`${snapshot.districts}`} />
             <HudBox label="score" value={`${snapshot.score}`} />
           </div>
+          <GameObjectivePanel text="desvie do caos e segure a tarifa" badge="3 faixas" />
           <div className="mt-3 h-3 overflow-hidden rounded-full bg-black/40">
             <div
               className="h-full rounded-full bg-[linear-gradient(90deg,var(--accent),#ffd15c,var(--rust))] transition-[width] duration-150"
@@ -644,10 +632,7 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
             onPointerDown={handlePointerDown}
           />
           {!snapshot.finished ? (
-            <div className="pointer-events-none absolute inset-x-5 bottom-5 flex items-center justify-between rounded-xl border border-white/5 bg-[rgba(28,28,26,0.9)] px-4 py-3 text-xs font-black uppercase text-[var(--text)] backdrop-blur-sm">
-              <span>toque lados</span>
-              <span>{toast}</span>
-            </div>
+            <PlayfieldStatusBar left="toque lados" right={toast} />
           ) : null}
         </section>
 
@@ -693,7 +678,7 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
               <ResultMetric label="combo max" value={`${snapshot.maxCombo}x`} />
               <ResultMetric label="tarifa final" value={`R$ ${formatFare(snapshot.fare)}`} />
               <ResultMetric label="bairros" value={`${snapshot.districts}`} />
-              <ResultMetric label="melhor score" value={`${snapshot.bestScore}`} />
+              <ResultMetric label="recorde" value={`${snapshot.bestScore}`} />
               <ResultMetric label="atraso" value={`${Math.round(snapshot.delay)}%`} />
             </div>
             <div className="mt-4 overflow-hidden rounded-xl border border-white/10 bg-black/45">
@@ -707,21 +692,7 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
               )}
             </div>
 
-            {/* Card de Pré-campanha de Alexandre VR Abandonada */}
-            <div className="relative overflow-hidden rounded-[1.25rem] border border-[#f15a24]/30 bg-gradient-to-br from-[#1e3c34]/95 to-[rgba(28,28,26,0.98)] p-5 shadow-[0_12px_40px_rgba(241,90,36,0.15)] text-center mt-4">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#f15a24] via-[#ffd45c] to-[#f15a24]" />
-              <div className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ffd554]">Pré-campanha</div>
-              <h3 className="mt-1 text-lg font-black uppercase text-white tracking-wide">Alexandre VR Abandonada</h3>
-              <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.15em] text-[#ff7c52]">Candidato a Deputado Estadual</p>
-              <p className="mt-3 text-xs font-semibold leading-relaxed text-[#d4e8d8]/90">
-                "Volta Redonda e o estado do Rio de Janeiro precisam de dignidade: merenda escolar de qualidade, valorização profissional, saúde eficiente e transporte público que realmente funcione. Vamos juntos mudar essa realidade!"
-              </p>
-              <div className="mt-3.5 flex items-center justify-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
-                <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#9ee8c1]">Pelo resgate da nossa dignidade</span>
-                <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
-              </div>
-            </div>
+            <CampaignCard />
 
             <input
               value={playerName}
@@ -729,35 +700,19 @@ export function OnibusZeroGame({ game }: { game: GameDefinition }) {
               className="mt-4 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/50"
               placeholder="nome no ranking"
             />
-            <div className="mt-4 flex gap-3 flex-wrap xs:flex-nowrap">
-              <button
-                type="button"
-                onClick={() => {
-                  setCopyLabel("Compartilhar");
-                  setResultImageUrl((current) => {
-                    if (current) URL.revokeObjectURL(current);
-                    return null;
-                  });
-                  resetRound();
-                }}
-                className="flex-[1.2] btn-primary !p-3 text-[10px] xs:text-xs"
-              >
-                Jogar de novo
-              </button>
-              <button
-                type="button"
-                onClick={() => void shareResult()}
-                className="flex-1 btn-secondary !p-3 text-[10px] xs:text-xs"
-              >
-                {copyLabel}
-              </button>
-            </div>
-            <Link
-              href={`/ranking/${game.slug}`}
-              className="mt-3 block btn-secondary !p-3 text-center text-[10px] xs:text-xs"
-            >
-              Ver ranking
-            </Link>
+            <ResultActions
+              copyLabel={copyLabel}
+              rankingHref={`/ranking/${game.slug}`}
+              onReplay={() => {
+                setCopyLabel("Compartilhar");
+                setResultImageUrl((current) => {
+                  if (current) URL.revokeObjectURL(current);
+                  return null;
+                });
+                resetRound();
+              }}
+              onShare={() => void shareResult()}
+            />
           </section>
         ) : null}
       </div>

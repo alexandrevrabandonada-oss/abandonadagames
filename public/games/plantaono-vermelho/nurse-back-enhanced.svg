@@ -1,0 +1,35 @@
+<svg width="430" height="760" viewBox="0 0 430 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="scrubTop" x1="215" y1="168" x2="215" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#90C4FF"/>
+      <stop offset="0.55" stop-color="#4B89D3"/>
+      <stop offset="1" stop-color="#2D5FA7"/>
+    </linearGradient>
+    <linearGradient id="scrubPant" x1="215" y1="470" x2="215" y2="760" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4178C1"/>
+      <stop offset="1" stop-color="#244B88"/>
+    </linearGradient>
+    <linearGradient id="skin" x1="215" y1="110" x2="215" y2="250" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D99663"/>
+      <stop offset="1" stop-color="#C88350"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="214" cy="742" rx="98" ry="18" fill="#050607" opacity="0.72"/>
+  <path d="M163 74C163 34 187 8 216 8C248 8 272 36 272 78V128H163V74Z" fill="#151112"/>
+  <ellipse cx="218" cy="126" rx="46" ry="38" fill="url(#skin)"/>
+  <path d="M137 174H293L354 458L310 486L286 430V500H144V430L120 486L76 458L137 174Z" fill="url(#scrubTop)"/>
+  <path d="M144 500H286V532H144V500Z" fill="#315FA4"/>
+  <path d="M144 532H204V760H144V532Z" fill="url(#scrubPant)"/>
+  <path d="M226 532H286V760H226V532Z" fill="url(#scrubPant)"/>
+  <path d="M144 716H204V760H144V716Z" fill="#2A4F8A"/>
+  <path d="M226 716H286V760H226V716Z" fill="#2A4F8A"/>
+  <path d="M194 186L158 220L144 500H188L194 186Z" fill="#A8D1FF" opacity="0.54"/>
+  <path d="M236 186L272 220L286 500H242L236 186Z" fill="#2C68B7" opacity="0.36"/>
+  <path d="M214 182L220 514" stroke="#1D467D" stroke-width="6" stroke-linecap="round"/>
+  <path d="M302 344L324 430" stroke="#97C8FF" stroke-width="5" stroke-linecap="round" opacity="0.48"/>
+  <path d="M176 188H254" stroke="#B8DAFF" stroke-width="6" stroke-linecap="round" opacity="0.65"/>
+  <circle cx="98" cy="476" r="24" fill="#C88350"/>
+  <circle cx="330" cy="476" r="24" fill="#C88350"/>
+  <path d="M116 438L138 438L136 506L114 504L116 438Z" fill="#356CB5"/>
+  <path d="M292 438L314 438L316 506L294 504L292 438Z" fill="#356CB5"/>
+</svg>

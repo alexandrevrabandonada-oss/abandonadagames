@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CampaignCard, GameObjectivePanel, GamePageHeader, PlayfieldStatusBar, ResultActions } from "@/components/games/GameChrome";
 import type { GameDefinition } from "@/lib/gameRegistry";
 import type { ScoreSubmission } from "@/lib/score";
 
@@ -98,12 +98,13 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
-function createCitizen(id: number, count: number): Citizen {
+function createCitizen(id: number, count: number, visible = false): Citizen {
   const row = count % 2;
+  const targetX = 182 + count * 62;
   return {
     id,
-    x: -40 - Math.random() * 120,
-    y: 250 + count * 96 + row * 8,
+    x: visible ? targetX : -40 - Math.random() * 120,
+    y: visible ? 340 + count * 95 : 250 + count * 96 + row * 8,
     radius: 38 + Math.random() * 5,
     patience: 0.84 + Math.random() * 0.16,
     hue: ["#ffca74", "#f7f1df", "#ff8f58", "#ffd86a"][id % 4],
@@ -228,6 +229,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
   const multiplierFlashRef = useRef(0);
   const lastMultiplierRef = useRef(1);
   const comboWindowRef = useRef<number>(0);
+  const uiSyncAtRef = useRef(0);
   const initialBestScore =
     typeof window !== "undefined"
       ? Number.parseInt(window.localStorage.getItem(BEST_SCORE_KEY) ?? "0", 10) || 0
@@ -355,6 +357,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
     multiplierFlashRef.current = 0;
     lastMultiplierRef.current = 1;
     comboWindowRef.current = 0;
+    uiSyncAtRef.current = 0;
     directorRef.current = {
       nextSpawnAt: 0,
       nextEventAt: 7800,
@@ -369,11 +372,11 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
     lastTickRef.current = performance.now();
   }, []);
 
-  const spawnCitizen = useCallback(() => {
+  const spawnCitizen = useCallback((visible = false) => {
     const current = citizensRef.current;
     if (current.length >= MAX_CITIZENS) return;
     citizenSeqRef.current += 1;
-    current.push(createCitizen(citizenSeqRef.current, current.length));
+    current.push(createCitizen(citizenSeqRef.current, current.length, visible));
   }, []);
 
   const applyPublicEvent = useCallback(() => {
@@ -555,7 +558,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
 
   useEffect(() => {
     resetRound();
-    for (let index = 0; index < 4; index += 1) spawnCitizen();
+    for (let index = 0; index < 4; index += 1) spawnCitizen(true);
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -583,7 +586,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
 
       citizensRef.current = citizensRef.current
         .map((citizen, index) => {
-          const targetX = 148 + index * 66;
+          const targetX = 182 + index * 62;
           const tension = Math.max(0, index - 3) * 0.03;
           const phase = elapsed / ROUND_DURATION_MS;
           const grace = elapsed < 15000 ? 0.7 : 1;
@@ -647,12 +650,18 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
       }
 
       if (stateRef.current.running) {
-        mutateState((current) => ({
+        const current = stateRef.current;
+        const next = {
           ...current,
           timeLeft,
           rank: getRank(current.score).label,
           bestScore: bestScoreRef.current,
-        }));
+        };
+        stateRef.current = next;
+        if (now - uiSyncAtRef.current >= 120) {
+          uiSyncAtRef.current = now;
+          setSnapshot(next);
+        }
       }
 
       if ((timeLeft <= 0 || stateRef.current.chaos >= 100) && stateRef.current.running) {
@@ -673,6 +682,17 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
       frameRef.current = window.requestAnimationFrame(render);
     };
 
+    drawGame(
+      ctx,
+      0,
+      stateRef.current,
+      citizensRef.current,
+      exitSpritesRef.current,
+      particlesRef.current,
+      flashRef.current,
+      shakeRef.current,
+      multiplierFlashRef.current,
+    );
     frameRef.current = window.requestAnimationFrame(render);
 
     return () => {
@@ -742,22 +762,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(242,169,0,0.05),transparent_24%),radial-gradient(circle_at_80%_20%,rgba(74,73,67,0.12),transparent_18%)]" />
       <div className="relative z-10 mx-auto max-w-md">
         <div className="relative overflow-hidden rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] p-4 shadow-[4px_4px_0px_#000000] backdrop-blur">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.32em] text-[var(--accent)]">
-                arcade queue chaos
-              </p>
-              <h1 className="mt-2 text-3xl font-black uppercase leading-none">
-                {game.title}
-              </h1>
-            </div>
-            <Link
-              href="/"
-              className="rounded-lg border border-[var(--accent)] px-3 py-2 text-[11px] font-black uppercase text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black transition-colors"
-            >
-              Inicio
-            </Link>
-          </div>
+          <GamePageHeader eyebrow="arcade queue chaos" title={game.title} />
 
           <div className="mt-4 grid grid-cols-4 gap-2">
             <HudBox label="tempo" value={`${Math.ceil(snapshot.timeLeft)}s`} />
@@ -766,19 +771,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
             <HudBox label="recorde" value={`${snapshot.bestScore}`} />
           </div>
 
-          <div className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-black/45 px-4 py-3">
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.28em] text-[var(--text-muted)]">
-                objetivo
-              </div>
-              <div className="mt-1 text-sm font-black uppercase text-[var(--sand)]">
-                Toque nas pessoas antes de desistirem
-              </div>
-            </div>
-            <div className="rounded-xl border border-black bg-[var(--accent)] px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-black shadow-[2px_2px_0px_#000000]">
-              x{snapshot.multiplier}
-            </div>
-          </div>
+          <GameObjectivePanel text="toque nas pessoas antes de desistirem" badge={`x${snapshot.multiplier}`} />
         </div>
 
         <section className="relative mt-4 rounded-xl border border-white/10 bg-[rgba(10,10,9,0.94)] p-3 shadow-[6px_6px_0px_#000000]">
@@ -807,10 +800,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
               onPointerDown={(event) => handleCanvasPress(event.clientX, event.clientY)}
             />
             {!snapshot.finished ? (
-              <div className="pointer-events-none absolute inset-x-6 bottom-6 flex items-center justify-between rounded-xl border border-white/5 bg-[rgba(28,28,26,0.9)] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--text-soft)] backdrop-blur-sm">
-                <span>toque nas pessoas</span>
-                <span>{snapshot.served} atendidos</span>
-              </div>
+              <PlayfieldStatusBar left="toque nas pessoas" right={`${snapshot.served} atendidos`} />
             ) : null}
           </div>
 
@@ -864,8 +854,8 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <ResultMetric label="maior combo" value={`${snapshot.maxCombo}x`} />
-              <ResultMetric label="melhor score" value={`${snapshot.bestScore}`} />
+              <ResultMetric label="combo max" value={`${snapshot.maxCombo}x`} />
+              <ResultMetric label="recorde" value={`${snapshot.bestScore}`} />
               <ResultMetric label="atendidos" value={`${snapshot.served}`} />
               <ResultMetric label="caos final" value={`${Math.round(snapshot.chaos)}%`} />
             </div>
@@ -885,21 +875,7 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
               )}
             </div>
 
-            {/* Card de Pré-campanha de Alexandre VR Abandonada */}
-            <div className="relative overflow-hidden rounded-[1.25rem] border border-[#f15a24]/30 bg-gradient-to-br from-[#1e3c34]/95 to-[rgba(28,28,26,0.98)] p-5 shadow-[0_12px_40px_rgba(241,90,36,0.15)] text-center mt-4">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#f15a24] via-[#ffd45c] to-[#f15a24]" />
-              <div className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ffd554]">Pré-campanha</div>
-              <h3 className="mt-1 text-lg font-black uppercase text-white tracking-wide">Alexandre VR Abandonada</h3>
-              <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.15em] text-[#ff7c52]">Candidato a Deputado Estadual</p>
-              <p className="mt-3 text-xs font-semibold leading-relaxed text-[#d4e8d8]/90">
-                "Volta Redonda e o estado do Rio de Janeiro precisam de dignidade: merenda escolar de qualidade, valorização profissional, saúde eficiente e transporte público que realmente funcione. Vamos juntos mudar essa realidade!"
-              </p>
-              <div className="mt-3.5 flex items-center justify-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
-                <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#9ee8c1]">Pelo resgate da nossa dignidade</span>
-                <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
-              </div>
-            </div>
+            <CampaignCard />
 
             <input
               value={playerName}
@@ -908,37 +884,20 @@ export function QueueChaosGame({ game }: { game: GameDefinition }) {
               placeholder="nome no ranking"
             />
 
-            <div className="mt-4 flex gap-3 flex-wrap xs:flex-nowrap">
-              <button
-                type="button"
-                onClick={() => {
-                  setCopyLabel("Compartilhar");
-                  setResultImageUrl((current) => {
-                    if (current) URL.revokeObjectURL(current);
-                    return null;
-                  });
-                  resetRound();
-                  for (let index = 0; index < 4; index += 1) spawnCitizen();
-                }}
-                className="flex-[1.2] btn-primary !p-3 text-[10px] xs:text-xs"
-              >
-                Jogar de novo
-              </button>
-              <button
-                type="button"
-                onClick={() => void shareResult()}
-                className="flex-1 btn-secondary !p-3 text-[10px] xs:text-xs"
-              >
-                {copyLabel}
-              </button>
-            </div>
-
-            <Link
-              href={`/ranking/${game.slug}`}
-              className="mt-3 block btn-secondary !p-3 text-center text-[10px] xs:text-xs"
-            >
-              Ver ranking
-            </Link>
+            <ResultActions
+              copyLabel={copyLabel}
+              rankingHref={`/ranking/${game.slug}`}
+              onReplay={() => {
+                setCopyLabel("Compartilhar");
+                setResultImageUrl((current) => {
+                  if (current) URL.revokeObjectURL(current);
+                  return null;
+                });
+                resetRound();
+                for (let index = 0; index < 4; index += 1) spawnCitizen(true);
+              }}
+              onShare={() => void shareResult()}
+            />
           </section>
         ) : null}
       </div>
@@ -1056,23 +1015,23 @@ function drawGame(
   ctx.fillText("FILA", 74, 406);
   ctx.fillText("JA", 84, 456);
 
-  ctx.strokeStyle = "rgba(255,255,255,0.08)";
-  ctx.lineWidth = 6;
+  ctx.strokeStyle = "rgba(255,202,116,0.15)";
+  ctx.lineWidth = 7;
   ctx.beginPath();
-  ctx.moveTo(156, 330);
-  ctx.bezierCurveTo(220, 320, 260, 320, 336, 330);
+  ctx.moveTo(188, 330);
+  ctx.bezierCurveTo(252, 320, 292, 320, 368, 330);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(156, 426);
-  ctx.bezierCurveTo(240, 416, 296, 418, 418, 428);
+  ctx.moveTo(188, 426);
+  ctx.bezierCurveTo(272, 416, 328, 418, 450, 428);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(156, 522);
-  ctx.bezierCurveTo(250, 516, 330, 524, 496, 526);
+  ctx.moveTo(188, 522);
+  ctx.bezierCurveTo(282, 516, 362, 524, 528, 526);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(156, 618);
-  ctx.bezierCurveTo(260, 618, 368, 622, 560, 620);
+  ctx.moveTo(188, 618);
+  ctx.bezierCurveTo(292, 618, 400, 622, 592, 620);
   ctx.stroke();
 
   ctx.fillStyle = multiplierFlash > 0 ? "#f7f1df" : "#ffca74";

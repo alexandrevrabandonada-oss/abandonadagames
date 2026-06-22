@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CampaignCard, GameHomeLink, PlayfieldStatusBar, ResultActions } from "@/components/games/GameChrome";
 import type { GameDefinition } from "@/lib/gameRegistry";
-import type { ScoreSubmission } from "@/lib/score";
+import type { RankingEntry, ScoreSubmission } from "@/lib/score";
 
 type ItemKind = "good" | "bad" | "power";
 
@@ -53,6 +53,8 @@ type GameSprites = {
   hospital: HTMLImageElement | null;
   nurse: HTMLImageElement | null;
 };
+
+type RankingStatus = "idle" | "loading" | "ready" | "error";
 
 const CANVAS_WIDTH = 720;
 const CANVAS_HEIGHT = 1080;
@@ -301,6 +303,8 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   const reliefRef = useRef(0);
   const mutiraoPulseRef = useRef(0);
   const interestFrozenRef = useRef(0);
+  const uiSyncAtRef = useRef(0);
+  const dragPointerIdRef = useRef<number | null>(null);
   const itemsRef = useRef<FallingItem[]>([]);
   const particlesRef = useRef<Particle[]>([]);
   const spritesRef = useRef<GameSprites>({ hospital: null, nurse: null });
@@ -321,14 +325,16 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   const [copyLabel, setCopyLabel] = useState("Compartilhar");
   const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
   const [decisionFlash, setDecisionFlash] = useState<{ title: string; subtitle: string; tone: string } | null>(null);
+  const [topRanking, setTopRanking] = useState<RankingEntry[]>([]);
+  const [rankingStatus, setRankingStatus] = useState<RankingStatus>("idle");
 
   const rankMeta = useMemo(() => getRank(snapshot.score), [snapshot.score]);
 
   useEffect(() => {
     const hospital = new Image();
     const nurse = new Image();
-    hospital.src = "/games/plantaono-vermelho/hospital-bg.png";
-    nurse.src = "/games/plantaono-vermelho/nurse-player.png";
+    hospital.src = "/games/plantaono-vermelho/hospital-bg-zilda.svg";
+    nurse.src = "/games/plantaono-vermelho/nurse-player-enhanced.svg";
     hospital.onload = () => {
       spritesRef.current = { ...spritesRef.current, hospital };
     };
@@ -420,8 +426,11 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
     reliefRef.current = 0;
     mutiraoPulseRef.current = 0;
     interestFrozenRef.current = 0;
+    uiSyncAtRef.current = 0;
     itemsRef.current = [];
     particlesRef.current = [];
+    setTopRanking([]);
+    setRankingStatus("idle");
     const next = { ...createInitialSnapshot(bestScoreRef.current), running: true };
     stateRef.current = next;
     setSnapshot(next);
@@ -508,18 +517,24 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
-      if (key === "arrowleft" || key === "a") movePlayer(-1);
-      if (key === "arrowright" || key === "d") movePlayer(1);
-      if (key === "arrowup" || key === "w") {
-        mutateState((current) => ({ ...current, breath: clamp(current.breath - 2, 0, 100), score: current.score + 8 }));
+      if (key === "arrowleft" || key === "a") {
+        event.preventDefault();
+        movePlayer(-1);
+      }
+      if (key === "arrowright" || key === "d") {
+        event.preventDefault();
+        movePlayer(1);
+      }
+      if (key === "arrowup" || key === "arrowdown") {
+        event.preventDefault();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [movePlayer, mutateState]);
+  }, [movePlayer]);
 
   useEffect(() => {
-    resetRound();
+    const initFrame = window.requestAnimationFrame(() => resetRound());
     const canvas = canvasRef.current;
     if (!canvas) return;
     const parent = canvas.parentElement;
@@ -610,12 +625,16 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
         .filter((particle) => particle.life > 0);
 
       if (stateRef.current.running) {
-        mutateState((current) => ({
-          ...current,
+        stateRef.current = {
+          ...stateRef.current,
           day,
           bestScore: bestScoreRef.current,
-          rank: getRank(current.score).label,
-        }));
+          rank: getRank(stateRef.current.score).label,
+        };
+        if (now - uiSyncAtRef.current >= 120) {
+          uiSyncAtRef.current = now;
+          setSnapshot(stateRef.current);
+        }
       }
       if ((day >= 30 || stateRef.current.breath <= 0 || stateRef.current.chaos >= 100 || stateRef.current.bills >= 100) && stateRef.current.running) {
         finishRound();
@@ -636,8 +655,21 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       frameRef.current = window.requestAnimationFrame(render);
     };
 
+    drawGame(
+      ctx,
+      stateRef.current,
+      itemsRef.current,
+      particlesRef.current,
+      playerXRef.current,
+      shakeRef.current,
+      reliefRef.current,
+      interestFrozenRef.current,
+      mutiraoPulseRef.current,
+      spritesRef.current,
+    );
     frameRef.current = window.requestAnimationFrame(render);
     return () => {
+      window.cancelAnimationFrame(initFrame);
       if (frameRef.current) window.cancelAnimationFrame(frameRef.current);
     };
   }, [addParticle, collectItem, finishRound, mutateState, resetRound, spawnItem]);
@@ -692,6 +724,25 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
 
   useEffect(() => {
     if (!snapshot.finished) return;
+    const loadingTimer = window.setTimeout(() => setRankingStatus("loading"), 0);
+    void fetch(`/api/score/ranking?slug=${game.slug}`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error("ranking indisponivel");
+        return (await response.json()) as { ranking?: RankingEntry[] };
+      })
+      .then((payload) => {
+        setTopRanking((payload.ranking ?? []).slice(0, 3));
+        setRankingStatus("ready");
+      })
+      .catch(() => {
+        setTopRanking([]);
+        setRankingStatus("error");
+      });
+    return () => window.clearTimeout(loadingTimer);
+  }, [game.slug, snapshot.finished]);
+
+  useEffect(() => {
+    if (!snapshot.finished) return;
     let cancelled = false;
     void createResultCardFile(snapshot).then((file) => {
       if (!file || cancelled) return;
@@ -705,23 +756,46 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
     };
   }, [snapshot]);
 
-  const shareResult = useCallback(async () => {
-    const text = `Joguei Plantao no Vermelho: sobrevivi ${snapshot.day} dias com salario atrasado, coletei ${snapshot.supports} apoios e terminei com rank ${snapshot.rank}. O boleto veio, mas a gente resistiu.`;
-    const imageFile = await createResultCardFile(snapshot);
-    const filePayload = imageFile ? { title: game.title, text, url: window.location.href, files: [imageFile] } : null;
+  useEffect(() => {
+    if (!snapshot.finished) return;
+    const handleReplayKey = (event: KeyboardEvent) => {
+      if (event.key !== " " && event.key !== "Enter") return;
+      event.preventDefault();
+      setCopyLabel("Compartilhar");
+      setResultImageUrl((current) => {
+        if (current) URL.revokeObjectURL(current);
+        return null;
+      });
+      resetRound();
+    };
+    window.addEventListener("keydown", handleReplayKey);
+    return () => window.removeEventListener("keydown", handleReplayKey);
+  }, [resetRound, snapshot.finished]);
 
-    if (filePayload && navigator.canShare?.({ files: filePayload.files })) {
-      await navigator.share(filePayload);
-      setCopyLabel("Compartilhado");
-      return;
+  const shareResult = useCallback(async () => {
+    const text = `Joguei Plantao no Vermelho: sobrevivi ${snapshot.day} dias, fiz combo maximo de ${snapshot.maxCombo}x e terminei com rank ${snapshot.rank}. O boleto veio, mas a gente resistiu.`;
+    try {
+      const imageFile = await createResultCardFile(snapshot);
+      const filePayload = imageFile ? { title: game.title, text, url: window.location.href, files: [imageFile] } : null;
+
+      if (filePayload && navigator.canShare?.({ files: filePayload.files })) {
+        await navigator.share(filePayload);
+        setCopyLabel("Compartilhado");
+        return;
+      }
+      if (navigator.share) {
+        await navigator.share({ title: game.title, text, url: window.location.href });
+        setCopyLabel("Compartilhado");
+        return;
+      }
+    } catch {}
+
+    try {
+      await navigator.clipboard.writeText(`${text} ${window.location.href}`);
+      setCopyLabel("Copiado");
+    } catch {
+      setCopyLabel("Sem compartilhamento");
     }
-    if (navigator.share) {
-      await navigator.share({ title: game.title, text, url: window.location.href });
-      setCopyLabel("Compartilhado");
-      return;
-    }
-    await navigator.clipboard.writeText(text);
-    setCopyLabel("Copiado");
     window.setTimeout(() => setCopyLabel("Compartilhar"), 1200);
   }, [game.title, snapshot]);
 
@@ -762,14 +836,27 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
 
   function handlePointerDown(event: React.PointerEvent<HTMLCanvasElement>) {
     if (!canvasRef.current) return;
+    dragPointerIdRef.current = event.pointerId;
+    canvasRef.current.setPointerCapture?.(event.pointerId);
     const rect = canvasRef.current.getBoundingClientRect();
     targetXRef.current = clamp(((event.clientX - rect.left) / rect.width) * CANVAS_WIDTH, 68, CANVAS_WIDTH - 68);
   }
 
   function handlePointerMove(event: React.PointerEvent<HTMLCanvasElement>) {
-    if (event.buttons !== 1 || !canvasRef.current) return;
+    if (!canvasRef.current) return;
+    const isActivePointer = dragPointerIdRef.current === event.pointerId;
+    const isTouchDrag = event.pointerType === "touch" && dragPointerIdRef.current !== null;
+    if (!isActivePointer && !isTouchDrag && event.buttons !== 1) return;
     const rect = canvasRef.current.getBoundingClientRect();
     targetXRef.current = clamp(((event.clientX - rect.left) / rect.width) * CANVAS_WIDTH, 68, CANVAS_WIDTH - 68);
+  }
+
+  function handlePointerUp(event: React.PointerEvent<HTMLCanvasElement>) {
+    if (!canvasRef.current) return;
+    if (dragPointerIdRef.current === event.pointerId) {
+      canvasRef.current.releasePointerCapture?.(event.pointerId);
+      dragPointerIdRef.current = null;
+    }
   }
 
   const salaryLeft = clamp(950 - snapshot.bills * 8.6 + snapshot.supports * 24 + snapshot.score * 0.025, -1400, 950);
@@ -791,7 +878,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
       className="relative min-h-screen overflow-x-hidden bg-concrete px-3 py-3 text-[var(--text)] sm:px-5 sm:py-5 lg:h-screen lg:overflow-hidden lg:px-4 lg:py-4"
       style={{
         backgroundImage:
-          "linear-gradient(180deg, rgba(11,11,11,0.2), rgba(28,28,26,0.85)), url('/games/plantaono-vermelho/hospital-facade.png')",
+          "linear-gradient(180deg, rgba(11,11,11,0.16), rgba(18,18,18,0.8)), url('/games/plantaono-vermelho/hospital-facade-zilda.svg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -813,7 +900,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           <div className="flex items-start justify-between gap-3">
             <div className="flex size-20 shrink-0 items-center justify-center rounded-full border-[5px] border-[var(--accent)] bg-[var(--surface-soft)] text-4xl font-black shadow-md">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/games/plantaono-vermelho/portrait-nurse.png" alt="" className="size-full rounded-full object-cover" />
+              <img src="/games/plantaono-vermelho/portrait-nurse-enhanced.svg" alt="" className="size-full rounded-full object-cover" />
             </div>
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--accent)]">
@@ -824,9 +911,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
                 <MeterBar label="xp" value={clamp((snapshot.score % 1600) / 16, 0, 100)} color="#29d443" />
               </div>
             </div>
-            <Link href="/" className="rounded-lg border border-[var(--accent)] px-2.5 py-1.5 text-[10px] font-black uppercase text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black transition-colors">
-              Inicio
-            </Link>
+            <GameHomeLink />
           </div>
           <div className="mt-4 grid gap-2">
             <StatusStrip
@@ -851,20 +936,21 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             <img
               src="/games/plantaono-vermelho/logo-salario-atrasado.png"
               alt="Como sobreviver com salario atrasado"
-              className="mx-auto w-full max-w-[340px] xs:max-w-[420px] rotate-[-2deg] drop-shadow-[4px_4px_0px_#000000]"
+              className="mx-auto w-full max-w-[280px] xs:max-w-[340px] sm:max-w-[380px] lg:max-w-[420px] rotate-[-2deg] drop-shadow-[4px_4px_0px_#000000]"
             />
             <div className="mx-auto mt-1 w-fit rounded-lg bg-[#1C1C1A] border border-[var(--accent)] px-5 py-2 text-sm font-black uppercase tracking-[0.08em] shadow-[4px_4px_0px_#000000] text-[var(--accent)]">
               Missao: chegar ao fim do mes!
             </div>
           </div>
-          <div className="pointer-events-none absolute bottom-12 left-1/2 z-10 -translate-x-1/2 block">
-            <div className="absolute left-1/2 top-[90%] h-8 w-44 lg:h-10 lg:w-56 -translate-x-1/2 rounded-full bg-black/60 blur-md" />
-            <div className="absolute left-1/2 top-[84%] hidden lg:block h-28 w-40 -translate-x-1/2 rounded-full bg-[#62d6ff]/10 blur-2xl" />
+          <div className="pointer-events-none absolute inset-x-3 top-24 bottom-16 z-10 hidden items-end justify-center lg:flex">
+            <div className="absolute inset-x-12 inset-y-8 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,11,12,0.22),rgba(8,11,12,0.52))] shadow-[inset_0_0_60px_rgba(0,0,0,0.35)]" />
+            <div className="absolute left-1/2 bottom-8 h-10 w-52 -translate-x-1/2 rounded-full bg-black/60 blur-md" />
+            <div className="absolute left-1/2 bottom-18 h-24 w-36 -translate-x-1/2 rounded-full bg-[#62d6ff]/8 blur-2xl" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/games/plantaono-vermelho/nurse-back.png"
+              src="/games/plantaono-vermelho/nurse-back-enhanced.svg"
               alt=""
-              className="h-[48vh] max-h-[430px] min-h-[310px] lg:h-[51vh] lg:min-h-[470px] lg:max-h-[660px] drop-shadow-[0_22px_28px_rgba(0,0,0,0.72)] lg:drop-shadow-[0_24px_30px_rgba(0,0,0,0.7)]"
+              className="relative z-0 h-[34vh] min-h-[280px] max-h-[420px] opacity-50 drop-shadow-[0_18px_24px_rgba(0,0,0,0.55)] xl:h-[38vh] xl:max-h-[480px]"
             />
           </div>
           <div className="pointer-events-none absolute inset-x-3 bottom-3 z-20 grid grid-cols-3 gap-2 lg:hidden">
@@ -874,15 +960,14 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
           </div>
           <canvas
             ref={canvasRef}
-            className="mx-auto block w-full max-w-[420px] touch-none rounded-lg opacity-100 mix-blend-screen lg:absolute lg:bottom-[4vh] lg:left-1/2 lg:max-w-[390px] lg:-translate-x-1/2"
+            className="relative z-20 mx-auto mt-28 block w-full max-w-[420px] touch-none rounded-lg drop-shadow-[0_18px_22px_rgba(0,0,0,0.45)] lg:absolute lg:bottom-[4vh] lg:left-1/2 lg:mt-0 lg:max-w-[390px] lg:-translate-x-1/2"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
           />
           {!snapshot.finished ? (
-            <div className="pointer-events-none absolute inset-x-5 bottom-5 flex items-center justify-between rounded-xl border border-white/5 bg-[rgba(28,28,26,0.9)] px-4 py-3 text-xs font-black uppercase backdrop-blur-sm">
-              <span>arraste</span>
-              <span>{toast}</span>
-            </div>
+            <PlayfieldStatusBar left="arraste" right={toast} />
           ) : null}
           {decisionFlash ? (
             <div className="pointer-events-none absolute left-1/2 top-[34%] z-30 w-[min(86vw,420px)] -translate-x-1/2 rounded-xl border border-white/20 bg-[rgba(28,28,26,0.95)] p-4 text-center shadow-[6px_6px_0px_#000000]">
@@ -912,6 +997,24 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
             <div className="mt-1 text-3xl font-black text-[#ffd554]">{snapshot.actionCount}</div>
             <div className="mt-1 text-[10px] font-black uppercase text-white/70">
               cada escolha cobra do corpo ou das contas
+            </div>
+          </div>
+          <div className="col-span-2 rounded-xl border border-white/10 bg-[rgba(28,28,26,0.9)] px-4 py-3 shadow-[4px_4px_0px_#000000] lg:col-span-1">
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-xs font-black uppercase text-[var(--accent)]">ritmo de resistencia</div>
+              <div className={`rounded-full px-2 py-1 text-[10px] font-black uppercase ${snapshot.combo >= 4 ? "bg-[#ff7c52] text-black" : "bg-white/10 text-white/75"}`}>
+                {snapshot.combo >= 4 ? "on fire" : "segura"}
+              </div>
+            </div>
+            <div className="mt-2 flex items-end justify-between gap-3">
+              <div>
+                <div className="text-3xl font-black text-[#9ee8c1]">{snapshot.combo}x</div>
+                <div className="text-[10px] font-black uppercase text-white/70">combo atual</div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-black text-[#62d6ff]">{snapshot.supports}</div>
+                <div className="text-[10px] font-black uppercase text-white/70">apoios coletados</div>
+              </div>
             </div>
           </div>
           <AchievementPanel snapshot={snapshot} />
@@ -975,14 +1078,43 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <ResultMetric label="dias" value={`${snapshot.day}`} />
+              <ResultMetric label="dia final" value={`${snapshot.day}`} />
               <ResultMetric label="folego final" value={`${Math.round(snapshot.breath)}%`} />
               <ResultMetric label="caos final" value={`${Math.round(snapshot.chaos)}%`} />
               <ResultMetric label="boletos desviados" value={`${snapshot.billsDodged}`} />
               <ResultMetric label="apoios" value={`${snapshot.supports}`} />
               <ResultMetric label="combo max" value={`${snapshot.maxCombo}x`} />
-              <ResultMetric label="melhor score" value={`${snapshot.bestScore}`} />
+              <ResultMetric label="recorde" value={`${snapshot.bestScore}`} />
               <ResultMetric label="contas" value={`${Math.round(snapshot.bills)}%`} />
+            </div>
+            <div className="mt-4 rounded-xl border border-white/10 bg-black/35 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-xs font-black uppercase tracking-[0.16em] text-[var(--accent)]">top 3 da rodada</div>
+                <div className="text-[10px] font-black uppercase text-white/55">space ou enter: replay</div>
+              </div>
+              <div className="mt-3 grid gap-2">
+                {rankingStatus === "loading" ? (
+                  <div className="rounded-lg border border-white/5 bg-white/5 px-3 py-3 text-xs font-black uppercase text-[var(--text-soft)]">
+                    carregando ranking
+                  </div>
+                ) : topRanking.length > 0 ? (
+                  topRanking.map((entry, index) => (
+                    <div key={`${entry.player}-${entry.createdAt}-${entry.score}`} className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 px-3 py-3">
+                      <div>
+                        <div className="text-xs font-black uppercase text-[var(--text)]">
+                          #{index + 1} {entry.player}
+                        </div>
+                        <div className="text-[10px] font-black uppercase text-[var(--text-soft)]">{entry.createdAt}</div>
+                      </div>
+                      <div className="text-xl font-black text-[var(--accent)]">{entry.score}</div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-lg border border-white/5 bg-white/5 px-3 py-3 text-xs font-black uppercase text-[var(--text-soft)]">
+                    {rankingStatus === "error" ? "ranking indisponivel no momento" : "seu score abre o placar"}
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mt-4 overflow-hidden rounded-xl border border-white/10 bg-black/45">
               {resultImageUrl ? (
@@ -995,21 +1127,7 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               )}
             </div>
 
-            {/* Card de Pré-campanha de Alexandre VR Abandonada */}
-            <div className="relative overflow-hidden rounded-[1.25rem] border border-[#f15a24]/30 bg-gradient-to-br from-[#1e3c34]/95 to-[rgba(28,28,26,0.98)] p-5 shadow-[0_12px_40px_rgba(241,90,36,0.15)] text-center mt-4">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#f15a24] via-[#ffd554] to-[#f15a24]" />
-              <div className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ffd554]">Pré-campanha</div>
-              <h3 className="mt-1 text-lg font-black uppercase text-white tracking-wide">Alexandre VR Abandonada</h3>
-              <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.15em] text-[#ff7c52]">Candidato a Deputado Estadual</p>
-              <p className="mt-3 text-xs font-semibold leading-relaxed text-[#d4e8d8]/90">
-                "Volta Redonda e o estado do Rio de Janeiro precisam de dignidade: merenda escolar de qualidade, valorização profissional, saúde eficiente e transporte público que realmente funcione. Vamos juntos mudar essa realidade!"
-              </p>
-              <div className="mt-3.5 flex items-center justify-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
-                <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#9ee8c1]">Pelo resgate da nossa dignidade</span>
-                <span className="h-1.5 w-1.5 rounded-full bg-[#f15a24] animate-pulse" />
-              </div>
-            </div>
+            <CampaignCard />
 
             <input
               value={playerName}
@@ -1017,32 +1135,19 @@ export function PlantaoNoVermelhoGame({ game }: { game: GameDefinition }) {
               className="mt-4 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/50"
               placeholder="nome no ranking"
             />
-            <div className="mt-4 flex gap-3 flex-wrap xs:flex-nowrap">
-              <button
-                type="button"
-                onClick={() => {
-                  setCopyLabel("Compartilhar");
-                  setResultImageUrl((current) => {
-                    if (current) URL.revokeObjectURL(current);
-                    return null;
-                  });
-                  resetRound();
-                }}
-                className="flex-[1.2] btn-primary !p-3 text-[10px] xs:text-xs"
-              >
-                Jogar de novo
-              </button>
-              <button
-                type="button"
-                onClick={() => void shareResult()}
-                className="flex-1 btn-secondary !p-3 text-[10px] xs:text-xs"
-              >
-                {copyLabel}
-              </button>
-            </div>
-            <Link href={`/ranking/${game.slug}`} className="mt-3 block btn-secondary !p-3 text-center text-[10px] xs:text-xs">
-              Ver ranking
-            </Link>
+            <ResultActions
+              copyLabel={copyLabel}
+              rankingHref={`/ranking/${game.slug}`}
+              onReplay={() => {
+                setCopyLabel("Compartilhar");
+                setResultImageUrl((current) => {
+                  if (current) URL.revokeObjectURL(current);
+                  return null;
+                });
+                resetRound();
+              }}
+              onShare={() => void shareResult()}
+            />
           </section>
         ) : null}
       </div>
@@ -1352,6 +1457,11 @@ function drawGame(
   ctx.fillText(`Dia ${snapshot.day}`, 48, 80);
   ctx.fillStyle = "#ffd554";
   ctx.fillText(`Score ${snapshot.score}`, 460, 80);
+  if (snapshot.combo >= 2) {
+    ctx.fillStyle = snapshot.combo >= 4 ? "#ff7c52" : "#9ee8c1";
+    ctx.font = '900 22px "Geist", sans-serif';
+    ctx.fillText(`Combo x${snapshot.combo}`, 48, 112);
+  }
   ctx.restore();
 }
 
@@ -1414,6 +1524,23 @@ function drawPlayer(
 ) {
   ctx.save();
   ctx.translate(x, y);
+  if (snapshot.combo >= 3) {
+    const pulse = 0.78 + Math.sin(Date.now() / 120) * 0.12;
+    ctx.strokeStyle = snapshot.combo >= 5 ? "rgba(255,124,82,0.85)" : "rgba(158,232,193,0.72)";
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    ctx.arc(0, 0, 74 * pulse, 0, Math.PI * 2);
+    ctx.stroke();
+    for (let index = 0; index < Math.min(snapshot.combo, 5); index += 1) {
+      const angle = Date.now() / 260 + (index / Math.min(snapshot.combo, 5)) * Math.PI * 2;
+      const orbitX = Math.cos(angle) * 58;
+      const orbitY = Math.sin(angle) * 34 - 26;
+      ctx.fillStyle = snapshot.combo >= 5 ? "#ff7c52" : "#9ee8c1";
+      ctx.beginPath();
+      ctx.arc(orbitX, orbitY, 6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
   if (relief > 0 || frozen > 0) {
     ctx.strokeStyle = relief > 0 ? `rgba(158,232,193,${relief})` : "rgba(98,214,255,0.62)";
     ctx.lineWidth = 8;
