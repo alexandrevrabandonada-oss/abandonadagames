@@ -141,6 +141,11 @@ a {
   box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
 }
 
+.btn-compact {
+  padding: 0.75rem 1rem;
+  min-height: 3rem;
+}
+
 /* Brutalist Card - dark base, solid shadow */
 .card-brutal {
   background-color: var(--surface);

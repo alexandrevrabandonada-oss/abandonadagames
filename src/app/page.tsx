@@ -38,11 +38,11 @@ export default function Home() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-concrete text-[var(--text)]">
+    <main className="relative min-h-screen overflow-x-hidden bg-concrete text-[var(--text)]">
       {/* Subtle brand color highlight in top background overlay */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(242,169,0,0.06),_transparent_40%)]" />
 
-      <section className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 pb-24 pt-6 lg:px-8">
+      <section className="relative mx-auto flex w-full max-w-6xl flex-col px-5 pb-24 pt-6 lg:px-8">
         {/* Stamp Style Header Banner */}
         <div className="mb-6 w-full max-w-md rounded border-2 border-[var(--accent)] bg-black/60 px-4 py-2.5 text-center text-xs font-black uppercase tracking-[0.2em] text-[var(--accent)] shadow-[3px_3px_0px_rgba(0,0,0,0.8)] rotate-[-1deg]">
           Pré-campanha Alexandre VR Abandonada
@@ -103,7 +103,7 @@ export default function Home() {
 
             <section className="relative overflow-hidden rounded-xl border border-[var(--border-strong)] bg-[#1C1C1A]/90 p-4 shadow-[4px_4px_0px_#000000] backdrop-blur">
               <div className="absolute inset-y-0 right-0 w-24 bg-[radial-gradient(circle_at_center,rgba(242,169,0,0.08),transparent_70%)]" />
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <div className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--accent)]">
                     entrada rápida
@@ -112,11 +112,11 @@ export default function Home() {
                     escolha uma pressão e entre jogando
                   </div>
                 </div>
-                <div className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-right">
+                <div className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-left sm:w-auto sm:max-w-[260px] sm:text-right">
                   <div className="text-[9px] font-black uppercase tracking-[0.16em] text-[var(--text-muted)]">
                     rota ativa
                   </div>
-                  <div className="mt-1 text-sm font-black text-[var(--accent)]">{featuredGame.title}</div>
+                  <div className="mt-1 text-sm font-black leading-tight text-[var(--accent)]">{featuredGame.title}</div>
                   {featuredGame.subtitle ? (
                     <div className="mt-1 text-[9px] font-black uppercase tracking-[0.14em] text-[var(--text-soft)]">
                       {featuredGame.subtitle}
@@ -124,14 +124,14 @@ export default function Home() {
                   ) : null}
                 </div>
               </div>
-              <div className="mt-4 grid gap-3 md:grid-cols-3">
+              <div className="mt-4 grid items-start gap-3 sm:grid-cols-2">
                 {quickLaunchGames.map((game, index) => {
                   const meta = getGamePresentation(game.slug);
 
                   return (
                     <article
                       key={`quick-${game.slug}`}
-                      className={`rounded-xl border p-4 ${
+                      className={`min-w-0 rounded-xl border p-3 sm:p-4 ${
                         index === 0
                           ? "border-[var(--accent)]/40 bg-[linear-gradient(180deg,rgba(242,169,0,0.08),rgba(0,0,0,0.18))]"
                           : "border-white/10 bg-black/30"
@@ -157,7 +157,7 @@ export default function Home() {
                           {meta.duration}
                         </span>
                       </div>
-                      <h2 className="mt-3 text-lg font-black uppercase leading-tight text-white">
+                      <h2 className="mt-3 text-base font-black uppercase leading-tight text-white sm:text-lg">
                         {game.title}
                       </h2>
                       {game.subtitle ? (
@@ -175,11 +175,11 @@ export default function Home() {
                           </span>
                         ))}
                       </div>
-                      <div className="mt-4 flex gap-2">
-                        <Link href={`/jogar/${game.slug}`} className="btn-primary flex-1 text-[10px]">
+                      <div className="mt-4 flex flex-col gap-2 xs:flex-row">
+                        <Link href={`/jogar/${game.slug}`} className="btn-primary btn-compact min-w-0 flex-1 text-[10px]">
                           {game.ctaLabel ?? "Jogar"}
                         </Link>
-                        <Link href={`/ranking/${game.slug}`} className="btn-secondary text-[10px]">
+                        <Link href={`/ranking/${game.slug}`} className="btn-secondary btn-compact min-w-0 text-[10px]">
                           Ranking
                         </Link>
                       </div>
@@ -354,16 +354,16 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-5 flex gap-3">
+            <div className="mt-5 flex flex-col gap-3 xs:flex-row">
               <Link
                 href={`/jogar/${featuredGame.slug}`}
-                className="flex-1 btn-primary text-center"
+                className="btn-primary btn-compact flex-1 text-center"
               >
                 {featuredGame.ctaLabel ?? "Jogar agora"}
               </Link>
               <Link
                 href={`/ranking/${featuredGame.slug}`}
-                className="btn-secondary text-center"
+                className="btn-secondary btn-compact text-center"
               >
                 Ranking
               </Link>
@@ -380,14 +380,14 @@ export default function Home() {
               dados via `game.json`
             </span>
           </div>
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid items-start gap-4 lg:grid-cols-2">
             {games.map((game, index) => {
               const presentation = getGamePresentation(game.slug);
 
               return (
                 <article
                   key={game.slug}
-                  className={`card-brutal group relative flex h-full flex-col overflow-hidden ${
+                  className={`card-brutal group relative flex flex-col overflow-hidden ${
                     index === 0 ? "border-[var(--accent)]/35" : ""
                   }`}
                 >
@@ -455,11 +455,11 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="relative mt-4 flex gap-3">
-                    <Link href={`/jogar/${game.slug}`} className="btn-primary flex-1 text-[10px]">
+                  <div className="relative mt-4 flex flex-col gap-3 xs:flex-row">
+                    <Link href={`/jogar/${game.slug}`} className="btn-primary btn-compact min-w-0 flex-1 text-[10px]">
                       {game.ctaLabel ?? "Entrar"}
                     </Link>
-                    <Link href={`/ranking/${game.slug}`} className="btn-secondary text-[10px]">
+                    <Link href={`/ranking/${game.slug}`} className="btn-secondary btn-compact min-w-0 text-[10px]">
                       Ranking
                     </Link>
                   </div>
@@ -510,11 +510,11 @@ export default function Home() {
               <p className="mt-2 text-xs font-bold uppercase leading-relaxed tracking-[0.08em] text-[var(--text-soft)]">
                 {featuredMeta.focus}
               </p>
-              <div className="mt-4 flex gap-3">
-                <Link href={`/jogar/${featuredGame.slug}`} className="btn-primary flex-1 text-[10px]">
+              <div className="mt-4 flex flex-col gap-3 xs:flex-row">
+                <Link href={`/jogar/${featuredGame.slug}`} className="btn-primary btn-compact min-w-0 flex-1 text-[10px]">
                   Jogar agora
                 </Link>
-                <Link href={`/ranking/${featuredGame.slug}`} className="btn-secondary text-[10px]">
+                <Link href={`/ranking/${featuredGame.slug}`} className="btn-secondary btn-compact min-w-0 text-[10px]">
                   Ver ranking
                 </Link>
               </div>
