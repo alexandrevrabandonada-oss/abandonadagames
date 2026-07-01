@@ -1,0 +1,60 @@
+{
+  "lotId": "lote-03-rio-bairro-cotidiano",
+  "order": 3,
+  "title": "Rio, bairro e cotidiano",
+  "goal": "fechar vida urbana, bairro, rio e coleta como identidade visual clara do deck Rio & Rua",
+  "promptSource": "../art-prompts.pt-BR.json",
+  "negativePromptSource": "../art-prompts.pt-BR.json#styleGuide.negativePrompt",
+  "status": "closed_planning_ready_for_generation",
+  "cards": [
+    {
+      "id": "rio_001",
+      "name": "Curva do Paraiba",
+      "outputFile": "03-rio_001-curva-do-paraiba.png",
+      "promptKey": "rio_001",
+      "reviewFocus": "curva do rio, margens urbanas, agua barrenta"
+    },
+    {
+      "id": "rio_002",
+      "name": "Guardia do Rio",
+      "outputFile": "03-rio_002-guardia-do-rio.png",
+      "promptKey": "rio_002",
+      "reviewFocus": "colete, margem do rio, tom civico e nao militar"
+    },
+    {
+      "id": "rio_003",
+      "name": "Catador do PEV",
+      "outputFile": "03-rio_003-catador-do-pev.png",
+      "promptKey": "rio_003",
+      "reviewFocus": "baias de reciclaveis, carrinho, realismo de servico urbano"
+    },
+    {
+      "id": "rio_004",
+      "name": "Menino do Retiro",
+      "outputFile": "03-rio_004-menino-do-retiro.png",
+      "promptKey": "rio_004",
+      "reviewFocus": "vida de bairro, lojas locais, circulacao cotidiana"
+    },
+    {
+      "id": "rio_009",
+      "name": "Roda de Escuta",
+      "outputFile": "03-rio_009-roda-de-escuta.png",
+      "promptKey": "rio_009",
+      "reviewFocus": "intimidade comunitaria, bancos baixos, cartazes e cadernos"
+    },
+    {
+      "id": "rio_010",
+      "name": "Mutirao de Bairro",
+      "outputFile": "03-rio_010-mutirao-de-bairro.png",
+      "promptKey": "rio_010",
+      "reviewFocus": "acao coletiva, rua viva, ferramentas simples, otimismo"
+    },
+    {
+      "id": "rio_011",
+      "name": "Defesa do Paraiba",
+      "outputFile": "03-rio_011-defesa-do-paraiba.png",
+      "promptKey": "rio_011",
+      "reviewFocus": "margem do rio, faixa ambiental, voluntarios em acao"
+    }
+  ]
+}

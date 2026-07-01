@@ -1,0 +1,204 @@
+{
+  "game": "cidade-de-aco-cartas-vr",
+  "version": "2026-06-29",
+  "styleGuide": {
+    "objetivoVisual": "arte premium de card game mobile ancorada em referencias reais de Volta Redonda",
+    "linguagem": [
+      "Concreto Zen",
+      "brutalismo industrial",
+      "memoria urbana",
+      "ilustracao premium de carta colecionavel",
+      "luz cinematografica",
+      "texturas de aco gasto e concreto"
+    ],
+    "paleta": [
+      "cinza aco escuro",
+      "laranja ferrugem",
+      "amarelo industrial",
+      "teal profundo",
+      "verde rio",
+      "ambar empoeirado",
+      "vermelho de crise apenas em cenas de alerta"
+    ],
+    "regrasDeComposicao": [
+      "composicao vertical para crop de carta mobile",
+      "silhueta principal legivel em primeiro plano",
+      "landmark ou acao forte no plano medio",
+      "fundo ligado a identidade urbana de Volta Redonda",
+      "evitar fantasia generica de card game",
+      "evitar interfaces sci-fi e maquinas futuristas",
+      "priorizar materiais tateis: fumaça, poeira, concreto, metal e textura de rua"
+    ],
+    "negativePrompt": "fantasia urbana generica, cyberpunk neon exagerado, props medievais, rosto anime, render 3D plastico, visual de brinquedo brilhante, arranha-ceus aleatorios, hologramas futuristas, UI flutuante, suburbio americano generico, fundo vazio, landmark sem detalhe, watermark, texto sobreposto"
+  },
+  "cards": [
+    {
+      "id": "aco_001",
+      "name": "Arigo",
+      "sourceType": "composicao_real",
+      "anchor": "trabalhador migrante que veio construir a CSN e a cidade",
+      "prompt": "Retrato de um trabalhador migrante da cidade do aco no inicio da industrializacao de Volta Redonda, carregando mala de lona gasta e capacete simples, poeira vermelha nas botas, moradias operarias inacabadas e guindastes ao fundo, historia do trabalho brasileiro, luz dramatica de fim de tarde, atmosfera de concreto e metal, ilustracao premium de carta colecionavel, enquadramento vertical para mobile."
+    },
+    {
+      "id": "aco_002",
+      "name": "Operaria da Laminacao",
+      "sourceType": "composicao_real",
+      "anchor": "setor de laminacao da Usina Presidente Vargas",
+      "prompt": "Operaria dentro da laminacao de uma siderurgica brasileira, EPI completo, chapas de aco incandescentes, passarelas, rolos industriais e luz ambar, distorcao de calor, suor e peso mecanico realista, sem elementos sci-fi, arte premium de carta com silhueta forte e textura de aco, composicao vertical."
+    },
+    {
+      "id": "aco_003",
+      "name": "Mestre do Alto-Forno",
+      "sourceType": "composicao_real",
+      "anchor": "estruturas reais de alto-forno da CSN",
+      "prompt": "Mestre do alto-forno enquadrado contra tubulacoes monumentais, escadas metalicas e valvulas de pressao, reflexo laranja do metal fundido no uniforme escuro, arquitetura industrial inspirada na usina real de Volta Redonda, fumaça e po de ferro no ar, ilustracao brutalista premium de carta, corte vertical."
+    },
+    {
+      "id": "aco_004",
+      "name": "Cronista da Cidade Operaria",
+      "sourceType": "composicao_real",
+      "anchor": "arquivo de memoria operaria e imprensa local",
+      "prompt": "Cronista da cidade operaria em mesa rustica com cadernos, recortes sindicais e jornais locais, skyline da usina visivel pela janela, luz quente de tungstenio, clima de arquivo e memoria do trabalho, paredes de concreto, realismo urbano brasileiro detalhado, pintura premium de carta para card game mobile."
+    },
+    {
+      "id": "aco_005",
+      "name": "Obelisco da Praca Brasil",
+      "sourceType": "vr_real",
+      "anchor": "obelisco real da Praca Brasil em Vila Santa Cecilia",
+      "prompt": "Obelisco real da Praca Brasil em Volta Redonda, monumento de pedra com relevos industriais, espelho d'agua, esculturas em bronze ligadas a siderurgia, atmosfera civica, superficies elegantes mas gastas, luz equilibrada de amanhecer, fidelidade realista ao landmark, ilustracao premium de carta, enquadramento vertical. Preservar a silhueta e a composicao real do conjunto da Praca Brasil; estilizar apenas luz, textura e atmosfera. Nao adicionar montanhas dramaticas, estatuaria heroica inventada ou base monumental inexistente."
+    },
+    {
+      "id": "aco_006",
+      "name": "Chamine Antiga",
+      "sourceType": "vr_real",
+      "anchor": "chamine historica de tijolo do passado industrial",
+      "prompt": "Landmark historico de Volta Redonda com chamine alta de tijolo aparente sobre base robusta, textura envelhecida de alvenaria, cercada por tracos de infraestrutura urbana, isolada e solene, memoria industrial, ceu nublado, arte premium de carta com perspectiva vertical forte e realismo tatico. Preservar a forma real de uma chamine historica simples sobre pedestal; estilizar apenas textura, cor e clima. Nao transformar em torre cenica, ruina fantasiosa ou chamine metalica moderna."
+    },
+    {
+      "id": "aco_007",
+      "name": "Memorial 9 de Novembro",
+      "sourceType": "vr_real",
+      "anchor": "memorial de Oscar Niemeyer aos trabalhadores mortos em 1988",
+      "prompt": "Memorial 9 de Novembro real em Volta Redonda, estrutura brutalista de concreto com tres efigies operarias e fraturas visiveis do atentado, praca civica aberta, atmosfera sobria de memoria politica, ceu baixo e dramatico, alta fidelidade ao landmark, ilustracao urbana premium de carta, composicao vertical. Preservar a forma real do monumento de Niemeyer e a disposicao verdadeira das efigies; estilizar apenas textura, desgaste e luz. Nao transformar o memorial em tres estatuas gigantes separadas, ruina cenografica ou monumento inventado."
+    },
+    {
+      "id": "aco_008",
+      "name": "Greve de 1988",
+      "sourceType": "composicao_real",
+      "anchor": "greve historica da CSN em 1988",
+      "prompt": "Greve operaria diante dos portoes da siderurgica em Volta Redonda, multidão de trabalhadores com faixas e capacetes, tensao densa, fumaça industrial ao fundo, luz urgente de conflito coletivo, energia de resistencia, visual inspirado em documentario mas pintado como carta premium, enquadramento vertical mobile."
+    },
+    {
+      "id": "aco_009",
+      "name": "Turno Virado",
+      "sourceType": "composicao_real",
+      "anchor": "troca de turno na cidade do aco",
+      "prompt": "Trabalhador saindo e entrando do turno sob luz de fabrica antes do amanhecer, relogio de ponto, lampadas de sodio, postura cansada, sombras azul-escuras da madrugada e brilho amarelo industrial, rotina da cidade operaria, realismo urbano contido, ilustracao premium de carta."
+    },
+    {
+      "id": "aco_010",
+      "name": "Cidade de Aco",
+      "sourceType": "composicao_real",
+      "anchor": "Volta Redonda como Cidade do Aco",
+      "prompt": "Vista epica de Volta Redonda como Cidade do Aco, skyline da usina, curva do rio, moradia operaria, avenidas de concreto e chamines em camadas, paleta teal profunda e ferrugem, identidade industrial orgulhosa sem fantasia exagerada, arte premium de carta em composicao vertical."
+    },
+    {
+      "id": "aco_011",
+      "name": "Sirene da Usina",
+      "sourceType": "composicao_real",
+      "anchor": "sirene de alerta no ambiente da siderurgica",
+      "prompt": "Torre de sirene industrial dentro de um grande complexo siderurgico brasileiro, luz de alerta cortando fumaça e vapor, canos e passarelas ao redor, sensacao de pressao e urgencia, atmosfera industrial dura, pintura premium de carta colecionavel, maquinaria realista, corte vertical."
+    },
+    {
+      "id": "aco_012",
+      "name": "Peso do Concreto",
+      "sourceType": "composicao_real",
+      "anchor": "arquitetura operaria planejada e massa urbana opressiva",
+      "prompt": "Lajes pesadas de concreto, pilotis, passarelas e blocos habitacionais fechando a cena sobre o observador, compressao brutalista inspirada na cidade operaria de Volta Redonda, luz ambar escura e sombras densas, sem fantasia de bunker, arte atmosferica premium com superficies de concreto bem texturizadas."
+    },
+    {
+      "id": "rio_001",
+      "name": "Curva do Paraiba",
+      "sourceType": "vr_real",
+      "anchor": "curva do Rio Paraiba do Sul que define a cidade",
+      "prompt": "Curva ampla do Rio Paraiba do Sul atravessando Volta Redonda, agua barrenta verde-acastanhada, margens urbanas, vegetacao baixa e pontes distantes, luz umida, forte senso de lugar, atmosfera realista de cidade-rio brasileira, ilustracao premium de carta em vertical."
+    },
+    {
+      "id": "rio_002",
+      "name": "Guardia do Rio",
+      "sourceType": "composicao_real",
+      "anchor": "defesa comunitaria do Paraiba",
+      "prompt": "Guardia do rio na margem do Paraiba com colete pratico, luvas e sacos de residuos recolhidos, plantas ribeirinhas e borda urbana ao fundo, tom vigilante e civico, sem fantasia militarizada, paleta profunda de rio, arte premium de carta com realismo de base."
+    },
+    {
+      "id": "rio_003",
+      "name": "Catador do PEV",
+      "sourceType": "composicao_real",
+      "anchor": "coleta seletiva e entrega voluntaria em Volta Redonda",
+      "prompt": "Catador ao lado de um ponto de entrega voluntaria, carrinho de mao, reciclaveis secos separados, baias metalicas e area urbana de servico, realismo de rua, humor resiliente e civico, paleta sutil de verde e ferrugem, ilustracao premium de carta com detalhe material."
+    },
+    {
+      "id": "rio_004",
+      "name": "Menino do Retiro",
+      "sourceType": "vr_real",
+      "anchor": "vida cotidiana no bairro Retiro",
+      "prompt": "Menino circulando pelas ruas movimentadas do Retiro em Volta Redonda, lojas locais, calcadas cheias, vida de bairro calorosa, roupa comum, realismo urbano brasileiro com movimento e afeto, pintura premium de carta, enquadramento vertical para mobile."
+    },
+    {
+      "id": "rio_005",
+      "name": "Mestra da Capoeira",
+      "sourceType": "composicao_real",
+      "anchor": "vida cultural afro-brasileira proxima ao Memorial Zumbi",
+      "prompt": "Mestra da capoeira em movimento dentro de uma roda aberta perto do Memorial Zumbi, berimbau e pandeiro visiveis, pose atletica, dignidade afro-brasileira sem caricatura, luz quente de rua e sombras teal profundas, ilustracao dinamica premium de carta, composicao vertical."
+    },
+    {
+      "id": "rio_006",
+      "name": "Parque do Inga",
+      "sourceType": "vr_real",
+      "anchor": "Parque Natural Municipal Fazenda Santa Cecilia do Inga",
+      "prompt": "Parque do Inga real em Volta Redonda, trilha de mata atlantica, estruturas de viveiro, copa verde densa e ar umido, sensacao de refugio urbano, luz natural filtrada pelas folhas, sem fantasia tropical generica, arte ambiental premium de carta, corte vertical. Preservar a leitura de trilha, viveiro e parque urbano real; estilizar apenas a luz, a umidade e a textura da vegetacao. Nao transformar em selva exotica, jardim cenografico ou parque generico sem cara de Volta Redonda."
+    },
+    {
+      "id": "rio_007",
+      "name": "Memorial Zumbi",
+      "sourceType": "vr_real",
+      "anchor": "Memorial Zumbi dos Palmares em Volta Redonda",
+      "prompt": "Memorial Zumbi dos Palmares real em Volta Redonda, anfiteatro e arena aberta, escultura de Zumbi em aco corten, detalhes simbolicos afro-brasileiros nas grades, atmosfera poderosa de memoria civica, identidade local precisa, pintura premium de landmark para carta, enquadramento vertical. Preservar a escala real da escultura e a composicao do anfiteatro; estilizar apenas material, cor e luz. Nao transformar o memorial em busto monumental heroico, guerreiro generico ou arena inventada."
+    },
+    {
+      "id": "rio_008",
+      "name": "Cinema 9 de Abril",
+      "sourceType": "vr_real",
+      "anchor": "historico Cinema 9 de Abril em Vila Santa Cecilia",
+      "prompt": "Cinema 9 de Abril real em Volta Redonda, fachada modernista trapezoidal, esquadrias em fita, presenca monumental de rua e calcada portuguesa em preto e branco, clima de memoria cultural, linhas geometricas limpas com textura envelhecida, arte premium de landmark para carta, composicao vertical. Preservar a volumetria e as proporcoes reais da fachada; estilizar apenas luz, material e atmosfera. Nao transformar em multiplex, cinema generico, marquee inventada ou bloco modernista sem a forma trapezoidal correta."
+    },
+    {
+      "id": "rio_009",
+      "name": "Roda de Escuta",
+      "sourceType": "composicao_real",
+      "anchor": "roda comunitaria de escuta em ambiente cultural urbano",
+      "prompt": "Roda de escuta em espaco cultural de bairro em Volta Redonda, pessoas sentadas em circulo baixo, cartazes, cadernos e microfone aberto, atmosfera civica intima, realismo comunitario de base, texturas de concreto e tecido aquecido, ilustracao premium de carta."
+    },
+    {
+      "id": "rio_010",
+      "name": "Mutirao de Bairro",
+      "sourceType": "composicao_real",
+      "anchor": "acao coletiva de bairro",
+      "prompt": "Moradores de Volta Redonda limpando rua, pintando parede e plantando mudas juntos, vassouras, pas, sacos de lixo e cooperacao improvisada, otimismo de nivel de rua, superficies urbanas tateis, cena autentica de ajuda mutua brasileira, pintura premium de carta em vertical."
+    },
+    {
+      "id": "rio_011",
+      "name": "Defesa do Paraiba",
+      "sourceType": "composicao_real",
+      "anchor": "acao civica para proteger o Paraiba",
+      "prompt": "Defesa coletiva do Rio Paraiba, voluntarios na margem com luvas, faixa ambiental e sacos de residuos recolhidos, agua e borda da cidade visiveis, clima esperancoso e urgente, cena realista de acao civica, ilustracao premium de carta em formato vertical."
+    },
+    {
+      "id": "rio_012",
+      "name": "Chuva de Po",
+      "sourceType": "vr_real",
+      "anchor": "crise real de po preto associada a cidade do aco",
+      "prompt": "Chuva de po preto sobre ruas de Volta Redonda, casas, carros e postes cobertos por particulado industrial, ceu amarelo-acinzentado, vento carregando a poeira, crise ambiental ancorada na realidade urbana, sem fantasia sobrenatural, arte dramatica premium de carta, crop vertical mobile."
+    }
+  ]
+}

@@ -1,0 +1,204 @@
+{
+  "game": "cidade-de-aco-cartas-vr",
+  "version": "2026-06-29",
+  "styleGuide": {
+    "visualGoal": "premium mobile card game art grounded in real Volta Redonda references",
+    "look": [
+      "Concreto Zen",
+      "industrial brutalism",
+      "urban memory",
+      "premium collectible card illustration",
+      "cinematic lighting",
+      "weathered steel and concrete textures"
+    ],
+    "palette": [
+      "dark steel gray",
+      "rust orange",
+      "industrial yellow",
+      "deep teal",
+      "river green",
+      "dusty amber",
+      "crisis red only for alert scenes"
+    ],
+    "compositionRules": [
+      "vertical composition for mobile card crop",
+      "clear foreground silhouette",
+      "strong midground landmark or action",
+      "background tied to Volta Redonda urban identity",
+      "avoid generic fantasy card art",
+      "avoid sci-fi interfaces and futuristic machinery",
+      "prefer tactile materials, smoke, dust, concrete, metal and street texture"
+    ],
+    "negativePrompt": "generic fantasy city, cyberpunk neon overload, medieval props, anime face, plastic 3D render, glossy toy look, random skyscrapers, futuristic holograms, floating UI, generic American suburb, empty background, low detail landmark, logo watermarks, text overlays"
+  },
+  "cards": [
+    {
+      "id": "aco_001",
+      "name": "Arigo",
+      "sourceType": "composicao_real",
+      "anchor": "migrant worker who came to build CSN and the city",
+      "prompt": "Portrait of a migrant steel-town worker in early industrial Volta Redonda, carrying a worn canvas bag and simple helmet, red dust on boots, unfinished worker housing and construction cranes behind him, grounded Brazilian labor history, dramatic dusk light, textured concrete and steel atmosphere, premium collectible card illustration, vertical mobile crop."
+    },
+    {
+      "id": "aco_002",
+      "name": "Operaria da Laminacao",
+      "sourceType": "composicao_real",
+      "anchor": "rolling mill sector of Usina Presidente Vargas",
+      "prompt": "A woman steel worker inside the rolling mill of a Brazilian steel plant, protective gear, glowing hot steel plates, catwalks, rollers and amber industrial light, heat haze, sweat, heavy machinery realism, no sci-fi elements, premium card art with strong silhouette and steel textures, vertical composition."
+    },
+    {
+      "id": "aco_003",
+      "name": "Mestre do Alto-Forno",
+      "sourceType": "composicao_real",
+      "anchor": "real blast furnace structures of the CSN plant",
+      "prompt": "Blast furnace master framed against towering furnace pipes, ladders and pressure valves, orange molten glow reflecting on dark protective gear, monumental industrial architecture inspired by the real Volta Redonda steel complex, smoke and iron dust in the air, premium brutalist card illustration, vertical crop."
+    },
+    {
+      "id": "aco_004",
+      "name": "Cronista da Cidade Operaria",
+      "sourceType": "composicao_real",
+      "anchor": "worker memory archive and local press",
+      "prompt": "Worker chronicler at a rough desk covered with notebooks, union papers and local newspapers, the steel city skyline visible through a window, warm tungsten light, archival mood, concrete walls, labor memory atmosphere, detailed Brazilian urban realism, premium card painting for a mobile collectible card game."
+    },
+    {
+      "id": "aco_005",
+      "name": "Obelisco da Praca Brasil",
+      "sourceType": "vr_real",
+      "anchor": "real obelisk at Praca Brasil in Vila Santa Cecilia",
+      "prompt": "The real obelisk of Praca Brasil in Volta Redonda, stone monument with industrial reliefs, reflecting pool, bronze statues linked to steelmaking, civic square atmosphere, elegant but weathered surfaces, balanced dawn light, realistic landmark fidelity, premium card illustration, vertical frame. Preserve the real silhouette and composition of the actual square ensemble; stylize only light, material and atmosphere. Do not add dramatic mountains, invented heroic statuary, or a nonexistent monumental base."
+    },
+    {
+      "id": "aco_006",
+      "name": "Chamine Antiga",
+      "sourceType": "vr_real",
+      "anchor": "historic brick chimney from the old industrial past",
+      "prompt": "Historic brick chimney landmark of Volta Redonda, tall masonry shaft on a sturdy pedestal, aged brick texture, surrounded by urban traces and infrastructure, isolated and solemn, memory-of-industry mood, cloudy sky, premium card art with strong vertical perspective and tactile realism. Preserve the simple real-world form of a historic brick chimney on a pedestal; stylize only texture, color and atmosphere. Do not turn it into a scenic tower, fantasy ruin or modern metal smokestack."
+    },
+    {
+      "id": "aco_007",
+      "name": "Memorial 9 de Novembro",
+      "sourceType": "vr_real",
+      "anchor": "Oscar Niemeyer memorial to the 1988 workers killed in Volta Redonda",
+      "prompt": "The real Memorial 9 de Novembro in Volta Redonda, brutal concrete structure with the three worker effigies and visible fractures from the attack, open civic plaza, sober political memory atmosphere, low dramatic sky, high fidelity landmark rendering, premium urban memorial card illustration, vertical composition. Preserve the real Niemeyer monument form and the true disposition of the effigies; stylize only texture, weathering and light. Do not turn it into three giant separate worker statues, a theatrical ruin, or an invented memorial."
+    },
+    {
+      "id": "aco_008",
+      "name": "Greve de 1988",
+      "sourceType": "composicao_real",
+      "anchor": "historic CSN strike of 1988",
+      "prompt": "Workers strike outside the steel plant gates in Volta Redonda, crowd of laborers with banners and helmets, dense tension, factory smoke in the background, urgent industrial light, collective resistance energy, documentary-inspired but painterly premium card art, vertical mobile framing."
+    },
+    {
+      "id": "aco_009",
+      "name": "Turno Virado",
+      "sourceType": "composicao_real",
+      "anchor": "factory shift change in the steel city",
+      "prompt": "Shift-turn worker leaving and entering under predawn factory light, punch clock, sodium lamps, tired posture, deep blue morning shadows and yellow industrial glow, steel town routine, grounded urban realism, premium card illustration with intimate human scale and heavy atmosphere."
+    },
+    {
+      "id": "aco_010",
+      "name": "Cidade de Aco",
+      "sourceType": "composicao_real",
+      "anchor": "Volta Redonda as the steel city",
+      "prompt": "Epic view of Volta Redonda as Cidade do Aco, steel plant skyline, river curve, worker housing, concrete avenues and smoke stacks layered together, deep teal and rust palette, proud industrial identity without fantasy excess, premium landmark collage card art, vertical composition."
+    },
+    {
+      "id": "aco_011",
+      "name": "Sirene da Usina",
+      "sourceType": "composicao_real",
+      "anchor": "industrial alert siren within the steel plant environment",
+      "prompt": "Factory alarm siren tower inside a vast Brazilian steel complex, warning light cutting through smoke and steam, pipes and catwalks around it, sense of pressure and urgency, harsh industrial atmosphere, premium collectible card painting, realistic machinery, vertical crop."
+    },
+    {
+      "id": "aco_012",
+      "name": "Peso do Concreto",
+      "sourceType": "composicao_real",
+      "anchor": "planned worker city architecture and oppressive urban mass",
+      "prompt": "Oppressive slabs of concrete, pilotis, walkways and heavy worker-city blocks closing in over the viewer, brutalist urban compression inspired by Volta Redonda, dark amber light and dense shadows, no bunker fantasy, premium atmospheric card art with tactile concrete surfaces."
+    },
+    {
+      "id": "rio_001",
+      "name": "Curva do Paraiba",
+      "sourceType": "vr_real",
+      "anchor": "the bend of the Paraiba do Sul river that defines the city",
+      "prompt": "Wide bend of the Paraiba do Sul river through Volta Redonda, muddy green-brown water, urban margins, low vegetation and bridges in the distance, humid light, strong sense of place, realistic Brazilian river-city atmosphere, premium vertical card illustration."
+    },
+    {
+      "id": "rio_002",
+      "name": "Guardia do Rio",
+      "sourceType": "composicao_real",
+      "anchor": "community defense of the Paraiba river",
+      "prompt": "River guardian standing on the Paraiba bank with practical vest, gloves and collected waste bags, riparian plants and city edge behind, vigilant but civic tone, no militarized fantasy, deep river palette, premium grounded card art, vertical crop."
+    },
+    {
+      "id": "rio_003",
+      "name": "Catador do PEV",
+      "sourceType": "composicao_real",
+      "anchor": "recycling collection and voluntary drop-off context in Volta Redonda",
+      "prompt": "Recycling worker beside a voluntary drop-off point, hand cart, sorted dry recyclables, metal bays and urban service area, practical street realism, resilient civic mood, subtle green and rust palette, premium card illustration with strong material detail."
+    },
+    {
+      "id": "rio_004",
+      "name": "Menino do Retiro",
+      "sourceType": "vr_real",
+      "anchor": "daily life in the Retiro neighborhood",
+      "prompt": "Young boy moving through the busy streets of Retiro in Volta Redonda, local shops, crowded sidewalks, warm neighborhood life, ordinary clothes, Brazilian urban realism with affection and movement, premium card painting, vertical framing for a mobile collectible card."
+    },
+    {
+      "id": "rio_005",
+      "name": "Mestra da Capoeira",
+      "sourceType": "composicao_real",
+      "anchor": "Afro-Brazilian cultural life near the Memorial Zumbi",
+      "prompt": "Capoeira master in motion inside an open roda near the Memorial Zumbi amphitheater, berimbau and pandeiro visible, athletic pose, grounded Afro-Brazilian dignity, warm street light and deep teal shadows, premium dynamic card illustration, vertical composition."
+    },
+    {
+      "id": "rio_006",
+      "name": "Parque do Inga",
+      "sourceType": "vr_real",
+      "anchor": "Parque Natural Municipal Fazenda Santa Cecilia do Inga",
+      "prompt": "The real Parque do Inga in Volta Redonda, lush Atlantic forest trail, nursery structures, dense green canopy and humid air, urban refuge feeling, natural light through leaves, no generic tropical fantasy, premium environmental card art, vertical crop. Preserve the readable combination of trail, nursery and real urban park atmosphere; stylize only light, humidity and vegetation texture. Do not turn it into an exotic jungle, scenic botanical fantasy, or a generic forest wallpaper."
+    },
+    {
+      "id": "rio_007",
+      "name": "Memorial Zumbi",
+      "sourceType": "vr_real",
+      "anchor": "Memorial Zumbi dos Palmares in Volta Redonda",
+      "prompt": "The real Memorial Zumbi dos Palmares in Volta Redonda, amphitheater and open arena, corten steel Zumbi sculpture, Afro-Brazilian symbolic details in the railings, powerful civic memory atmosphere, precise local identity, premium landmark card painting, vertical frame. Preserve the actual sculpture scale and amphitheater composition; stylize only material, color and light. Do not turn the memorial into a monumental heroic bust, a generic African warrior statue, or an invented ceremonial arena."
+    },
+    {
+      "id": "rio_008",
+      "name": "Cinema 9 de Abril",
+      "sourceType": "vr_real",
+      "anchor": "historic Cinema 9 de Abril in Vila Santa Cecilia",
+      "prompt": "The real Cinema 9 de Abril in Volta Redonda, modernist trapezoidal facade, ribbon windows, monumental street presence and Portuguese black-and-white pavement, cultural memory mood, clean geometric lines with weathered texture, premium landmark card art, vertical composition. Preserve the real facade volume and proportions; stylize only light, material and atmosphere. Do not turn it into a multiplex, a generic movie theater, an invented marquee building, or a modernist block without the correct trapezoidal form."
+    },
+    {
+      "id": "rio_009",
+      "name": "Roda de Escuta",
+      "sourceType": "composicao_real",
+      "anchor": "community listening circle in a cultural urban setting",
+      "prompt": "Listening circle in a neighborhood cultural space in Volta Redonda, people seated low in a round formation, posters, notebooks and open microphone, intimate civic atmosphere, grounded community realism, concrete and warm fabric textures, premium card illustration."
+    },
+    {
+      "id": "rio_010",
+      "name": "Mutirao de Bairro",
+      "sourceType": "composicao_real",
+      "anchor": "collective neighborhood action",
+      "prompt": "Neighbors in Volta Redonda cleaning, painting walls and planting seedlings together, brooms, shovels, trash bags and improvised teamwork, street-level optimism, tactile urban surfaces, authentic Brazilian mutual aid scene, premium vertical card painting."
+    },
+    {
+      "id": "rio_011",
+      "name": "Defesa do Paraiba",
+      "sourceType": "composicao_real",
+      "anchor": "civic action to protect the Paraiba river",
+      "prompt": "Collective defense of the Paraiba river, volunteers on the riverbank with gloves, environmental banner and collected debris bags, water and city edge visible, hopeful but urgent mood, realistic civic action scene, premium card illustration in vertical format."
+    },
+    {
+      "id": "rio_012",
+      "name": "Chuva de Po",
+      "sourceType": "vr_real",
+      "anchor": "real black dust pollution crisis associated with the steel city",
+      "prompt": "Black dust storm over Volta Redonda streets, houses, cars and utility poles coated in industrial powder, yellow-gray sky, wind-blown particles, environmental crisis grounded in urban reality, no supernatural fantasy, premium dramatic card art, vertical mobile crop."
+    }
+  ]
+}

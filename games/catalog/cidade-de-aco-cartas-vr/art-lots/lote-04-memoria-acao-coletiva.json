@@ -1,0 +1,25 @@
+{
+  "lotId": "lote-04-memoria-acao-coletiva",
+  "order": 4,
+  "title": "Memoria e acao coletiva",
+  "goal": "amarrar movimento, coletividade e base historica sem estetizar demais o conflito",
+  "promptSource": "../art-prompts.pt-BR.json",
+  "negativePromptSource": "../art-prompts.pt-BR.json#styleGuide.negativePrompt",
+  "status": "closed_planning_ready_for_generation",
+  "cards": [
+    {
+      "id": "aco_008",
+      "name": "Greve de 1988",
+      "outputFile": "04-aco_008-greve-de-1988.png",
+      "promptKey": "aco_008",
+      "reviewFocus": "multidao operaria, faixas, portoes da usina, tensao historica"
+    },
+    {
+      "id": "rio_005",
+      "name": "Mestra da Capoeira",
+      "outputFile": "04-rio_005-mestra-da-capoeira.png",
+      "promptKey": "rio_005",
+      "reviewFocus": "roda, berimbau, movimento corporal, dignidade cultural"
+    }
+  ]
+}

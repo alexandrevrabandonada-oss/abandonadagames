@@ -7,8 +7,8 @@
   --border: rgba(231, 224, 210, 0.1);
   --border-strong: rgba(231, 224, 210, 0.22);
   --text: #E7E0D2;
-  --text-soft: #c4bbb0;
-  --text-muted: #8e877c;
+  --text-soft: #d4cbc0;
+  --text-muted: #aba395;
   --accent: #F2A900;
   --accent-2: #D99600;
   --sand: #F2A900;
@@ -179,4 +179,148 @@ a {
   100% {
     border-radius: 52% 48% 49% 51% / 51% 49% 48% 52%;
   }
+}
+
+@keyframes city-card-selected-loop {
+  0%, 100% {
+    transform: translateY(-4px);
+    box-shadow: 0 0 0 1px rgba(242, 169, 0, 0.2), 0 18px 40px rgba(0, 0, 0, 0.32);
+  }
+  50% {
+    transform: translateY(-7px);
+    box-shadow: 0 0 0 1px rgba(242, 169, 0, 0.28), 0 22px 46px rgba(0, 0, 0, 0.38);
+  }
+}
+
+@keyframes city-card-warning-shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-3px);
+  }
+  45% {
+    transform: translateX(3px);
+  }
+  70% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes city-card-played-pop {
+  0% {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 0 0 rgba(42, 199, 196, 0);
+  }
+  45% {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 0 0 1px rgba(42, 199, 196, 0.2), 0 18px 34px rgba(10, 24, 30, 0.26);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 0 0 rgba(42, 199, 196, 0);
+  }
+}
+
+@keyframes city-territory-impact {
+  0% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 0 0 rgba(42, 199, 196, 0);
+  }
+  40% {
+    transform: translateY(-3px) scale(1.008);
+    box-shadow: 0 0 0 1px rgba(42, 199, 196, 0.22), 0 18px 32px rgba(12, 36, 44, 0.22);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 0 0 rgba(42, 199, 196, 0);
+  }
+}
+
+@keyframes city-territory-warning {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes city-kpi-rise {
+  0% {
+    box-shadow: 0 0 0 rgba(42, 199, 196, 0);
+  }
+  40% {
+    box-shadow: 0 0 0 1px rgba(42, 199, 196, 0.24), 0 0 30px rgba(42, 199, 196, 0.18);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(42, 199, 196, 0);
+  }
+}
+
+@keyframes city-kpi-drop {
+  0% {
+    box-shadow: 0 0 0 rgba(255, 126, 78, 0);
+  }
+  40% {
+    box-shadow: 0 0 0 1px rgba(255, 126, 78, 0.24), 0 0 30px rgba(255, 126, 78, 0.16);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(255, 126, 78, 0);
+  }
+}
+
+@keyframes city-toast-in {
+  0% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.city-card-selected-loop {
+  animation: city-card-selected-loop 1.5s ease-in-out infinite;
+}
+
+.city-card-warning-shake {
+  animation: city-card-warning-shake 0.3s ease-out;
+}
+
+.city-card-played-pop {
+  animation: city-card-played-pop 0.45s ease-out;
+}
+
+.city-territory-impact {
+  animation: city-territory-impact 0.45s ease-out;
+}
+
+.city-territory-warning {
+  animation: city-territory-warning 0.32s ease-out;
+}
+
+.city-kpi-rise {
+  animation: city-kpi-rise 0.55s ease-out;
+}
+
+.city-kpi-drop {
+  animation: city-kpi-drop 0.55s ease-out;
+}
+
+.city-toast-in {
+  animation: city-toast-in 0.22s ease-out;
 }

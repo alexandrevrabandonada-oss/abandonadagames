@@ -1,0 +1,18 @@
+{
+  "lotId": "lote-05-crises",
+  "order": 5,
+  "title": "Crises",
+  "goal": "fechar o vocabulario visual de perigo do jogo com base urbana real",
+  "promptSource": "../art-prompts.pt-BR.json",
+  "negativePromptSource": "../art-prompts.pt-BR.json#styleGuide.negativePrompt",
+  "status": "closed_planning_ready_for_generation",
+  "cards": [
+    {
+      "id": "rio_012",
+      "name": "Chuva de Po",
+      "outputFile": "05-rio_012-chuva-de-po.png",
+      "promptKey": "rio_012",
+      "reviewFocus": "po preto cobrindo a cidade, vento, crise ambiental real"
+    }
+  ]
+}

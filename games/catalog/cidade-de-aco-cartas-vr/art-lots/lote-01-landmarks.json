@@ -1,0 +1,54 @@
+{
+  "lotId": "lote-01-landmarks",
+  "order": 1,
+  "title": "Landmarks obrigatorios",
+  "goal": "fechar landmarks reais de Volta Redonda e calibrar fidelidade local do baralho",
+  "fidelityRule": "Preservar forma, silhueta, volumetria e composicao reais dos landmarks. Estilizar apenas luz, textura, cor e atmosfera.",
+  "promptSource": "../art-prompts.pt-BR.json",
+  "negativePromptSource": "../art-prompts.pt-BR.json#styleGuide.negativePrompt",
+  "status": "closed_planning_ready_for_generation",
+  "cards": [
+    {
+      "id": "aco_005",
+      "name": "Obelisco da Praca Brasil",
+      "outputFile": "01-aco_005-obelisco-da-praca-brasil.png",
+      "promptKey": "aco_005",
+      "reviewFocus": "relevos industriais, espelho d'agua, landmark reconhecivel"
+    },
+    {
+      "id": "aco_006",
+      "name": "Chamine Antiga",
+      "outputFile": "01-aco_006-chamine-antiga.png",
+      "promptKey": "aco_006",
+      "reviewFocus": "tijolo aparente, verticalidade, tom historico"
+    },
+    {
+      "id": "aco_007",
+      "name": "Memorial 9 de Novembro",
+      "outputFile": "01-aco_007-memorial-9-de-novembro.png",
+      "promptKey": "aco_007",
+      "reviewFocus": "fraturas do atentado, concreto brutalista, memoria politica"
+    },
+    {
+      "id": "rio_006",
+      "name": "Parque do Inga",
+      "outputFile": "01-rio_006-parque-do-inga.png",
+      "promptKey": "rio_006",
+      "reviewFocus": "mata atlantica, trilha, sensacao de refugio urbano"
+    },
+    {
+      "id": "rio_007",
+      "name": "Memorial Zumbi",
+      "outputFile": "01-rio_007-memorial-zumbi.png",
+      "promptKey": "rio_007",
+      "reviewFocus": "aco corten, arena, identidade afro-brasileira local"
+    },
+    {
+      "id": "rio_008",
+      "name": "Cinema 9 de Abril",
+      "outputFile": "01-rio_008-cinema-9-de-abril.png",
+      "promptKey": "rio_008",
+      "reviewFocus": "fachada trapezoidal, esquadrias em fita, calcada portuguesa"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "slug": "cidade-de-aco-cartas-vr",
+  "title": "Cidade de Aco: Cronicas de VR",
+  "template": "card-territory-battle",
+  "tagline": "Segure Volta Redonda viva entre aco, rio, memoria e disputa.",
+  "summary": "Um card game mobile-first de 5 rodadas para ocupar territorios, administrar Folego e decidir o rumo de Volta Redonda.",
+  "subtitle": "Aco & Memoria vs Rio & Rua",
+  "ctaLabel": "Segurar a cidade",
+  "sharePrompt": "Sera que voce segura Volta Redonda melhor?",
+  "coverImage": "/games/cidade-de-aco-cartas-vr/cover.jpg",
+  "socialImage": "/games/cidade-de-aco-cartas-vr/social-card.jpg",
+  "tags": [
+    "aco & memoria",
+    "rio & rua",
+    "5 rodadas",
+    "mobile"
+  ],
+  "obstacles": [
+    "poluicao",
+    "apagamento",
+    "burocracia",
+    "privatizacao",
+    "abandono",
+    "chuva de po"
+  ],
+  "powerUps": [
+    "mutirao",
+    "memoria em luta",
+    "rio em recuperacao",
+    "praca ocupada",
+    "organizacao popular",
+    "folego da cidade"
+  ]
+}

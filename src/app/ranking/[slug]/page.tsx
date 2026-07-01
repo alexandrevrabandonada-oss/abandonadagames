@@ -1,29 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getGameBySlug } from "@/lib/gameRegistry";
+import { PortalGameRail, PortalTrail } from "@/components/games/GameChrome";
+import { getAllGames, getGameBySlug } from "@/lib/gameRegistry";
+import { getGamePresentation } from "@/lib/gamePresentation";
 import { getApiRankingForGame } from "@/lib/server/mockRankingStore";
 
 export const dynamic = "force-dynamic";
-
-const EMPTY_MESSAGE_BY_SLUG: Record<string, { title: string; subtitle: string }> = {
-  "merendeira-no-vermelho": {
-    title: "Ranking abrindo agora",
-    subtitle: "Seja a primeira a segurar a cozinha e marcar pontos.",
-  },
-  "plantaono-vermelho": {
-    title: "Plantao esperando recordes",
-    subtitle: "Publique a primeira corrida ate o fim do mes.",
-  },
-  "onibus-zero": {
-    title: "Linha sem lider ainda",
-    subtitle: "Seja o primeiro a fechar a rota com pontuacao alta.",
-  },
-  "fila-invisivel": {
-    title: "Fila sem campeao ainda",
-    subtitle: "Organize a fila e abra o ranking desta crise.",
-  },
-};
 
 export async function generateMetadata({
   params,
@@ -60,20 +43,19 @@ export default async function RankingPage({
 
   if (!game) notFound();
 
+  const presentation = getGamePresentation(slug);
+  const otherGames = getAllGames().filter((entry) => entry.slug !== slug).slice(0, 3);
   const ranking = await getApiRankingForGame(slug);
-  const subtitle =
-    slug === "merendeira-no-vermelho"
-      ? "Quem segura a cozinha, serve mais pratos e ainda dribla o contrato intermitente?"
-      : "Ranking oficial. Dispute os melhores tempos e pontuações da comunidade.";
-  const emptyState = EMPTY_MESSAGE_BY_SLUG[slug] ?? {
-    title: "Ranking abrindo agora",
-    subtitle: "Seja o primeiro a marcar pontos neste jogo.",
-  };
+  const subtitle = presentation.rankingSubtitle;
+  const topScore = ranking[0]?.score ?? 0;
+  const topPlayer = ranking[0]?.player ?? null;
+  const podiumCount = Math.min(3, ranking.length);
 
   return (
     <main className="min-h-screen bg-concrete px-5 py-6 text-[var(--text)] lg:px-8">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(242,169,0,0.04),_transparent_35%)]" />
       <div className="relative z-10 mx-auto max-w-5xl">
+        <PortalTrail currentLabel={`${game.title} ranking`} currentHref={`/ranking/${slug}`} />
         <Link
           href={`/jogar/${slug}`}
           prefetch={false}
@@ -81,16 +63,83 @@ export default async function RankingPage({
         >
           Voltar ao jogo
         </Link>
-        <div className="lg:flex lg:items-end lg:justify-between lg:gap-8">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-end">
           <div className="max-w-2xl">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="stamp-badge border-[var(--accent)] bg-black/25 text-[var(--accent)]">
+                {presentation.theme}
+              </span>
+              <span className="rounded border border-white/10 bg-black/30 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-[var(--text-soft)]">
+                {presentation.duration}
+              </span>
+              <span className="rounded border border-white/10 bg-black/30 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-[var(--text-soft)]">
+                {presentation.action.toLowerCase()}
+              </span>
+            </div>
             <h1 className="mt-2 text-4xl font-black uppercase leading-none sm:text-5xl">{game.title}</h1>
-            <p className="mt-3 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+            <p className="mt-3 text-sm font-bold uppercase tracking-[0.12em] text-[var(--text-muted)] leading-relaxed">
               {subtitle}
             </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link href={`/jogar/${slug}`} className="btn-primary text-[10px]">
+                Jogar agora
+              </Link>
+              <Link href="/" className="btn-secondary text-[10px]">
+                Ver portal
+              </Link>
+            </div>
           </div>
-          <div className="mt-4 rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-black uppercase tracking-[0.18em] text-[var(--accent)] lg:mt-0">
-            ranking comunitario
-          </div>
+          <aside className="rounded-xl border border-[var(--accent)]/25 bg-[linear-gradient(180deg,rgba(242,169,0,0.08),rgba(0,0,0,0.22))] px-5 py-4 shadow-[4px_4px_0px_#000000]">
+            <div className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--accent)]">
+              ranking comunitário
+            </div>
+            <div className="mt-3 text-4xl font-black text-white">{ranking.length > 0 ? topScore : "--"}</div>
+            <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-soft)]">
+              melhor marca do portal agora
+            </div>
+            <div className="mt-3 rounded-lg border border-white/10 bg-black/30 px-3 py-2">
+              <div className="text-[10px] font-black uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                líder atual
+              </div>
+              <div className="mt-1 truncate text-sm font-black text-[var(--text)]">
+                {topPlayer ?? "aguardando primeira rodada"}
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-between rounded-lg border border-white/10 bg-black/30 px-3 py-2">
+              <span className="text-[10px] font-black uppercase tracking-[0.16em] text-[var(--text-muted)]">top ativo</span>
+              <span className="text-sm font-black text-[var(--accent)]">{podiumCount}/3</span>
+            </div>
+          </aside>
+        </div>
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+          <article className="card-brutal">
+            <div className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--text-muted)]">
+              líder atual
+            </div>
+            <div className="mt-2 text-3xl font-black text-[var(--accent)]">{ranking.length > 0 ? topScore : "--"}</div>
+            <p className="mt-2 text-xs font-bold uppercase tracking-[0.1em] text-[var(--text-soft)] leading-relaxed">
+              melhor pontuação registrada
+            </p>
+          </article>
+          <article className="card-brutal">
+            <div className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--text-muted)]">
+              entradas
+            </div>
+            <div className="mt-2 text-3xl font-black text-[var(--accent)]">{ranking.length}</div>
+            <p className="mt-2 text-xs font-bold uppercase tracking-[0.1em] text-[var(--text-soft)] leading-relaxed">
+              partidas publicadas
+            </p>
+          </article>
+          <article className="card-brutal">
+            <div className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--text-muted)]">
+              formato
+            </div>
+            <div className="mt-2 text-2xl font-black text-[var(--accent)]">{presentation.duration}</div>
+            <p className="mt-2 text-xs font-bold uppercase tracking-[0.1em] text-[var(--text-soft)] leading-relaxed">
+              {presentation.action.toLowerCase()}
+            </p>
+          </article>
         </div>
 
         <div className="mt-8 grid gap-4 lg:grid-cols-2">
@@ -98,20 +147,31 @@ export default async function RankingPage({
             ranking.map((entry, index) => (
               <article
                 key={`${entry.player}-${entry.score}-${index}`}
-                className="flex items-center justify-between card-brutal"
+                className={`card-brutal flex items-center justify-between gap-4 ${
+                  index === 0 ? "border-[var(--accent)]/35 bg-[linear-gradient(180deg,rgba(242,169,0,0.08),rgba(0,0,0,0.18))]" : ""
+                }`}
               >
-                <div>
-                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--accent)]">
-                    #{index + 1} LUGAR
+                <div className="flex min-w-0 items-center gap-4">
+                  <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border text-lg font-black ${
+                    index === 0
+                      ? "border-[var(--accent)] bg-[var(--accent)] text-black"
+                      : "border-white/10 bg-black/30 text-[var(--text)]"
+                  }`}>
+                    #{index + 1}
                   </div>
-                  <h2 className="mt-1.5 text-lg font-black uppercase text-white">
-                    {entry.player}
-                  </h2>
-                  <p className="mt-1 text-[10px] font-medium text-[var(--text-muted)]">
-                    {entry.createdAt}
-                  </p>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--accent)]">
+                      {index === 0 ? "líder da rodada" : `${index + 1}º lugar`}
+                    </div>
+                    <h2 className="mt-1.5 truncate text-lg font-black uppercase text-white">
+                      {entry.player}
+                    </h2>
+                    <p className="mt-1 text-xs font-medium text-[var(--text-muted)]">
+                      {entry.createdAt}
+                    </p>
+                  </div>
                 </div>
-                <div className="text-right">
+                <div className="shrink-0 text-right">
                   <div className="text-2xl font-black text-[var(--accent)]">
                     {entry.score}
                   </div>
@@ -124,14 +184,53 @@ export default async function RankingPage({
           ) : (
             <article className="card-brutal text-center">
               <div className="text-sm font-black uppercase text-[var(--accent)]">
-                {emptyState.title}
+                {presentation.rankingEmptyTitle}
               </div>
               <p className="mt-2 text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">
-                {emptyState.subtitle}
+                {presentation.rankingEmptySubtitle}
               </p>
             </article>
           )}
         </div>
+
+        {otherGames.length > 0 ? (
+          <section className="mt-10">
+            <div className="mb-3 text-[10px] font-black uppercase tracking-[0.26em] text-[var(--text-muted)]">
+              continuar no portal
+            </div>
+            <div className="grid gap-4 lg:grid-cols-3">
+              {otherGames.map((entry) => {
+                const meta = getGamePresentation(entry.slug);
+
+                return (
+                  <article key={entry.slug} className="card-brutal">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="stamp-badge border-[var(--accent)] bg-black/20 text-[var(--accent)]">
+                        {meta.theme}
+                      </span>
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)]">
+                        {meta.duration}
+                      </span>
+                    </div>
+                    <h2 className="mt-4 text-lg font-black uppercase text-white">{entry.title}</h2>
+                    <p className="mt-2 text-sm font-bold uppercase leading-relaxed tracking-[0.08em] text-[var(--text-soft)]">
+                      {meta.focus}
+                    </p>
+                    <div className="mt-4 flex gap-3">
+                      <Link href={`/jogar/${entry.slug}`} className="btn-primary flex-1 text-[10px]">
+                        Jogar
+                      </Link>
+                      <Link href={`/ranking/${entry.slug}`} className="btn-secondary text-[10px]">
+                        Ranking
+                      </Link>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
+        <PortalGameRail currentSlug={slug} mode="ranking" />
       </div>
     </main>
   );

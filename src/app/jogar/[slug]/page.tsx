@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CidadeDeAcoCardGame } from "@/components/games/CidadeDeAcoCardGame";
 import { notFound } from "next/navigation";
 import { MerendeiraNoVermelhoGame } from "@/components/games/MerendeiraNoVermelhoGame";
 import { OnibusZeroGame } from "@/components/games/OnibusZeroGame";
@@ -33,9 +34,9 @@ export async function generateMetadata({
       url: `https://www.abandonadagames.online/jogar/${game.slug}`,
       images: [
         {
-          url: "/alexandre-vr.jpg",
+          url: game.socialImage ?? game.coverImage ?? "/alexandre-vr.jpg",
           width: 1200,
-          height: 1500,
+          height: game.socialImage ? 630 : 1500,
           alt: game.title,
         },
       ],
@@ -44,7 +45,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: game.title,
       description: game.summary,
-      images: ["/alexandre-vr.jpg"],
+      images: [game.socialImage ?? game.coverImage ?? "/alexandre-vr.jpg"],
     },
   };
 }
@@ -69,6 +70,10 @@ export default async function PlayPage({
 
   if (game.slug === "merendeira-no-vermelho" || game.template === "kitchen-survival") {
     return <MerendeiraNoVermelhoGame game={game} />;
+  }
+
+  if (game.slug === "cidade-de-aco-cartas-vr" || game.template === "card-territory-battle") {
+    return <CidadeDeAcoCardGame game={game} />;
   }
 
   return <QueueChaosGame game={game} />;

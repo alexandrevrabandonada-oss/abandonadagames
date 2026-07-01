@@ -1,0 +1,67 @@
+{
+  "lotId": "lote-02-identidade-industrial",
+  "order": 2,
+  "title": "Identidade industrial",
+  "goal": "fechar rosto, figurino, EPI, atmosfera de concreto e peso da Cidade do Aco",
+  "promptSource": "../art-prompts.pt-BR.json",
+  "negativePromptSource": "../art-prompts.pt-BR.json#styleGuide.negativePrompt",
+  "status": "closed_planning_ready_for_generation",
+  "cards": [
+    {
+      "id": "aco_001",
+      "name": "Arigo",
+      "outputFile": "02-aco_001-arigo.png",
+      "promptKey": "aco_001",
+      "reviewFocus": "migracao operaria, mala, poeira vermelha, fundo de obras"
+    },
+    {
+      "id": "aco_002",
+      "name": "Operaria da Laminacao",
+      "outputFile": "02-aco_002-operaria-da-laminacao.png",
+      "promptKey": "aco_002",
+      "reviewFocus": "EPI, chapas quentes, passarelas, luz industrial"
+    },
+    {
+      "id": "aco_003",
+      "name": "Mestre do Alto-Forno",
+      "outputFile": "02-aco_003-mestre-do-alto-forno.png",
+      "promptKey": "aco_003",
+      "reviewFocus": "alto-forno monumental, clarao laranja, estrutura metalica"
+    },
+    {
+      "id": "aco_004",
+      "name": "Cronista da Cidade Operaria",
+      "outputFile": "02-aco_004-cronista-da-cidade-operaria.png",
+      "promptKey": "aco_004",
+      "reviewFocus": "arquivo, cadernos, jornais, skyline da usina"
+    },
+    {
+      "id": "aco_009",
+      "name": "Turno Virado",
+      "outputFile": "02-aco_009-turno-virado.png",
+      "promptKey": "aco_009",
+      "reviewFocus": "troca de turno, relogio de ponto, cansaco e luz de fabrica"
+    },
+    {
+      "id": "aco_010",
+      "name": "Cidade de Aco",
+      "outputFile": "02-aco_010-cidade-de-aco.png",
+      "promptKey": "aco_010",
+      "reviewFocus": "skyline da usina, rio, moradia operaria, vista epica"
+    },
+    {
+      "id": "aco_011",
+      "name": "Sirene da Usina",
+      "outputFile": "02-aco_011-sirene-da-usina.png",
+      "promptKey": "aco_011",
+      "reviewFocus": "torre de alerta, vapor, fumaca, tensao mecanica"
+    },
+    {
+      "id": "aco_012",
+      "name": "Peso do Concreto",
+      "outputFile": "02-aco_012-peso-do-concreto.png",
+      "promptKey": "aco_012",
+      "reviewFocus": "pilotis, lajes, compressao espacial, brutalismo urbano"
+    }
+  ]
+}

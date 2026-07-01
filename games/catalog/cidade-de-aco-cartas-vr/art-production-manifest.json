@@ -1,0 +1,343 @@
+{
+  "game": "cidade-de-aco-cartas-vr",
+  "version": "2026-06-29",
+  "status": "ready_for_generation",
+  "promptSources": {
+    "ptBr": "games/catalog/cidade-de-aco-cartas-vr/art-prompts.pt-BR.json",
+    "en": "games/catalog/cidade-de-aco-cartas-vr/art-prompts.json"
+  },
+  "outputConvention": {
+    "directory": "generated/cidade-de-aco-cartas-vr/cards",
+    "filenamePattern": "{lotOrder}-{cardId}-{slug}.png",
+    "aspectRatio": "3:4",
+    "orientation": "vertical",
+    "targetUse": "mobile card art"
+  },
+  "lotSummary": [
+    {
+      "lotId": "lote-01-landmarks",
+      "order": 1,
+      "title": "Landmarks obrigatorios",
+      "count": 6,
+      "status": "closed_planning_ready_for_generation"
+    },
+    {
+      "lotId": "lote-02-identidade-industrial",
+      "order": 2,
+      "title": "Identidade industrial",
+      "count": 8,
+      "status": "closed_planning_ready_for_generation"
+    },
+    {
+      "lotId": "lote-03-rio-bairro-cotidiano",
+      "order": 3,
+      "title": "Rio, bairro e cotidiano",
+      "count": 7,
+      "status": "closed_planning_ready_for_generation"
+    },
+    {
+      "lotId": "lote-04-memoria-acao-coletiva",
+      "order": 4,
+      "title": "Memoria e acao coletiva",
+      "count": 2,
+      "status": "closed_planning_ready_for_generation"
+    },
+    {
+      "lotId": "lote-05-crises",
+      "order": 5,
+      "title": "Crises",
+      "count": 1,
+      "status": "closed_planning_ready_for_generation"
+    }
+  ],
+  "cards": [
+    {
+      "id": "aco_005",
+      "name": "Obelisco da Praca Brasil",
+      "lotId": "lote-01-landmarks",
+      "lotOrder": 1,
+      "promptKey": "aco_005",
+      "sourceType": "vr_real",
+      "priority": "critical",
+      "outputFile": "01-aco_005-obelisco-da-praca-brasil.png",
+      "reviewFocus": "relevos industriais, espelho d'agua, landmark reconhecivel",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "aco_006",
+      "name": "Chamine Antiga",
+      "lotId": "lote-01-landmarks",
+      "lotOrder": 1,
+      "promptKey": "aco_006",
+      "sourceType": "vr_real",
+      "priority": "critical",
+      "outputFile": "01-aco_006-chamine-antiga.png",
+      "reviewFocus": "tijolo aparente, verticalidade, tom historico",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "aco_007",
+      "name": "Memorial 9 de Novembro",
+      "lotId": "lote-01-landmarks",
+      "lotOrder": 1,
+      "promptKey": "aco_007",
+      "sourceType": "vr_real",
+      "priority": "critical",
+      "outputFile": "01-aco_007-memorial-9-de-novembro.png",
+      "reviewFocus": "fraturas do atentado, concreto brutalista, memoria politica",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "rio_006",
+      "name": "Parque do Inga",
+      "lotId": "lote-01-landmarks",
+      "lotOrder": 1,
+      "promptKey": "rio_006",
+      "sourceType": "vr_real",
+      "priority": "critical",
+      "outputFile": "01-rio_006-parque-do-inga.png",
+      "reviewFocus": "mata atlantica, trilha, sensacao de refugio urbano",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "rio_007",
+      "name": "Memorial Zumbi",
+      "lotId": "lote-01-landmarks",
+      "lotOrder": 1,
+      "promptKey": "rio_007",
+      "sourceType": "vr_real",
+      "priority": "critical",
+      "outputFile": "01-rio_007-memorial-zumbi.png",
+      "reviewFocus": "aco corten, arena, identidade afro-brasileira local",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "rio_008",
+      "name": "Cinema 9 de Abril",
+      "lotId": "lote-01-landmarks",
+      "lotOrder": 1,
+      "promptKey": "rio_008",
+      "sourceType": "vr_real",
+      "priority": "critical",
+      "outputFile": "01-rio_008-cinema-9-de-abril.png",
+      "reviewFocus": "fachada trapezoidal, esquadrias em fita, calcada portuguesa",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "aco_001",
+      "name": "Arigo",
+      "lotId": "lote-02-identidade-industrial",
+      "lotOrder": 2,
+      "promptKey": "aco_001",
+      "sourceType": "composicao_real",
+      "priority": "high",
+      "outputFile": "02-aco_001-arigo.png",
+      "reviewFocus": "migracao operaria, mala, poeira vermelha, fundo de obras",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "aco_002",
+      "name": "Operaria da Laminacao",
+      "lotId": "lote-02-identidade-industrial",
+      "lotOrder": 2,
+      "promptKey": "aco_002",
+      "sourceType": "composicao_real",
+      "priority": "high",
+      "outputFile": "02-aco_002-operaria-da-laminacao.png",
+      "reviewFocus": "EPI, chapas quentes, passarelas, luz industrial",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "aco_003",
+      "name": "Mestre do Alto-Forno",
+      "lotId": "lote-02-identidade-industrial",
+      "lotOrder": 2,
+      "promptKey": "aco_003",
+      "sourceType": "composicao_real",
+      "priority": "high",
+      "outputFile": "02-aco_003-mestre-do-alto-forno.png",
+      "reviewFocus": "alto-forno monumental, claridade laranja, estrutura metalica",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "aco_004",
+      "name": "Cronista da Cidade Operaria",
+      "lotId": "lote-02-identidade-industrial",
+      "lotOrder": 2,
+      "promptKey": "aco_004",
+      "sourceType": "composicao_real",
+      "priority": "high",
+      "outputFile": "02-aco_004-cronista-da-cidade-operaria.png",
+      "reviewFocus": "arquivo, cadernos, jornais, skyline da usina",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "aco_009",
+      "name": "Turno Virado",
+      "lotId": "lote-02-identidade-industrial",
+      "lotOrder": 2,
+      "promptKey": "aco_009",
+      "sourceType": "composicao_real",
+      "priority": "high",
+      "outputFile": "02-aco_009-turno-virado.png",
+      "reviewFocus": "troca de turno, relogio de ponto, cansaco e luz de fabrica",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "aco_010",
+      "name": "Cidade de Aco",
+      "lotId": "lote-02-identidade-industrial",
+      "lotOrder": 2,
+      "promptKey": "aco_010",
+      "sourceType": "composicao_real",
+      "priority": "high",
+      "outputFile": "02-aco_010-cidade-de-aco.png",
+      "reviewFocus": "skyline da usina, rio, moradia operaria, vista epica",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "aco_011",
+      "name": "Sirene da Usina",
+      "lotId": "lote-02-identidade-industrial",
+      "lotOrder": 2,
+      "promptKey": "aco_011",
+      "sourceType": "composicao_real",
+      "priority": "high",
+      "outputFile": "02-aco_011-sirene-da-usina.png",
+      "reviewFocus": "torre de alerta, vapor, fumaça, tensao mecanica",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "aco_012",
+      "name": "Peso do Concreto",
+      "lotId": "lote-02-identidade-industrial",
+      "lotOrder": 2,
+      "promptKey": "aco_012",
+      "sourceType": "composicao_real",
+      "priority": "high",
+      "outputFile": "02-aco_012-peso-do-concreto.png",
+      "reviewFocus": "pilotis, lajes, compressao espacial, brutalismo urbano",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "rio_001",
+      "name": "Curva do Paraiba",
+      "lotId": "lote-03-rio-bairro-cotidiano",
+      "lotOrder": 3,
+      "promptKey": "rio_001",
+      "sourceType": "vr_real",
+      "priority": "high",
+      "outputFile": "03-rio_001-curva-do-paraiba.png",
+      "reviewFocus": "curva do rio, margens urbanas, agua barrenta",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "rio_002",
+      "name": "Guardia do Rio",
+      "lotId": "lote-03-rio-bairro-cotidiano",
+      "lotOrder": 3,
+      "promptKey": "rio_002",
+      "sourceType": "composicao_real",
+      "priority": "high",
+      "outputFile": "03-rio_002-guardia-do-rio.png",
+      "reviewFocus": "colete, margem do rio, tom civico e nao militar",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "rio_003",
+      "name": "Catador do PEV",
+      "lotId": "lote-03-rio-bairro-cotidiano",
+      "lotOrder": 3,
+      "promptKey": "rio_003",
+      "sourceType": "composicao_real",
+      "priority": "medium",
+      "outputFile": "03-rio_003-catador-do-pev.png",
+      "reviewFocus": "baias de reciclaveis, carrinho, realismo de servico urbano",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "rio_004",
+      "name": "Menino do Retiro",
+      "lotId": "lote-03-rio-bairro-cotidiano",
+      "lotOrder": 3,
+      "promptKey": "rio_004",
+      "sourceType": "vr_real",
+      "priority": "high",
+      "outputFile": "03-rio_004-menino-do-retiro.png",
+      "reviewFocus": "vida de bairro, lojas locais, circulacao cotidiana",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "rio_009",
+      "name": "Roda de Escuta",
+      "lotId": "lote-03-rio-bairro-cotidiano",
+      "lotOrder": 3,
+      "promptKey": "rio_009",
+      "sourceType": "composicao_real",
+      "priority": "medium",
+      "outputFile": "03-rio_009-roda-de-escuta.png",
+      "reviewFocus": "intimidade comunitaria, bancos baixos, cartazes e cadernos",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "rio_010",
+      "name": "Mutirao de Bairro",
+      "lotId": "lote-03-rio-bairro-cotidiano",
+      "lotOrder": 3,
+      "promptKey": "rio_010",
+      "sourceType": "composicao_real",
+      "priority": "medium",
+      "outputFile": "03-rio_010-mutirao-de-bairro.png",
+      "reviewFocus": "acao coletiva, rua viva, ferramentas simples, otimismo",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "rio_011",
+      "name": "Defesa do Paraiba",
+      "lotId": "lote-03-rio-bairro-cotidiano",
+      "lotOrder": 3,
+      "promptKey": "rio_011",
+      "sourceType": "composicao_real",
+      "priority": "medium",
+      "outputFile": "03-rio_011-defesa-do-paraiba.png",
+      "reviewFocus": "margem do rio, faixa ambiental, voluntarios em acao",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "aco_008",
+      "name": "Greve de 1988",
+      "lotId": "lote-04-memoria-acao-coletiva",
+      "lotOrder": 4,
+      "promptKey": "aco_008",
+      "sourceType": "composicao_real",
+      "priority": "high",
+      "outputFile": "04-aco_008-greve-de-1988.png",
+      "reviewFocus": "multidao operaria, faixas, portoes da usina, tensao historica",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "rio_005",
+      "name": "Mestra da Capoeira",
+      "lotId": "lote-04-memoria-acao-coletiva",
+      "lotOrder": 4,
+      "promptKey": "rio_005",
+      "sourceType": "composicao_real",
+      "priority": "high",
+      "outputFile": "04-rio_005-mestra-da-capoeira.png",
+      "reviewFocus": "roda, berimbau, movimento corporal, dignidade cultural",
+      "status": "ready_for_generation"
+    },
+    {
+      "id": "rio_012",
+      "name": "Chuva de Po",
+      "lotId": "lote-05-crises",
+      "lotOrder": 5,
+      "promptKey": "rio_012",
+      "sourceType": "vr_real",
+      "priority": "critical",
+      "outputFile": "05-rio_012-chuva-de-po.png",
+      "reviewFocus": "po preto cobrindo a cidade, vento, crise ambiental real",
+      "status": "ready_for_generation"
+    }
+  ]
+}
